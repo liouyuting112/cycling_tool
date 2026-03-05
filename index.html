@@ -4,23 +4,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0b1120">
     <title>Road Master - 智慧單車導遊</title>
     <link
-        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Outfit:ital,wght@0,400;0,700;0,900;1,900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap"
         rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         :root {
-            --p: #06b6d4;
-            /* 充滿活力的青色 */
-            --s: #3b82f6;
-            /* 運動感藍色 */
+            --p: #f97316;
+            /* 熱血霓虹橘 (Primary) */
+            --s: #06b6d4;
+            /* 破風青藍 (Secondary) */
             --bg: #0b1120;
-            /* 深空藍背景 */
-            --c: rgba(30, 41, 59, 0.7);
-            /* 毛玻璃卡片底色 */
+            /* 曜石黑背景 */
+            --c: rgba(30, 41, 59, 0.45);
+            /* 極致透光感 */
+            --border: rgba(255, 255, 255, 0.08);
             --t: #f8fafc;
-            --m: #94a3b8;
         }
 
         * {
@@ -28,260 +29,325 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Outfit', 'Noto Sans TC', sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
+        /* 動態星陣背景設定 */
         body {
-            background: var(--bg);
+            background-color: var(--bg);
             color: var(--t);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             overflow-x: hidden;
-            /* 加上非常微弱的動態光影感做背景 */
-            background-image: radial-gradient(circle at 15% 50%, rgba(6, 182, 212, 0.1), transparent 25%),
-                radial-gradient(circle at 85% 30%, rgba(59, 130, 246, 0.1), transparent 25%);
+            background-image:
+                radial-gradient(circle at 0% 0%, rgba(249, 115, 22, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(6, 182, 212, 0.1) 0%, transparent 40%);
+            background-attachment: fixed;
         }
 
         .ac {
-            max-width: 800px;
+            max-width: 680px;
             margin: 0 auto;
             width: 100%;
             flex: 1;
-            padding: 2rem 1.5rem;
+            padding: 2.5rem 1.5rem;
         }
 
         header {
             text-align: center;
-            margin-bottom: 2.5rem;
-            animation: fadeDown 0.8s ease-out;
+            margin-bottom: 3rem;
+            animation: fadeDown 1s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         h1 {
-            font-size: 3rem;
+            font-size: 3.5rem;
             font-weight: 900;
             font-style: italic;
-            letter-spacing: -1px;
-            background: linear-gradient(135deg, #22d3ee, #3b82f6);
+            letter-spacing: -2px;
+            background: linear-gradient(135deg, #fff, var(--p));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 0.5rem;
+            filter: drop-shadow(0px 10px 20px rgba(249, 115, 22, 0.2));
+            text-transform: uppercase;
         }
 
         .subtitle {
-            color: var(--m);
-            font-size: 0.95rem;
+            color: #cbd5e1;
+            font-size: 1rem;
             font-weight: 500;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
         }
 
-        /* 輸入卡片區 (Glassmorphism) */
+        /* 沉浸式卡片 */
         .pw {
             background: var(--c);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 24px;
-            padding: 2rem;
+            border: 1px solid var(--border);
+            border-radius: 32px;
+            padding: 2.5rem 2rem;
             margin-bottom: 2rem;
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-            animation: fadeUp 0.8s ease-out 0.2s both;
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
         }
 
         .wg {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.8rem;
         }
 
         .wg label {
-            display: block;
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: var(--t);
-            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: var(--s);
+            margin-bottom: 12px;
             letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
+        .wg label::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: var(--s);
+            border-radius: 50%;
+            margin-right: 8px;
+            box-shadow: 0 0 10px var(--s);
+        }
+
+        /* 質感標籤 */
         .chips {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
 
         .chip {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--t);
-            padding: 6px 14px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            color: #94a3b8;
+            padding: 8px 16px;
             border-radius: 100px;
             font-size: 0.85rem;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .chip:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateY(-1px);
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            transform: translateY(-2px);
         }
 
         .chip.active {
-            background: linear-gradient(135deg, var(--p), var(--s));
+            background: var(--p);
             color: #fff;
-            border-color: transparent;
-            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4);
+            border-color: var(--p);
+            box-shadow: 0 8px 20px rgba(249, 115, 22, 0.4);
+            transform: translateY(-2px);
         }
 
+        /* 輸入框發光特效 */
         .wi {
             width: 100%;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border);
             color: #fff;
-            padding: 14px 18px;
-            border-radius: 12px;
+            padding: 16px 20px;
+            border-radius: 16px;
             outline: none;
-            transition: all 0.3s;
-            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-size: 1.05rem;
+            font-weight: 500;
         }
 
         .wi:focus {
             border-color: var(--p);
-            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2);
+            background: rgba(249, 115, 22, 0.05);
+            box-shadow: 0 0 25px rgba(249, 115, 22, 0.15);
         }
 
         .wi::placeholder {
             color: #475569;
+            font-weight: 400;
         }
 
+        /* 超能按鈕 */
         .wb {
             width: 100%;
-            background: linear-gradient(135deg, var(--p), var(--s));
+            background: linear-gradient(135deg, #f97316, #ef4444);
             color: #fff;
             border: none;
-            font-weight: 800;
-            border-radius: 12px;
+            font-weight: 900;
+            border-radius: 16px;
             cursor: pointer;
-            height: 56px;
-            margin-top: 1rem;
-            font-size: 1.15rem;
-            letter-spacing: 1px;
-            box-shadow: 0 10px 25px rgba(6, 182, 212, 0.3);
-            transition: all 0.3s;
+            height: 60px;
+            margin-top: 1.5rem;
+            font-size: 1.25rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            box-shadow: 0 15px 35px rgba(249, 115, 22, 0.3);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .wb::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: skewX(-20deg);
+            transition: 0.5s;
         }
 
         .wb:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 35px rgba(6, 182, 212, 0.4);
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 20px 45px rgba(249, 115, 22, 0.5);
+        }
+
+        .wb:hover::after {
+            left: 150%;
         }
 
         .wb:active {
-            transform: translateY(0);
+            transform: translateY(0) scale(0.98);
         }
 
         /* 結果顯示區 */
         .da {
-            padding-bottom: 120px;
+            padding-bottom: 140px;
         }
 
         .rc {
             background: var(--c);
-            border-radius: 24px;
-            padding: 2rem;
-            border-top: 4px solid var(--p);
-            backdrop-filter: blur(12px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-            animation: sweep 0.6s ease-out;
-            line-height: 1.7;
+            border-radius: 32px;
+            padding: 2.5rem;
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            animation: sweep 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            line-height: 1.8;
+            font-size: 1.05rem;
+            color: #f1f5f9;
         }
 
         .rc h3 {
-            margin-bottom: 1.5rem;
-            font-size: 1.5rem;
-            color: #fff;
+            margin-bottom: 1.8rem;
+            font-size: 1.6rem;
+            color: var(--s);
+            font-weight: 900;
             display: flex;
             align-items: center;
             gap: 10px;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
         }
 
-        /* 美化 Markdown 輸出的表格與排版 */
         .rc p {
-            margin-bottom: 1rem;
-            color: #cbd5e1;
+            margin-bottom: 1.2rem;
         }
 
         .rc strong {
             color: #fff;
-            font-weight: 700;
-            color: var(--p);
+            font-weight: 800;
+            background: rgba(6, 182, 212, 0.15);
+            padding: 2px 6px;
+            border-radius: 4px;
         }
 
         .rc ul,
         .rc ol {
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
             padding-left: 1.5rem;
-            color: #cbd5e1;
         }
 
         .rc li {
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.8rem;
         }
 
-        /* 旅遊感精美表格 */
+        /* 極致旅行報表 (表格) */
         .rc table {
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
-            margin: 1.5rem 0;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 12px;
+            margin: 2rem 0;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 16px;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
         }
 
         .rc th {
-            background: rgba(6, 182, 212, 0.15);
-            color: #fff;
-            padding: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--p);
+            padding: 18px;
             text-align: left;
             font-size: 0.95rem;
-            font-weight: 700;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--border);
         }
 
         .rc td {
-            padding: 16px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            padding: 18px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
             font-size: 0.95rem;
-            color: #cbd5e1;
+            font-weight: 500;
         }
 
         .rc tr:last-child td {
             border-bottom: none;
         }
 
-        .rc tr:hover td {
-            background: rgba(255, 255, 255, 0.03);
+        .rc tr:nth-child(even) td {
+            background: rgba(255, 255, 255, 0.01);
         }
 
-        /* 底部輸入框 */
+        .rc tr:hover td {
+            background: rgba(6, 182, 212, 0.05);
+            color: #fff;
+        }
+
+        /* 流線型浮動輸入框 */
         .iw {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            background: linear-gradient(to top, var(--bg) 80%, transparent);
-            padding: 2rem 1.5rem 1.5rem 1.5rem;
+            background: linear-gradient(to top, var(--bg) 60%, transparent);
+            padding: 2rem 1.5rem 2rem 1.5rem;
             z-index: 1000;
         }
 
         .ibc {
-            max-width: 800px;
+            max-width: 680px;
             margin: 0 auto;
             display: flex;
-            gap: 8px;
-            background: rgba(15, 23, 42, 0.9);
-            border-radius: 20px;
-            padding: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            gap: 10px;
+            background: rgba(15, 23, 42, 0.7);
+            border-radius: 100px;
+            padding: 10px;
+            border: 1px solid var(--border);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+            transition: 0.3s;
+        }
+
+        .ibc:focus-within {
+            border-color: rgba(6, 182, 212, 0.5);
+            box-shadow: 0 10px 40px rgba(6, 182, 212, 0.2);
         }
 
         .ibc input {
@@ -289,9 +355,10 @@
             background: transparent;
             border: none;
             color: #fff;
-            padding: 0 16px;
+            padding: 0 20px;
             outline: none;
-            font-size: 1rem;
+            font-size: 1.05rem;
+            font-weight: 500;
         }
 
         .ibc input::placeholder {
@@ -299,34 +366,70 @@
         }
 
         .ibc button {
-            background: var(--s);
+            background: #fff;
             border: none;
-            color: #fff;
-            border-radius: 14px;
-            padding: 0 24px;
-            font-weight: 700;
+            color: #0f172a;
+            border-radius: 100px;
+            padding: 0 28px;
+            font-weight: 900;
             cursor: pointer;
-            height: 44px;
-            transition: 0.2s;
+            height: 48px;
+            transition: all 0.3s;
+            font-size: 1rem;
         }
 
         .ibc button:hover {
             background: var(--p);
+            color: #fff;
+            transform: scale(1.05);
         }
 
-        .loading-text {
-            text-align: center;
-            padding: 3rem 0;
-            color: var(--p);
+        /* 精緻的 Loading 動畫 */
+        .loader {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 0;
+            color: var(--s);
             font-weight: 700;
-            font-size: 1.1rem;
-            animation: pulse 1.5s infinite;
+            letter-spacing: 2px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(6, 182, 212, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--p);
+            animation: spin 1s ease-in-out infinite;
+            margin-bottom: 1.5rem;
+        }
+
+        /* 歡迎提示語 */
+        .welcome-card {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #64748b;
+        }
+
+        .welcome-card .emoji {
+            font-size: 3.5rem;
+            display: block;
+            margin-bottom: 1.5rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .welcome-card h4 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: #94a3b8;
         }
 
         @keyframes sweep {
             from {
                 opacity: 0;
-                transform: translateY(20px) scale(0.98);
+                transform: translateY(30px) scale(0.95);
             }
 
             to {
@@ -338,7 +441,7 @@
         @keyframes fadeDown {
             from {
                 opacity: 0;
-                transform: translateY(-20px);
+                transform: translateY(-30px);
             }
 
             to {
@@ -350,7 +453,7 @@
         @keyframes fadeUp {
             from {
                 opacity: 0;
-                transform: translateY(20px);
+                transform: translateY(30px);
             }
 
             to {
@@ -359,32 +462,24 @@
             }
         }
 
-        @keyframes pulse {
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes float {
             0% {
-                opacity: 0.6;
+                transform: translateY(0px);
             }
 
             50% {
-                opacity: 1;
-                text-shadow: 0 0 15px rgba(6, 182, 212, 0.5);
+                transform: translateY(-10px);
             }
 
             100% {
-                opacity: 0.6;
+                transform: translateY(0px);
             }
-        }
-
-        /* 歡迎提示語 */
-        .welcome-card {
-            text-align: center;
-            padding: 2rem;
-            color: var(--m);
-        }
-
-        .welcome-card span {
-            font-size: 2.5rem;
-            display: block;
-            margin-bottom: 1rem;
         }
     </style>
 </head>
@@ -393,7 +488,7 @@
     <div class="ac">
         <header>
             <h1>Road Master</h1>
-            <p class="subtitle">專為台灣車友打造的智慧騎行規劃神器</p>
+            <p class="subtitle">頂級騎行路線智囊引擎</p>
         </header>
 
         <div class="pw">
@@ -405,44 +500,46 @@
                     <span class="chip" onclick="setV('sp','台中市')">台中</span>
                     <span class="chip" onclick="setV('sp','高雄市')">高雄</span>
                 </div>
-                <input type="text" id="sp" class="wi" placeholder="例如：台北松山車站">
+                <input type="text" id="sp" class="wi" placeholder="規劃起點，例如：台北松山車站">
             </div>
 
             <div class="wg">
                 <label>目的地 / 挑戰目標</label>
                 <div class="chips">
-                    <span class="chip" onclick="setV('ep','花蓮太魯閣')">花蓮太魯閣</span>
+                    <span class="chip" onclick="setV('ep','花蓮太魯閣')">太魯閣</span>
                     <span class="chip" onclick="setV('ep','墾丁大街')">墾丁</span>
                     <span class="chip" onclick="setV('ep','公路車環島')">逆風環島</span>
                     <span class="chip" onclick="setV('ep','武嶺')">武嶺挑戰</span>
                 </div>
-                <input type="text" id="ep" class="wi" placeholder="例如：台南火車站">
+                <input type="text" id="ep" class="wi" placeholder="目標終點，例如：台南火車站">
             </div>
 
             <div class="wg">
-                <label>規劃天數</label>
+                <label>行程天數</label>
                 <div class="chips">
                     <span class="chip" onclick="setV('du','1天 (單日挑戰)')">單日挑戰</span>
                     <span class="chip" onclick="setV('du','3天 (輕旅行)')">3天</span>
                     <span class="chip" onclick="setV('du','7天 (深度遊)')">7天</span>
                     <span class="chip" onclick="setV('du','9天 (大環島)')">大環島</span>
                 </div>
-                <input type="text" id="du" class="wi" placeholder="例如：4天">
+                <input type="text" id="du" class="wi" placeholder="規劃時間，例如：4天">
             </div>
 
-            <button class="wb" onclick="_gp()">自動規劃我的專屬行程 ⚡</button>
+            <button class="wb" onclick="_gp()">運算專屬軌跡</button>
         </div>
 
         <div id="ca" class="da">
-            <div class="welcome-card">
-                <span>🚵‍♂️</span>
-                <p>告訴我你想去哪裡，為你安排最棒的路線與補給點規劃！</p>
+            <!-- 預設歡迎畫面閒置狀態 -->
+            <div class="welcome-card" id="welcome-msg">
+                <span class="emoji">🚵‍♂️</span>
+                <h4>準備好踏上旅程了嗎？</h4>
+                <p>輸入路線參數，或是直接在下方詢問單車相關問題。</p>
             </div>
         </div>
 
         <div class="iw">
             <div class="ibc">
-                <input type="text" id="ui" placeholder="或是問我任何裝備、路線、維修問題..." onkeypress="if(event.keyCode===13)_sm()">
+                <input type="text" id="ui" placeholder="輸入裝備、路線、維修或路線提問..." onkeypress="if(event.keyCode===13)_sm()">
                 <button onclick="_sm()">傳送</button>
             </div>
         </div>
@@ -451,7 +548,7 @@
     <script>
         (function () {
             let _busy = false;
-            // 完全穩定的背景 Gateway 地址，不露臉
+            // 路由終端隱形指向 Cloudflare Worker
             const _CF_GATEWAY = "https://hidden-surf-0579.love7053150.workers.dev/";
 
             window.setV = (id, v) => {
@@ -462,9 +559,11 @@
 
             window._am = (r, c) => {
                 const a = document.getElementById('ca');
+                document.getElementById('welcome-msg') && document.getElementById('welcome-msg').remove();
+
                 const d = document.createElement('div');
                 if (r === 'ai') {
-                    d.innerHTML = `<div class="rc"><h3>🚵 你的專屬騎行計畫</h3>${marked.parse(c)}</div>`;
+                    d.innerHTML = `<div class="rc"><h3>📍 路線大師分析結果</h3>${marked.parse(c)}</div>`;
                 } else {
                     d.innerHTML = `<div class="rc" style="border-top-color:#ef4444;text-align:center;">
                         <p style="color:#f87171;font-weight:700;">${c}</p>
@@ -478,14 +577,16 @@
                 const s = document.getElementById('sp').value, e = document.getElementById('ep').value, d = document.getElementById('du').value;
                 if (!s || !e || !d) return alert("車友你好！請幫我填寫起點、終點與天數，我才能幫你排行程喔！");
 
-                // 【系統Prompt鎖定區】防跑題、制定風格
-                const sysPrompt = `你是一位專業且熱血的台灣單車環島導遊。
-請為使用者量身打造一份【單車旅遊行程表】。
+                // 【Prompt AI 防衛區】
+                const sysPrompt = `你現在是頂尖的單車環島教練與行程規劃師。
+請為使用者量身打造一份極具專業度的【單車旅遊行程表】。
 起點：${s}，終點：${e}，天數：${d}。
-要求格式：
-1. 必須使用 Markdown 表格來呈現每一天的行程，表格欄位應有：天數、出發-抵達、預估里程(km)、重點路線/景點、補給點建議。
-2. 在表格前後，可以給予熱血的鼓勵以及針對這條路線的裝備或安全注意事項。
-3. 如果輸入的地點太荒謬（例如火星）或是非單車旅遊的情境，請委婉告知你只負責單車行程安排。`;
+
+絕對遵守以下格式規範：
+1. 必須使用 Markdown 表格來呈現每一天的行程，表格欄位必須是：天數 | 出發至抵達 | 預估里程(km) | 爬升與路線重點 | 補給與休息建議。
+2. 表格上方請給予路線的總體評價（難度、風景）。
+3. 表格下方請給予針對此路線的「專業裝備建議」與「安全注意事項」。
+4. 拒絕回答任何與腳踏車、體育、旅遊完全無關的話題。`;
 
                 _runAi(sysPrompt);
             };
@@ -494,25 +595,33 @@
                 const i = document.getElementById('ui');
                 const t = i.value.trim();
                 if (!t) return;
-                i.value = ''; // 清空輸入框
+                i.value = ''; // 瞬間清空提升體驗
 
-                // 【系統Prompt鎖定區】日常問答防跑題
-                const sysPrompt = `你是一位專業、友善且熱血的台灣單車旅行顧問。
-使用者的問題是：「${t}」
+                // 【對話 AI 把關區】
+                const sysPrompt = `你是一位專業且熱血的單車導遊及技師。
+使用者問你：「${t}」
+
 規則：
-1. 你的回答必須專注於單車、裝備、破胎維修、天氣影響騎行、路線推薦或環島相關知識。
-2. 排版清楚（使用 Markdown 條列式或粗體）。
-3. 如果使用者的問題【完全無關】單車或戶外運動（例如問食譜、寫程式、問歷史），請委婉但堅定地拒絕，並請他們詢問單車相關問題。不要為無關話題提供答案。`;
+1. 只回答關於腳踏車、單車旅遊、裝備挑選、破胎維修、路線推薦的內容。
+2. 語氣要像有經驗的車友，熱情且專業。
+3. 如果使用者的問題【完全非關】單車與旅行（例如寫程式碼、問數學、聊政治），請用幽默的口吻說：「不好意思兄弟，我只懂踩踏板跟看風景，這個問題太深奧了！我們來聊聊腳踏車吧？」。絕對不要幫他解答無關的問題。
+4. 排版必須清晰，多用重點符號與 Markdown。`;
 
                 _runAi(sysPrompt);
             };
 
-            // 核心呼叫函數
             async function _runAi(promptText) {
                 if (_busy) return;
                 _busy = true;
 
-                document.getElementById('ca').innerHTML = `<div class="loading-text">🚴‍♂️ 正在為您計算最佳路線與資料...</div>`;
+                document.getElementById('welcome-msg') && document.getElementById('welcome-msg').remove();
+                document.getElementById('ca').innerHTML = `
+                    <div class="loader">
+                        <div class="spinner"></div>
+                        <span>運 算 軌 跡 中 ...</span>
+                    </div>`;
+
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
 
                 try {
                     const res = await fetch(_CF_GATEWAY, {
@@ -521,18 +630,18 @@
                         body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
                     });
 
-                    if (!res.ok) throw new Error("通訊暫時中斷，請稍後再試。");
+                    if (!res.ok) throw new Error("與導航衛星通訊異常");
 
                     const data = await res.json();
-                    document.getElementById('ca').innerHTML = ''; // 清除 loading
+                    document.getElementById('ca').innerHTML = '';
 
                     if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
                         window._am('ai', data.candidates[0].content.parts[0].text);
                     } else {
-                        window._am('error', "大腦當機了！請換個方式問問看。");
+                        window._am('error', "大腦處理中斷，請換個問題標的。");
                     }
                 } catch (e) {
-                    window._am('error', `連線發生小狀況，可能是網路連線不穩：${e.message}`);
+                    window._am('error', `連線發生小狀況，請檢查網路狀態。`);
                 } finally {
                     _busy = false;
                 }
