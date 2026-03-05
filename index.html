@@ -4,20 +4,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Road Master - 智慧單車導遊 (v12.1 Diagnostic)</title>
+    <title>Road Master - 智慧單車導遊</title>
     <link
-        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Noto+Sans+TC:wght@400;700;900&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap"
         rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         :root {
-            --p: #f97316;
-            --bg: #0f172a;
-            --c: #1e293b;
-            --t: #f1f5f9;
+            --p: #06b6d4;
+            /* 充滿活力的青色 */
+            --s: #3b82f6;
+            /* 運動感藍色 */
+            --bg: #0b1120;
+            /* 深空藍背景 */
+            --c: rgba(30, 41, 59, 0.7);
+            /* 毛玻璃卡片底色 */
+            --t: #f8fafc;
             --m: #94a3b8;
-            --e: #ef4444;
-            --s: #22c55e;
         }
 
         * {
@@ -34,174 +37,251 @@
             display: flex;
             flex-direction: column;
             overflow-x: hidden;
+            /* 加上非常微弱的動態光影感做背景 */
+            background-image: radial-gradient(circle at 15% 50%, rgba(6, 182, 212, 0.1), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(59, 130, 246, 0.1), transparent 25%);
         }
 
         .ac {
-            max-width: 850px;
+            max-width: 800px;
             margin: 0 auto;
             width: 100%;
             flex: 1;
-            padding: 1.5rem;
+            padding: 2rem 1.5rem;
         }
 
         header {
             text-align: center;
-            padding: 1rem 0;
+            margin-bottom: 2.5rem;
+            animation: fadeDown 0.8s ease-out;
         }
 
         h1 {
-            font-size: 2.5rem;
-            color: var(--p);
+            font-size: 3rem;
             font-weight: 900;
             font-style: italic;
-            letter-spacing: -2px;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #22d3ee, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
         }
 
-        .v-tag {
+        .subtitle {
             color: var(--m);
-            font-size: 0.6rem;
-            font-weight: 800;
-            letter-spacing: 2px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            letter-spacing: 1px;
         }
 
+        /* 輸入卡片區 (Glassmorphism) */
         .pw {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 28px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
+            background: var(--c);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            animation: fadeUp 0.8s ease-out 0.2s both;
         }
 
         .wg {
-            margin-bottom: 15px;
+            margin-bottom: 1.5rem;
         }
 
         .wg label {
             display: block;
-            font-size: 0.7rem;
-            font-weight: 900;
-            color: var(--p);
-            margin-bottom: 6px;
-            text-transform: uppercase;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--t);
+            margin-bottom: 8px;
+            letter-spacing: 1px;
         }
 
         .chips {
             display: flex;
             flex-wrap: wrap;
-            gap: 6px;
-            margin-bottom: 8px;
+            gap: 8px;
+            margin-bottom: 10px;
         }
 
         .chip {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--m);
-            padding: 4px 10px;
+            color: var(--t);
+            padding: 6px 14px;
             border-radius: 100px;
-            font-size: 0.75rem;
+            font-size: 0.85rem;
+            font-weight: 500;
             cursor: pointer;
-            transition: 0.2s;
+            transition: all 0.2s;
         }
 
         .chip:hover {
-            border-color: var(--p);
-            color: var(--p);
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
         }
 
         .chip.active {
-            background: var(--p);
+            background: linear-gradient(135deg, var(--p), var(--s));
             color: #fff;
-            border-color: var(--p);
+            border-color: transparent;
+            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4);
         }
 
         .wi {
             width: 100%;
-            background: #000;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             color: #fff;
-            padding: 14px;
+            padding: 14px 18px;
             border-radius: 12px;
             outline: none;
-            transition: 0.3s;
-            font-size: 0.95rem;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+
+        .wi:focus {
+            border-color: var(--p);
+            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2);
+        }
+
+        .wi::placeholder {
+            color: #475569;
         }
 
         .wb {
             width: 100%;
-            background: var(--p);
+            background: linear-gradient(135deg, var(--p), var(--s));
             color: #fff;
             border: none;
-            font-weight: 900;
+            font-weight: 800;
             border-radius: 12px;
             cursor: pointer;
-            height: 50px;
-            margin-top: 10px;
-            font-size: 1.1rem;
-            box-shadow: 0 10px 20px rgba(249, 115, 22, 0.2);
+            height: 56px;
+            margin-top: 1rem;
+            font-size: 1.15rem;
+            letter-spacing: 1px;
+            box-shadow: 0 10px 25px rgba(6, 182, 212, 0.3);
+            transition: all 0.3s;
         }
 
+        .wb:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(6, 182, 212, 0.4);
+        }
+
+        .wb:active {
+            transform: translateY(0);
+        }
+
+        /* 結果顯示區 */
         .da {
-            padding-bottom: 140px;
+            padding-bottom: 120px;
         }
 
         .rc {
             background: var(--c);
-            border-radius: 28px;
+            border-radius: 24px;
             padding: 2rem;
-            border-left: 8px solid var(--p);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            border-top: 4px solid var(--p);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
             animation: sweep 0.6s ease-out;
+            line-height: 1.7;
         }
 
         .rc h3 {
-            margin-bottom: 1.2rem;
-            font-size: 1.6rem;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
             color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
+        /* 美化 Markdown 輸出的表格與排版 */
+        .rc p {
+            margin-bottom: 1rem;
+            color: #cbd5e1;
+        }
+
+        .rc strong {
+            color: #fff;
+            font-weight: 700;
+            color: var(--p);
+        }
+
+        .rc ul,
+        .rc ol {
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+            color: #cbd5e1;
+        }
+
+        .rc li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* 旅遊感精美表格 */
         .rc table {
             width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
-            background: rgba(0, 0, 0, 0.3);
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 1.5rem 0;
+            background: rgba(0, 0, 0, 0.2);
             border-radius: 12px;
             overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .rc th {
-            background: rgba(249, 115, 22, 0.3);
+            background: rgba(6, 182, 212, 0.15);
             color: #fff;
-            padding: 12px;
+            padding: 16px;
             text-align: left;
-            font-size: 0.85rem;
+            font-size: 0.95rem;
+            font-weight: 700;
         }
 
         .rc td {
-            padding: 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
             font-size: 0.95rem;
+            color: #cbd5e1;
         }
 
+        .rc tr:last-child td {
+            border-bottom: none;
+        }
+
+        .rc tr:hover td {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        /* 底部輸入框 */
         .iw {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            background: linear-gradient(to top, var(--bg) 95%, transparent);
-            padding: 1.5rem;
+            background: linear-gradient(to top, var(--bg) 80%, transparent);
+            padding: 2rem 1.5rem 1.5rem 1.5rem;
             z-index: 1000;
         }
 
         .ibc {
-            max-width: 850px;
+            max-width: 800px;
             margin: 0 auto;
             display: flex;
             gap: 8px;
-            background: rgba(30, 41, 59, 0.95);
-            border-radius: 100px;
+            background: rgba(15, 23, 42, 0.9);
+            border-radius: 20px;
             padding: 8px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
         .ibc input {
@@ -209,60 +289,56 @@
             background: transparent;
             border: none;
             color: #fff;
-            padding: 0 20px;
+            padding: 0 16px;
             outline: none;
             font-size: 1rem;
         }
 
+        .ibc input::placeholder {
+            color: #64748b;
+        }
+
         .ibc button {
-            background: var(--p);
+            background: var(--s);
             border: none;
             color: #fff;
-            border-radius: 100px;
-            padding: 0 25px;
-            font-weight: 900;
+            border-radius: 14px;
+            padding: 0 24px;
+            font-weight: 700;
             cursor: pointer;
             height: 44px;
+            transition: 0.2s;
         }
 
-        .debug-panel {
-            margin-top: 12px;
-            padding: 12px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
-            font-size: 0.7rem;
-            color: var(--m);
-            border: 1px dashed rgba(255, 255, 255, 0.08);
+        .ibc button:hover {
+            background: var(--p);
         }
 
-        .url-input {
-            background: #000;
-            border: 1px solid #333;
-            color: #4ade80;
-            padding: 5px 10px;
-            width: 100%;
-            font-family: monospace;
-            border-radius: 6px;
-            margin-top: 5px;
-            font-size: 0.7rem;
-        }
-
-        .error-box {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid var(--e);
-            color: #fda4af;
-            padding: 1.5rem;
-            border-radius: 15px;
-            margin-top: 10px;
-            font-family: monospace;
-            font-size: 0.8rem;
-            line-height: 1.6;
+        .loading-text {
+            text-align: center;
+            padding: 3rem 0;
+            color: var(--p);
+            font-weight: 700;
+            font-size: 1.1rem;
+            animation: pulse 1.5s infinite;
         }
 
         @keyframes sweep {
             from {
                 opacity: 0;
-                transform: translateY(10px);
+                transform: translateY(20px) scale(0.98);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes fadeDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
             }
 
             to {
@@ -270,72 +346,104 @@
                 transform: translateY(0);
             }
         }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 0.6;
+            }
+
+            50% {
+                opacity: 1;
+                text-shadow: 0 0 15px rgba(6, 182, 212, 0.5);
+            }
+
+            100% {
+                opacity: 0.6;
+            }
+        }
+
+        /* 歡迎提示語 */
+        .welcome-card {
+            text-align: center;
+            padding: 2rem;
+            color: var(--m);
+        }
+
+        .welcome-card span {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 1rem;
+        }
     </style>
 </head>
 
 <body>
     <div class="ac">
         <header>
-            <h1>Road Master ⚡ <span
-                    style="font-size:0.8rem;background:#3b82f6;color:#fff;padding:2px 8px;border-radius:5px;font-style:normal;">v15.0</span>
-            </h1>
-            <p class="v-tag">VERSION 15.0 · GEMINI 2.5 ENGINE</p>
+            <h1>Road Master</h1>
+            <p class="subtitle">專為台灣車友打造的智慧騎行規劃神器</p>
         </header>
 
         <div class="pw">
             <div class="wg">
-                <label>起點</label>
+                <label>出發地 / 城市</label>
                 <div class="chips">
-                    <span class="chip" onclick="setV('sp','台北')">台北</span>
-                    <span class="chip" onclick="setV('sp','桃園')">桃園</span>
-                    <span class="chip" onclick="setV('sp','台中')">台中</span>
-                    <span class="chip" onclick="setV('sp','高雄')">高雄</span>
+                    <span class="chip" onclick="setV('sp','台北市')">台北</span>
+                    <span class="chip" onclick="setV('sp','新北市')">新北</span>
+                    <span class="chip" onclick="setV('sp','台中市')">台中</span>
+                    <span class="chip" onclick="setV('sp','高雄市')">高雄</span>
                 </div>
-                <input type="text" id="sp" class="wi" placeholder="...">
+                <input type="text" id="sp" class="wi" placeholder="例如：台北松山車站">
             </div>
 
             <div class="wg">
-                <label>終點</label>
+                <label>目的地 / 挑戰目標</label>
                 <div class="chips">
-                    <span class="chip" onclick="setV('ep','花蓮')">花蓮</span>
-                    <span class="chip" onclick="setV('ep','墾丁')">墾丁</span>
-                    <span class="chip" onclick="setV('ep','逆風環島')">環島</span>
-                    <span class="chip" onclick="setV('ep','台東')">台東</span>
+                    <span class="chip" onclick="setV('ep','花蓮太魯閣')">花蓮太魯閣</span>
+                    <span class="chip" onclick="setV('ep','墾丁大街')">墾丁</span>
+                    <span class="chip" onclick="setV('ep','公路車環島')">逆風環島</span>
+                    <span class="chip" onclick="setV('ep','武嶺')">武嶺挑戰</span>
                 </div>
-                <input type="text" id="ep" class="wi" placeholder="...">
+                <input type="text" id="ep" class="wi" placeholder="例如：台南火車站">
             </div>
 
             <div class="wg">
-                <label>天數</label>
+                <label>規劃天數</label>
                 <div class="chips">
-                    <span class="chip" onclick="setV('du','1天')">1天</span>
-                    <span class="chip" onclick="setV('du','3天')">3天</span>
-                    <span class="chip" onclick="setV('du','7天')">7天</span>
-                    <span class="chip" onclick="setV('du','9天')">環島</span>
+                    <span class="chip" onclick="setV('du','1天 (單日挑戰)')">單日挑戰</span>
+                    <span class="chip" onclick="setV('du','3天 (輕旅行)')">3天</span>
+                    <span class="chip" onclick="setV('du','7天 (深度遊)')">7天</span>
+                    <span class="chip" onclick="setV('du','9天 (大環島)')">大環島</span>
                 </div>
-                <input type="text" id="du" class="wi" placeholder="...">
+                <input type="text" id="du" class="wi" placeholder="例如：4天">
             </div>
 
-            <button class="wb" onclick="_gp()">⚡ 生成精準規劃小卡</button>
-
-            <div class="debug-panel">
-                ⚙️ GATEWAY: <input type="text" id="gw-url" class="url-input"
-                    value="https://hidden-surf-0579.love7053150.workers.dev/">
-                <div id="setup-msg" style="margin-top:8px;">正在偵測伺服器健康度...</div>
-            </div>
+            <button class="wb" onclick="_gp()">自動規劃我的專屬行程 ⚡</button>
         </div>
 
         <div id="ca" class="da">
-            <div class="rc">
-                <h3>🚵 行程系統已備就緒</h3>
-                <p>正在等候 Cloudflare 密鑰保險箱連線...</p>
+            <div class="welcome-card">
+                <span>🚵‍♂️</span>
+                <p>告訴我你想去哪裡，為你安排最棒的路線與補給點規劃！</p>
             </div>
         </div>
 
         <div class="iw">
             <div class="ibc">
-                <input type="text" id="ui" placeholder="或是問任何單車問題..." onkeypress="if(event.keyCode===13)_sm()">
-                <button onclick="_sm()">發送</button>
+                <input type="text" id="ui" placeholder="或是問我任何裝備、路線、維修問題..." onkeypress="if(event.keyCode===13)_sm()">
+                <button onclick="_sm()">傳送</button>
             </div>
         </div>
     </div>
@@ -343,6 +451,8 @@
     <script>
         (function () {
             let _busy = false;
+            // 完全穩定的背景 Gateway 地址，不露臉
+            const _CF_GATEWAY = "https://hidden-surf-0579.love7053150.workers.dev/";
 
             window.setV = (id, v) => {
                 document.getElementById(id).value = v;
@@ -353,60 +463,80 @@
             window._am = (r, c) => {
                 const a = document.getElementById('ca');
                 const d = document.createElement('div');
-                if (r === 'ai') d.innerHTML = `<div class="rc"><h3>🔍 規劃結果產出</h3>${marked.parse(c)}</div>`;
-                else d.innerHTML = `<div class="error-box"><strong>❌ 連線錯誤報報：</strong><br>${c}</div>`;
+                if (r === 'ai') {
+                    d.innerHTML = `<div class="rc"><h3>🚵 你的專屬騎行計畫</h3>${marked.parse(c)}</div>`;
+                } else {
+                    d.innerHTML = `<div class="rc" style="border-top-color:#ef4444;text-align:center;">
+                        <p style="color:#f87171;font-weight:700;">${c}</p>
+                    </div>`;
+                }
                 a.appendChild(d);
                 window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
             };
 
             window._gp = () => {
                 const s = document.getElementById('sp').value, e = document.getElementById('ep').value, d = document.getElementById('du').value;
-                if (!s || !e || !d) return alert("請填妥行程資料");
-                window._sm(`產出 Markdown 表格行程。起點：${s}，終點：${e}，天數：${d}。`);
+                if (!s || !e || !d) return alert("車友你好！請幫我填寫起點、終點與天數，我才能幫你排行程喔！");
+
+                // 【系統Prompt鎖定區】防跑題、制定風格
+                const sysPrompt = `你是一位專業且熱血的台灣單車環島導遊。
+請為使用者量身打造一份【單車旅遊行程表】。
+起點：${s}，終點：${e}，天數：${d}。
+要求格式：
+1. 必須使用 Markdown 表格來呈現每一天的行程，表格欄位應有：天數、出發-抵達、預估里程(km)、重點路線/景點、補給點建議。
+2. 在表格前後，可以給予熱血的鼓勵以及針對這條路線的裝備或安全注意事項。
+3. 如果輸入的地點太荒謬（例如火星）或是非單車旅遊的情境，請委婉告知你只負責單車行程安排。`;
+
+                _runAi(sysPrompt);
             };
 
-            window._sm = async (ot = null) => {
+            window._sm = () => {
                 const i = document.getElementById('ui');
-                const t = ot || i.value.trim();
-                const gw = document.getElementById('gw-url').value.trim();
-                if (!t || _busy) return;
-                _busy = true; if (!ot) i.value = '';
-                document.getElementById('ca').innerHTML = '<p style="text-align:center;padding:80px;color:var(--p);">🚀 正在與 Cloudflare 保險箱通訊...</p>';
+                const t = i.value.trim();
+                if (!t) return;
+                i.value = ''; // 清空輸入框
+
+                // 【系統Prompt鎖定區】日常問答防跑題
+                const sysPrompt = `你是一位專業、友善且熱血的台灣單車旅行顧問。
+使用者的問題是：「${t}」
+規則：
+1. 你的回答必須專注於單車、裝備、破胎維修、天氣影響騎行、路線推薦或環島相關知識。
+2. 排版清楚（使用 Markdown 條列式或粗體）。
+3. 如果使用者的問題【完全無關】單車或戶外運動（例如問食譜、寫程式、問歷史），請委婉但堅定地拒絕，並請他們詢問單車相關問題。不要為無關話題提供答案。`;
+
+                _runAi(sysPrompt);
+            };
+
+            // 核心呼叫函數
+            async function _runAi(promptText) {
+                if (_busy) return;
+                _busy = true;
+
+                document.getElementById('ca').innerHTML = `<div class="loading-text">🚴‍♂️ 正在為您計算最佳路線與資料...</div>`;
 
                 try {
-                    const res = await fetch(gw, {
+                    const res = await fetch(_CF_GATEWAY, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ contents: [{ parts: [{ text: t }] }] })
+                        body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
                     });
 
-                    if (!res.ok) {
-                        const raw = await res.text();
-                        let msg = `伺服器回報代碼：${res.status} (${res.statusText})`;
-                        if (raw.includes("API_KEY missing")) msg += "<br>原因：Cloudflare 裡面的 API_KEY 沒設好！";
-                        if (res.status === 403) msg += "<br>原因：被 Cloudflare 安全機制擋住了 (CORS)。";
-                        throw new Error(msg + "<br>原始回傳：" + raw.substring(0, 100));
-                    }
+                    if (!res.ok) throw new Error("通訊暫時中斷，請稍後再試。");
 
                     const data = await res.json();
-                    document.getElementById('ca').innerHTML = '';
+                    document.getElementById('ca').innerHTML = ''; // 清除 loading
+
                     if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
                         window._am('ai', data.candidates[0].content.parts[0].text);
                     } else {
-                        window._am('ai', "產出失敗，可能 API Key 額度用盡或內容違規。");
+                        window._am('error', "大腦當機了！請換個方式問問看。");
                     }
                 } catch (e) {
-                    window._am('error', e.message || "發生未知連線故障");
-                } finally { _busy = false; }
-            };
-
-            fetch(document.getElementById('gw-url').value, { method: 'OPTIONS' }).then(r => {
-                const m = document.getElementById('setup-msg');
-                if (r.ok) m.innerHTML = "✅ 通訊正常：保險箱已解鎖！";
-                else m.innerHTML = "⚠️ 注意：伺服器拒絕存取，請重新點擊上方網址檢查內容。";
-            }).catch(e => {
-                document.getElementById('setup-msg').innerHTML = "❌ 無法觸及伺服器。請確認網址正確且已 Deploy。";
-            });
+                    window._am('error', `連線發生小狀況，可能是網路連線不穩：${e.message}`);
+                } finally {
+                    _busy = false;
+                }
+            }
         })();
     </script>
 </body>
