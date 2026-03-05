@@ -4,12 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Road Master - 智慧單車規劃助理 (v5.0)</title>
+    <title>Road Master - 智慧單車規劃助理 (v5.1 - Final)</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Noto+Sans+TC:wght@400;700;900&display=swap"
         rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="security-v3.js?v=5.0"></script>
+    <script src="security-v3.js?v=5.1"></script>
     <style>
         :root {
             --p: #f97316;
@@ -33,6 +33,7 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            overflow-x: hidden;
         }
 
         .ac {
@@ -94,6 +95,11 @@
             padding: 12px 16px;
             border-radius: 12px;
             font-size: 1rem;
+            outline: none;
+        }
+
+        .wi:focus {
+            border-color: var(--p);
         }
 
         .wb {
@@ -110,6 +116,10 @@
             box-shadow: 0 10px 20px rgba(249, 115, 22, 0.2);
         }
 
+        .wb:active {
+            transform: scale(0.98);
+        }
+
         .da {
             flex: 1;
             padding-bottom: 120px;
@@ -121,12 +131,15 @@
             padding: 2rem;
             border-left: 6px solid var(--p);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.4s ease-out;
         }
 
         .rc h3 {
             margin-bottom: 1.2rem;
             font-size: 1.5rem;
             color: #fff;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 10px;
         }
 
         .rc table {
@@ -159,6 +172,7 @@
             right: 0;
             background: linear-gradient(to top, var(--bg) 80%, transparent);
             padding: 2rem 1rem;
+            z-index: 100;
         }
 
         .ibc {
@@ -198,12 +212,12 @@
             display: flex;
             gap: 5px;
             justify-content: center;
-            padding: 20px;
+            padding: 40px;
         }
 
         .tp span {
-            width: 8px;
-            height: 8px;
+            width: 10px;
+            height: 10px;
             background: var(--p);
             border-radius: 50%;
             animation: bn 1.2s infinite;
@@ -222,6 +236,30 @@
                 transform: scale(1);
             }
         }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .err-box {
+            text-align: center;
+            background: rgba(255, 71, 87, 0.1);
+            border: 1px solid var(--d);
+            color: var(--d);
+            padding: 1.5rem;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-top: 20px;
+        }
     </style>
 </head>
 
@@ -229,26 +267,26 @@
     <div class="ac">
         <header>
             <h1>Road Master ⚡</h1>
-            <p class="tg">智慧單車導遊 · 核心穩定版 v5.0</p>
+            <p class="tg">智慧單車導遊 · 最終校正版 v5.1</p>
         </header>
 
         <div class="pw">
-            <div class="wg"><label>起點</label><input type="text" id="sp" class="wi" placeholder="例如：台北"></div>
-            <div class="wg"><label>終點</label><input type="text" id="ep" class="wi" placeholder="例如：台東"></div>
-            <div class="wg"><label>天數</label><input type="text" id="du" class="wi" placeholder="例如：3天"></div>
+            <div class="wg"><label>起點區域</label><input type="text" id="sp" class="wi" placeholder="例如：台北"></div>
+            <div class="wg"><label>終點目標</label><input type="text" id="ep" class="wi" placeholder="例如：台東"></div>
+            <div class="wg"><label>天數安排</label><input type="text" id="du" class="wi" placeholder="例如：3天"></div>
             <button class="wb" onclick="_gp()">自動規劃行程</button>
         </div>
 
         <div class="da" id="ca">
             <div class="rc">
                 <h3>🚵 行程看板就緒</h3>
-                <p>版本 v5.0：已導入「暴力相容模式」。系統會自動偵測您的金鑰適用型號，不再拘泥於特定版本。請直接嘗試生成！</p>
+                <p>版本 v5.1：已切換為「動態路徑適應」。系統將自動抓取您的金鑰適用權限。如遇錯誤，請確認您的金鑰具備 Gemini 預覽權限。</p>
             </div>
         </div>
 
         <div class="iw">
             <div class="ibc">
-                <input type="text" id="ui" placeholder="問任何單車問題..." onkeypress="if(event.keyCode===13)_sm()">
+                <input type="text" id="ui" placeholder="或是問任何單車問題..." onkeypress="if(event.keyCode===13)_sm()">
                 <button onclick="_sm()">發送</button>
             </div>
         </div>
@@ -256,38 +294,43 @@
 
     <script>
         (function () {
-            if (typeof _SECURITY_CORE === 'undefined') return alert("Security Error");
+            // 檢查安全模組與金鑰
+            if (typeof _SECURITY_CORE === 'undefined') {
+                document.getElementById('ca').innerHTML = '<div class="err-box">❌ 安全偵測失敗：請確認 security-v3.js 已正確上傳。</div>';
+                return;
+            }
+
             const _k = _SECURITY_CORE.getKey();
-            let _activeModel = null;
             let _busy = false;
+            let _activeModel = null;
 
             window._am = (r, c) => {
                 const a = document.getElementById('ca');
                 const d = document.createElement('div');
                 d.className = 'msg ' + r;
                 if (r === 'ai') d.innerHTML = `<div class="rc"><h3>行程顧問建議</h3>${marked.parse(c)}</div>`;
-                else d.innerHTML = `<p style="text-align:center;padding:10px;color:var(--d);font-size:0.8rem;">${c}</p>`;
+                else d.innerHTML = `<div class="err-box">${c}</div>`;
                 a.appendChild(d);
                 window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
             };
 
             window._gp = () => {
                 const s = document.getElementById('sp').value, e = document.getElementById('ep').value, d = document.getElementById('du').value;
-                if (!s || !e || !d) return alert("請填妥資料");
+                if (!s || !e || !d) return alert("請填妥行程資料");
                 window._sm(`規劃從「${s}」到「${e}」，天數「${d}」。請務必用 Markdown 表格呈現。`);
             };
 
-            async function _findModel() {
+            // 自動尋找可用模型代號
+            async function _probe() {
                 try {
                     const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${_k}`);
                     const d = await r.json();
                     if (d.models) {
-                        // 優先尋找支援內容產生的模型
                         const m = d.models.find(it => it.supportedGenerationMethods.includes('generateContent'));
                         if (m) return m.name;
                     }
-                } catch (e) { }
-                return "models/gemini-pro"; // 終極保底
+                } catch (e) { console.error("Discovery error", e); }
+                return "models/gemini-pro"; // 備援
             }
 
             window._sm = async (ot = null) => {
@@ -302,8 +345,12 @@
                 document.getElementById('ca').appendChild(tph);
 
                 try {
-                    // 如果還沒有確定的模型，這次我們先問 Google
-                    if (!_activeModel) _activeModel = await _findModel();
+                    // 自動適應您的金鑰模型權限
+                    if (!_activeModel) {
+                        console.log("Probing for models...");
+                        _activeModel = await _probe();
+                        console.log("Using model:", _activeModel);
+                    }
 
                     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/${_activeModel}:generateContent?key=${_k}`, {
                         method: 'POST',
@@ -317,13 +364,14 @@
                     if (res.ok && data.candidates?.[0]?.content?.parts?.[0]?.text) {
                         window._am('ai', data.candidates[0].content.parts[0].text);
                     } else {
-                        // 如果此模型失敗，清除緩存，下次換一個試
-                        _activeModel = null;
-                        window._am('error', `連線失敗：${data.error?.message || "線路不通"}`);
+                        const msg = data.error?.message || "線路不通";
+                        const code = res.status;
+                        window._am('error', `❌ 生成失敗 [代碼 ${code}]：${msg}\n\n這通常是金鑰權限未開通或網址限制不符。`);
+                        _activeModel = null; // 失敗則下次重啟探測
                     }
                 } catch (e) {
                     document.getElementById('ti')?.remove();
-                    window._am('error', "系統異常，請嘗試重新整理。");
+                    window._am('error', "❌ 連線異常：請確認網路通暢或金鑰有效。");
                 } finally { _busy = false; }
             };
         })();
