@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Road Master - 智慧單車導遊 (v12.0 Final)</title>
+    <title>Road Master - 智慧單車導遊 (v12.1 Diagnostic)</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Noto+Sans+TC:wght@400;700;900&display=swap"
         rel="stylesheet">
@@ -46,11 +46,11 @@
 
         header {
             text-align: center;
-            padding: 1.5rem 0;
+            padding: 1rem 0;
         }
 
         h1 {
-            font-size: 2.8rem;
+            font-size: 2.5rem;
             color: var(--p);
             font-weight: 900;
             font-style: italic;
@@ -59,7 +59,7 @@
 
         .v-tag {
             color: var(--m);
-            font-size: 0.7rem;
+            font-size: 0.6rem;
             font-weight: 800;
             letter-spacing: 2px;
         }
@@ -67,39 +67,38 @@
         .pw {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 32px;
-            padding: 2rem;
-            margin-bottom: 2rem;
+            border-radius: 28px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
         }
 
         .wg {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .wg label {
             display: block;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 900;
             color: var(--p);
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             text-transform: uppercase;
         }
 
-        /* 選或填的標籤樣式 */
         .chips {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 10px;
+            gap: 6px;
+            margin-bottom: 8px;
         }
 
         .chip {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
             color: var(--m);
-            padding: 5px 12px;
+            padding: 4px 10px;
             border-radius: 100px;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             cursor: pointer;
             transition: 0.2s;
         }
@@ -120,16 +119,11 @@
             background: #000;
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: #fff;
-            padding: 16px;
-            border-radius: 14px;
+            padding: 14px;
+            border-radius: 12px;
             outline: none;
             transition: 0.3s;
-            font-size: 1rem;
-        }
-
-        .wi:focus {
-            border-color: var(--p);
-            box-shadow: 0 0 20px rgba(249, 115, 22, 0.1);
+            font-size: 0.95rem;
         }
 
         .wb {
@@ -138,17 +132,12 @@
             color: #fff;
             border: none;
             font-weight: 900;
-            border-radius: 14px;
+            border-radius: 12px;
             cursor: pointer;
-            height: 55px;
+            height: 50px;
             margin-top: 10px;
-            font-size: 1.15rem;
-            box-shadow: 0 10px 25px rgba(249, 115, 22, 0.3);
-            transition: 0.2s;
-        }
-
-        .wb:hover {
-            transform: translateY(-3px);
+            font-size: 1.1rem;
+            box-shadow: 0 10px 20px rgba(249, 115, 22, 0.2);
         }
 
         .da {
@@ -157,38 +146,40 @@
 
         .rc {
             background: var(--c);
-            border-radius: 32px;
-            padding: 2.5rem;
+            border-radius: 28px;
+            padding: 2rem;
             border-left: 8px solid var(--p);
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
             animation: sweep 0.6s ease-out;
         }
 
         .rc h3 {
-            margin-bottom: 1.5rem;
-            font-size: 1.8rem;
+            margin-bottom: 1.2rem;
+            font-size: 1.6rem;
             color: #fff;
         }
 
         .rc table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
+            margin: 15px 0;
             background: rgba(0, 0, 0, 0.3);
-            border-radius: 16px;
+            border-radius: 12px;
             overflow: hidden;
         }
 
         .rc th {
             background: rgba(249, 115, 22, 0.3);
             color: #fff;
-            padding: 15px;
+            padding: 12px;
             text-align: left;
+            font-size: 0.85rem;
         }
 
         .rc td {
-            padding: 15px;
+            padding: 12px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.95rem;
         }
 
         .iw {
@@ -197,7 +188,7 @@
             left: 0;
             right: 0;
             background: linear-gradient(to top, var(--bg) 95%, transparent);
-            padding: 2rem 1.5rem;
+            padding: 1.5rem;
             z-index: 1000;
         }
 
@@ -205,10 +196,10 @@
             max-width: 850px;
             margin: 0 auto;
             display: flex;
-            gap: 10px;
+            gap: 8px;
             background: rgba(30, 41, 59, 0.95);
             border-radius: 100px;
-            padding: 10px;
+            padding: 8px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(20px);
         }
@@ -218,9 +209,9 @@
             background: transparent;
             border: none;
             color: #fff;
-            padding: 0 25px;
+            padding: 0 20px;
             outline: none;
-            font-size: 1.1rem;
+            font-size: 1rem;
         }
 
         .ibc button {
@@ -228,31 +219,44 @@
             border: none;
             color: #fff;
             border-radius: 100px;
-            padding: 0 30px;
+            padding: 0 25px;
             font-weight: 900;
             cursor: pointer;
-            height: 48px;
+            height: 44px;
         }
 
-        /* 除錯小工具 */
         .debug-panel {
-            margin-top: 15px;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.4);
-            border-radius: 12px;
-            font-size: 0.75rem;
-            border: 1px dashed rgba(255, 255, 255, 0.1);
+            margin-top: 12px;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            font-size: 0.7rem;
+            color: var(--m);
+            border: 1px dashed rgba(255, 255, 255, 0.08);
         }
 
         .url-input {
             background: #000;
             border: 1px solid #333;
-            color: #0f0;
+            color: #4ade80;
             padding: 5px 10px;
             width: 100%;
             font-family: monospace;
-            border-radius: 5px;
+            border-radius: 6px;
             margin-top: 5px;
+            font-size: 0.7rem;
+        }
+
+        .error-box {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--e);
+            color: #fda4af;
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-top: 10px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            line-height: 1.6;
         }
 
         @keyframes sweep {
@@ -273,62 +277,56 @@
     <div class="ac">
         <header>
             <h1>Road Master ⚡</h1>
-            <p class="v-tag">ULTIMATE SECURITY VERSION 12.0</p>
+            <p class="v-tag">VERSION 12.1 · DIAGNOSTIC MODE</p>
         </header>
 
         <div class="pw">
-            <!-- 起點 -->
             <div class="wg">
-                <label>起點區域</label>
+                <label>起點</label>
                 <div class="chips">
                     <span class="chip" onclick="setV('sp','台北')">台北</span>
                     <span class="chip" onclick="setV('sp','桃園')">桃園</span>
                     <span class="chip" onclick="setV('sp','台中')">台中</span>
                     <span class="chip" onclick="setV('sp','高雄')">高雄</span>
                 </div>
-                <input type="text" id="sp" class="wi" placeholder="或手動輸入...">
+                <input type="text" id="sp" class="wi" placeholder="...">
             </div>
 
-            <!-- 終點 -->
             <div class="wg">
-                <label>終點目標</label>
+                <label>終點</label>
                 <div class="chips">
                     <span class="chip" onclick="setV('ep','花蓮')">花蓮</span>
                     <span class="chip" onclick="setV('ep','墾丁')">墾丁</span>
                     <span class="chip" onclick="setV('ep','逆風環島')">環島</span>
                     <span class="chip" onclick="setV('ep','台東')">台東</span>
                 </div>
-                <input type="text" id="ep" class="wi" placeholder="或手動輸入...">
+                <input type="text" id="ep" class="wi" placeholder="...">
             </div>
 
-            <!-- 天數 -->
             <div class="wg">
-                <label>行程天數</label>
+                <label>天數</label>
                 <div class="chips">
                     <span class="chip" onclick="setV('du','1天')">1天</span>
                     <span class="chip" onclick="setV('du','3天')">3天</span>
                     <span class="chip" onclick="setV('du','7天')">7天</span>
-                    <span class="chip" onclick="setV('du','環島9天')">環島</span>
+                    <span class="chip" onclick="setV('du','9天')">環島</span>
                 </div>
-                <input type="text" id="du" class="wi" placeholder="或手動輸入...">
+                <input type="text" id="du" class="wi" placeholder="...">
             </div>
 
             <button class="wb" onclick="_gp()">⚡ 生成精準規劃小卡</button>
 
-            <!-- 手動填寫 Cloudflare URL (如果自動抓失敗) -->
             <div class="debug-panel">
-                <label style="color:var(--m);font-size:0.6rem;">🛡️ CLOUDFLARE GATEWAY URL (自動抓取失敗時可手動修正)</label>
-                <input type="text" id="gw-url" class="url-input"
+                ⚙️ GATEWAY: <input type="text" id="gw-url" class="url-input"
                     value="https://hidden-surf-0579.love7053150.workers.dev/">
+                <div id="setup-msg" style="margin-top:8px;">正在偵測伺服器健康度...</div>
             </div>
         </div>
 
         <div id="ca" class="da">
             <div class="rc">
-                <h3>🚵 v12.0 全功能解鎖</h3>
-                <p>1. 已支援「選或填」快速輸入。</p>
-                <p>2. 已鎖定您的 Cloudflare 保險箱。</p>
-                <p id="setup-msg" style="color:var(--p);margin-top:15px;font-weight:900;">連線中...</p>
+                <h3>🚵 行程系統已備就緒</h3>
+                <p>正在等候 Cloudflare 密鑰保險箱連線...</p>
             </div>
         </div>
 
@@ -346,7 +344,6 @@
 
             window.setV = (id, v) => {
                 document.getElementById(id).value = v;
-                // 視覺回饋
                 event.target.parentElement.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
                 event.target.classList.add('active');
             };
@@ -355,15 +352,15 @@
                 const a = document.getElementById('ca');
                 const d = document.createElement('div');
                 if (r === 'ai') d.innerHTML = `<div class="rc"><h3>🔍 規劃結果產出</h3>${marked.parse(c)}</div>`;
-                else d.innerHTML = `<p style="text-align:center;padding:20px;color:var(--e);font-weight:900;">${c}</p>`;
+                else d.innerHTML = `<div class="error-box"><strong>❌ 連線錯誤報報：</strong><br>${c}</div>`;
                 a.appendChild(d);
                 window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
             };
 
             window._gp = () => {
                 const s = document.getElementById('sp').value, e = document.getElementById('ep').value, d = document.getElementById('du').value;
-                if (!s || !e || !d) return alert("請填寫起點、終點與天數");
-                window._sm(`請直接產出行程 Markdown 表格。起點：${s}，終點：${e}，天數：${d}。嚴禁廢話。`);
+                if (!s || !e || !d) return alert("請填妥行程資料");
+                window._sm(`產出 Markdown 表格行程。起點：${s}，終點：${e}，天數：${d}。`);
             };
 
             window._sm = async (ot = null) => {
@@ -372,7 +369,7 @@
                 const gw = document.getElementById('gw-url').value.trim();
                 if (!t || _busy) return;
                 _busy = true; if (!ot) i.value = '';
-                document.getElementById('ca').innerHTML = '<p style="text-align:center;padding:80px;color:var(--p);">🚀 透過 Cloudflare 密鑰保險箱計算中...</p>';
+                document.getElementById('ca').innerHTML = '<p style="text-align:center;padding:80px;color:var(--p);">🚀 正在與 Cloudflare 保險箱通訊...</p>';
 
                 try {
                     const res = await fetch(gw, {
@@ -382,8 +379,11 @@
                     });
 
                     if (!res.ok) {
-                        const errData = await res.json();
-                        throw new Error(errData.error || "Server Error");
+                        const raw = await res.text();
+                        let msg = `伺服器回報代碼：${res.status} (${res.statusText})`;
+                        if (raw.includes("API_KEY missing")) msg += "<br>原因：Cloudflare 裡面的 API_KEY 沒設好！";
+                        if (res.status === 403) msg += "<br>原因：被 Cloudflare 安全機制擋住了 (CORS)。";
+                        throw new Error(msg + "<br>原始回傳：" + raw.substring(0, 100));
                     }
 
                     const data = await res.json();
@@ -391,19 +391,19 @@
                     if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
                         window._am('ai', data.candidates[0].content.parts[0].text);
                     } else {
-                        window._am('error', "產出失敗，請檢查 Cloudflare 的 API_KEY 是否正確設定。");
+                        window._am('ai', "產出失敗，可能 API Key 額度用盡或內容違規。");
                     }
                 } catch (e) {
-                    window._am('error', `❌ 連線失敗: ${e.message}<br><br>請確認您的 Cloudflare Worker 網址正確無誤，且已點擊 Save and Deploy。`);
+                    window._am('error', e.message || "發生未知連線故障");
                 } finally { _busy = false; }
             };
 
-            // 啟動連線測試
-            const gw = document.getElementById('gw-url').value;
-            fetch(gw, { method: 'OPTIONS' }).then(r => {
-                if (r.ok) document.getElementById('setup-msg').innerHTML = "✅ 通訊正常：Cloudflare 保險箱已成功解鎖！";
+            fetch(document.getElementById('gw-url').value, { method: 'OPTIONS' }).then(r => {
+                const m = document.getElementById('setup-msg');
+                if (r.ok) m.innerHTML = "✅ 通訊正常：保險箱已解鎖！";
+                else m.innerHTML = "⚠️ 注意：伺服器拒絕存取，請重新點擊上方網址檢查內容。";
             }).catch(e => {
-                document.getElementById('setup-msg').innerHTML = "❌ 連線異常：請確認下方手動輸入的 Cloudflare URL 是否正確。";
+                document.getElementById('setup-msg').innerHTML = "❌ 無法觸及伺服器。請確認網址正確且已 Deploy。";
             });
         })();
     </script>
