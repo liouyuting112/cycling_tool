@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Road Master - 智慧單車規劃助理 (v3.4)</title>
+    <title>Road Master - 智慧單車規劃助理 (v3.5)</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Noto+Sans+TC:wght@400;700;900&display=swap"
         rel="stylesheet">
@@ -18,6 +18,7 @@
             --t: #f1f5f9;
             --m: #94a3b8;
             --d: #ff4757;
+            --blu: #3b82f6;
         }
 
         * {
@@ -115,17 +116,33 @@
             transition: 0.2s;
         }
 
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-bottom: 1.5rem;
+        }
+
         .rnd-btn {
             background: #334155;
             color: #fff;
             border: none;
-            padding: 10px 20px;
+            padding: 10px 15px;
             border-radius: 10px;
             font-weight: 800;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             cursor: pointer;
-            align-self: flex-end;
-            margin-bottom: 1.5rem;
+        }
+
+        .diag-btn {
+            background: var(--blu);
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 0.75rem;
+            cursor: pointer;
         }
 
         .da {
@@ -314,15 +331,14 @@
 
 <body>
     <div class="lo" id="lock" style="display:none">
-        <h2 style="color:var(--d);margin-bottom:1rem">🔒 存取未獲得授權</h2>
-        <p style="color:var(--m)">請從授權網域或透過本地 Server 伺服器啟動。</p>
-        <p style="font-size:0.6rem;margin-top:20px;opacity:0.5">Security v3.4 Encrypted</p>
+        <h2 style="color:var(--d);margin-bottom:1rem">🔒 授權鎖定中</h2>
+        <p style="color:var(--m)">Security v3.5 | Domain Guard Active</p>
     </div>
 
     <div class="ac" id="main">
         <header>
             <h1>Road Master ⚡</h1>
-            <p class="tg">智慧單車規畫師 · 安全加固版 v3.4</p>
+            <p class="tg">智慧單車規畫師 · 安全加固版 v3.5</p>
         </header>
 
         <div class="pw">
@@ -332,20 +348,23 @@
             <button class="wb" onclick="_gp()">生成規劃小卡</button>
         </div>
 
-        <button class="rnd-btn" onclick="_rnd()">🎲 隨機推薦行程</button>
+        <div class="btn-group">
+            <button class="diag-btn" onclick="_diag()">🔍 檢查 API 金鑰健康度</button>
+            <button class="rnd-btn" onclick="_rnd()">🎲 隨機推薦行程</button>
+        </div>
 
         <div class="da" id="ca">
             <div class="rc">
-                <h3>🛡️ 智能備援系統已就緒</h3>
-                <p>版本 v3.4：已加入自動跳頻模式。如果單一線路卡死，系統將自動切換備援。如果看到紅字報錯，請將內容提供給顧問。</p>
+                <h3>🛡️ v3.5 診斷模式已開啟</h3>
+                <p>如果持續看到「找不到模型」，請先點擊下方的 **[檢查 API 金鑰健康度]**。這能幫我們確認 Google Cloud 那邊是否已經開通權限。</p>
             </div>
         </div>
 
         <div class="iw">
-            <div class="st" id="as">Secure Connection: Auto-Fallback Mode (v3.4)</div>
+            <div class="st" id="as">Secure Connection: Diagnostic Mode (v3.5)</div>
             <div class="ibc">
                 <div class="ib">
-                    <input type="text" id="ui" placeholder="問任何環島問題..." onkeypress="if(event.keyCode===13)_sm()">
+                    <input type="text" id="ui" placeholder="輸入單車需求..." onkeypress="if(event.keyCode===13)_sm()">
                     <button class="sb" id="sn" onclick="_sm()">發送</button>
                 </div>
             </div>
@@ -374,23 +393,34 @@
                 window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
             };
 
+            window._diag = async () => {
+                window._am('user', '正在執行 API 深度診斷...');
+                try {
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${_k}`);
+                    const d = await res.json();
+                    if (!res.ok) {
+                        window._am('ai', `❌ **診斷失敗**\n\n原因：${d.error?.message}\n\n這通常代表您的 API Key 可能不是 Gemini 專用 Key，或是 **"Generative Language API"** 沒有在您的 Google Cloud 專案中啟用。`);
+                    } else {
+                        const names = d.models.map(m => m.name.replace('models/', '')).join(', ');
+                        window._am('ai', `✅ **診斷成功！**\n\n您的 Key 可以使用以下模型：\n${names}\n\n既然連線通暢，請再次嘗試生成行程。`);
+                    }
+                } catch (e) {
+                    window._am('ai', '❌ **網路連線遭拒**\n\nGoogle 伺服器沒有回應。這可能是因為您的網域鎖定設定過於嚴格，攔截了檢查請求。');
+                }
+            };
+
             window._gp = () => {
                 const s = document.getElementById('sp').value;
                 const e = document.getElementById('ep').value;
                 const d = document.getElementById('du').value;
                 if (!s || !e || !d) { alert("請填寫所有欄位！"); return; }
-                window._sm(`規劃從「${s}」出發，目標「${e}」，預計天數「${d}」。請用 Markdown 表格呈現詳細行程。`);
+                window._sm(`規劃從「${s}」出發，目標「${e}」，預計天數「${d}」。請用 Markdown 表格呈現。`);
             };
 
             window._rnd = () => {
-                const routes = [
-                    "從台北出發，騎往基隆北海岸，一日挑戰 80 公里。",
-                    "從屏東出發，挑戰兩塔（鵝鑾鼻與大武崙）。",
-                    "台中出發，環大肚山半日輕鬆騎 30 公里。",
-                    "從花蓮出發到台東，3 天海岸行程。"
-                ];
+                const routes = ["台北到基隆北海岸", "屏東鵝鑾鼻挑戰", "台中大肚山輕鬆騎", "花東 3 天海岸線"];
                 const r = routes[Math.floor(Math.random() * routes.length)];
-                window._sm("請針對這個建議提供詳細規劃：" + r);
+                window._sm("請提供詳細規劃：" + r);
             };
 
             window._sm = async (ot = null) => {
@@ -406,11 +436,11 @@
                 tph.id = 'ti'; tph.className = 'tp'; tph.innerHTML = '<span></span><span></span><span></span>';
                 document.getElementById('ca').appendChild(tph);
 
-                // 備援模型列表
+                // v3.5 線路組合：嘗試所有常見的 Gemini 模型名稱
                 const models = [
-                    "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent",
-                    "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-002:generateContent",
-                    "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-8b:generateContent"
+                    "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent",
+                    "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent",
+                    "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent"
                 ];
 
                 let success = false;
@@ -418,7 +448,6 @@
 
                 for (const url of models) {
                     try {
-                        console.log("Trying endpoint: " + url);
                         const res = await fetch(`${url}?key=${_k}`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -427,25 +456,21 @@
                             })
                         });
                         const d = await res.json();
-
                         if (res.ok && d.candidates?.[0]?.content?.parts?.[0]?.text) {
                             if (document.getElementById('ti')) document.getElementById('ti').remove();
                             window._am('ai', d.candidates[0].content.parts[0].text);
                             success = true;
-                            break; // 成功就跳出迴圈
+                            break;
                         } else {
-                            lastError = d.error?.message || "線路忙碌";
+                            lastError = d.error?.message || "跳轉下一個模型...";
                         }
-                    } catch (e) {
-                        lastError = "連線失敗";
-                    }
+                    } catch (e) { lastError = "連線失敗"; }
                 }
 
                 if (!success) {
                     if (document.getElementById('ti')) document.getElementById('ti').remove();
-                    window._am('system', `❌ 所有備援線路均失敗。最後報錯：${lastError}\n\n請檢查 Google Cloud 是否啟用了 Generative Language API。`);
+                    window._am('system', `❌ 所有模型均無效。\n\n**最終訊息：** ${lastError}\n\n**建議：** 點擊上面的 [檢查 API 金鑰健康度] 查看可用權限。`);
                 }
-
                 _busy = false;
             };
         })();
