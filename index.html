@@ -379,7 +379,7 @@
                 document.getElementById('ca').appendChild(tph);
 
                 try {
-                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${_k}`, {
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${_k}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -387,12 +387,17 @@
                         })
                     });
                     const d = await res.json();
-                    document.getElementById('ti').remove();
-                    if (!res.ok) throw new Error(d.error?.message || "線路繁忙");
+                    if (document.getElementById('ti')) document.getElementById('ti').remove();
+
+                    if (!res.ok) {
+                        const em = d.error?.message || "線路繁忙";
+                        window._am('system', `❌ 服務中斷。原因：${em}\n\n請確認 Google Cloud 是否授權了您的網址。`);
+                        return;
+                    }
                     window._am('ai', d.candidates[0].content.parts[0].text);
                 } catch (e) {
                     if (document.getElementById('ti')) document.getElementById('ti').remove();
-                    window._am('system', "❌ 服務暫時中斷，請確認您的 Google Cloud 權限與網紅限制設定。");
+                    window._am('system', "❌ 網路或系統連線異常，請確認您的 API Key 是否有效。");
                 } finally { _busy = false; }
             };
         })();
