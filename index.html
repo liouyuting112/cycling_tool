@@ -4,12 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Road Master - 智慧單車規劃助理 (v6.0 - 隱身特仕版)</title>
+    <title>Road Master - 智慧單車規劃助理 (v6.1)</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Noto+Sans+TC:wght@400;700;900&display=swap"
         rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="security-v3.js?v=6.0"></script>
+    <script src="security-v3.js?v=6.1"></script>
     <style>
         :root {
             --p: #f97316;
@@ -33,7 +33,6 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            overflow-x: hidden;
         }
 
         .ac {
@@ -97,6 +96,10 @@
             outline: none;
         }
 
+        .wi:focus {
+            border-color: var(--p);
+        }
+
         .wb {
             background: var(--p);
             color: #fff;
@@ -136,6 +139,11 @@
             color: #fff;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             padding-bottom: 10px;
+        }
+
+        .rc p,
+        .rc li {
+            line-height: 1.8;
         }
 
         .rc table {
@@ -258,27 +266,27 @@
     <div class="ac">
         <header>
             <h1>Road Master ⚡</h1>
-            <p class="tg">智慧單車導遊 · 潛行加固版 v6.0</p>
+            <p class="tg">智慧單車導遊 · 自動規劃版 v6.1</p>
         </header>
 
         <div class="pw">
-            <div class="wg"><label>起點區域</label><input type="text" id="sp" class="wi" placeholder="例如：台北市"></div>
-            <div class="wg"><label>最終目標</label><input type="text" id="ep" class="wi" placeholder="例如：台南市"></div>
-            <div class="wg"><label>天數安排</label><input type="text" id="du" class="wi" placeholder="例如：4天環台"></div>
-            <button class="wb" onclick="_gp()">⚡ 立即生成自動產出</button>
+            <div class="wg"><label>起點區域</label><input type="text" id="sp" class="wi" placeholder="例如：台北"></div>
+            <div class="wg"><label>最終目標</label><input type="text" id="ep" class="wi" placeholder="例如：高雄"></div>
+            <div class="wg"><label>天數安排</label><input type="text" id="du" class="wi" placeholder="例如：5天"></div>
+            <button class="wb" onclick="_gp()">⚡ 一鍵自動規劃</button>
         </div>
 
         <div class="da" id="ca">
             <div class="rc">
-                <h3>🚵 行程系統已備就緒</h3>
-                <p>版本 v6.0 已升級「潛行加密」與「一鍵生成」功能。您現在點擊按鈕，AI 將跳過聊天，直接为您自動規劃。</p>
+                <h3>🚵 v6.1 行程系統就緒</h3>
+                <p>填寫起點、終點和天數，按下按鈕即可自動產出完整行程表。AI 不會問您問題，而是直接為您規劃。</p>
             </div>
         </div>
 
         <div class="iw">
-            <div class="st">SECURE TUNNEL: GHOST SHIELD ACTIVE (v6.0)</div>
+            <div class="st">v6.1 ENCRYPTED TUNNEL ACTIVE</div>
             <div class="ibc">
-                <input type="text" id="ui" placeholder="或是問任何單車救援問題..." onkeypress="if(event.keyCode===13)_sm()">
+                <input type="text" id="ui" placeholder="或是直接問單車問題..." onkeypress="if(event.keyCode===13)_sm()">
                 <button onclick="_sm()">發送</button>
             </div>
         </div>
@@ -286,78 +294,104 @@
 
     <script>
         (function () {
-            if (typeof _SECURITY_CORE === 'undefined') return alert("Security Error: Check your deployment.");
-            const _k = _SECURITY_CORE.getKey();
-            let _busy = false;
-            let _am = null;
-
-            window._am = (r, c) => {
-                const a = document.getElementById('ca');
-                const d = document.createElement('div');
-                d.className = 'msg ' + r;
-                if (r === 'ai') d.innerHTML = `<div class="rc"><h3>行程顧問建議</h3>${marked.parse(c)}</div>`;
-                else d.innerHTML = `<p style="text-align:center;padding:20px;color:var(--d);font-size:0.9rem;">${c}</p>`;
-                a.appendChild(d);
-                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-            };
-
-            window._gp = () => {
-                const s = document.getElementById('sp').value, e = document.getElementById('ep').value, d = document.getElementById('du').value;
-                if (!s || !e || !d) return alert("請填妥行程資料");
-                // 強制 AI 進入「生成模式」，嚴禁廢話
-                const p = `你現在是一個全自動單車行程生成器。嚴禁提問，嚴禁聊天，嚴禁給前言。請直接分析以下需求並產出一份詳細的 Markdown 行程表格：起點「${s}」，終點「${e}」，預計天數「${d}」。`;
-                window._sm(p);
-            };
-
-            async function _probe() {
-                try {
-                    // API Key 被放在 Header 中，不再出現在 URL
-                    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models`, {
-                        headers: { 'x-goog-api-key': _k }
-                    });
-                    const d = await r.json();
-                    if (d.models) return d.models.find(it => it.supportedGenerationMethods.includes('generateContent'))?.name;
-                } catch (e) { }
-                return "models/gemini-1.5-flash";
+            if (typeof _SECURITY_CORE === 'undefined' || !_SECURITY_CORE.isAuthorized) {
+                document.getElementById('ca').innerHTML = '<p style="color:var(--d);text-align:center;padding:2rem;">🔒 未授權的網域</p>';
+                return;
             }
 
-            window._sm = async (ot = null) => {
-                const i = document.getElementById('ui');
-                const t = ot || i.value.trim();
-                if (!t || _busy) return;
-                _busy = true; if (!ot) i.value = '';
-                document.getElementById('ca').innerHTML = '';
+            const _k = _SECURITY_CORE.getKey();
+            let _busy = false;
+            let _model = null;
 
-                const tph = document.createElement('div');
-                tph.id = 'ti'; tph.className = 'tp'; tph.innerHTML = '<span></span><span></span><span></span>';
+            function _show(type, content) {
+                const a = document.getElementById('ca');
+                const d = document.createElement('div');
+                if (type === 'ai') {
+                    d.innerHTML = '<div class="rc"><h3>🗺️ 自動行程規劃</h3>' + marked.parse(content) + '</div>';
+                } else {
+                    d.innerHTML = '<p style="text-align:center;padding:20px;color:var(--d);font-size:0.9rem;">' + content + '</p>';
+                }
+                a.appendChild(d);
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            }
+
+            window._gp = function () {
+                var s = document.getElementById('sp').value;
+                var e = document.getElementById('ep').value;
+                var d = document.getElementById('du').value;
+                if (!s || !e || !d) return alert("請填妥行程資料");
+                // 嚴格指令：禁止 AI 提問，必須直接產出行程
+                var prompt = "你是一個全自動單車行程產生器。規則：1.嚴禁提問 2.嚴禁寒暄 3.嚴禁說前言 4.必須直接輸出完整行程。" +
+                    "請為以下需求直接產出一份詳細的單車行程規劃（含 Markdown 表格）：" +
+                    "起點：" + s + "，終點：" + e + "，天數：" + d + "。" +
+                    "表格需包含：日期、出發地、目的地、距離（km）、預計騎乘時間、沿途景點、住宿建議。";
+                _send(prompt);
+            };
+
+            window._sm = function () {
+                var i = document.getElementById('ui');
+                var t = i.value.trim();
+                if (!t) return;
+                i.value = '';
+                // 一般問題也加上指令，不要反問
+                var prompt = "你是單車專家。規則：嚴禁提問、嚴禁寒暄，直接回答。問題：" + t;
+                _send(prompt);
+            };
+
+            async function _findModel() {
+                try {
+                    var r = await fetch('https://generativelanguage.googleapis.com/v1beta/models?key=' + _k);
+                    var d = await r.json();
+                    if (d.models) {
+                        var m = d.models.find(function (it) {
+                            return it.supportedGenerationMethods && it.supportedGenerationMethods.indexOf('generateContent') !== -1;
+                        });
+                        if (m) return m.name;
+                    }
+                } catch (e) { console.error('Model probe failed:', e); }
+                return 'models/gemini-pro';
+            }
+
+            async function _send(text) {
+                if (_busy) return;
+                _busy = true;
+                document.getElementById('ca').innerHTML = '';
+                var tph = document.createElement('div');
+                tph.id = 'ti'; tph.className = 'tp';
+                tph.innerHTML = '<span></span><span></span><span></span>';
                 document.getElementById('ca').appendChild(tph);
 
                 try {
-                    if (!_am) _am = await _probe();
+                    // 第一次呼叫時，先偵測可用模型
+                    if (!_model) {
+                        _model = await _findModel();
+                        console.log('[v6.1] Auto-detected model:', _model);
+                    }
 
-                    // 改用 Header 傳輸 Key，避開 Network Tab 的 URL 偵測
-                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/${_am}:generateContent`, {
+                    var url = 'https://generativelanguage.googleapis.com/v1beta/' + _model + ':generateContent?key=' + _k;
+                    var res = await fetch(url, {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'x-goog-api-key': _k
-                        },
-                        body: JSON.stringify({ contents: [{ parts: [{ text: t }] }] })
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ contents: [{ parts: [{ text: text }] }] })
                     });
 
-                    const data = await res.json();
-                    document.getElementById('ti')?.remove();
+                    var data = await res.json();
+                    if (document.getElementById('ti')) document.getElementById('ti').remove();
 
-                    if (res.ok && data.candidates?.[0]?.content?.parts?.[0]?.text) {
-                        window._am('ai', data.candidates[0].content.parts[0].text);
+                    if (res.ok && data.candidates && data.candidates[0] && data.candidates[0].content) {
+                        _show('ai', data.candidates[0].content.parts[0].text);
                     } else {
-                        window._am('error', "產出失敗，請確認 API 狀態。");
+                        var errMsg = (data.error && data.error.message) ? data.error.message : '未知錯誤';
+                        _show('error', '❌ 錯誤 [' + res.status + ']: ' + errMsg);
+                        _model = null; // 下次重新偵測
                     }
                 } catch (e) {
-                    document.getElementById('ti')?.remove();
-                    window._am('error', "系統重連中，請稍後再試。");
-                } finally { _busy = false; }
-            };
+                    if (document.getElementById('ti')) document.getElementById('ti').remove();
+                    _show('error', '❌ 連線失敗: ' + e.message);
+                    _model = null;
+                }
+                _busy = false;
+            }
         })();
     </script>
 </body>

@@ -1,27 +1,20 @@
-/* 
-   Road Master Security Module v6.0 - Ghost Shield Edition
-   Encrypted API Key Storage with Header-based Security
-*/
+/*
+ * Road Master Security Core v6.1
+ * Triple-XOR Encrypted Key Storage
+ */
 const _SECURITY_CORE = (function () {
-    // 加密過的複雜數列 (XOR 混淆)
-    const _p1 = [72, 72, 25, 4, 18, 56, 10, 119, 0, 101, 21, 1, 23, 27, 26, 4, 30, 24, 114, 5, 114, 21, 103, 115, 20, 10, 25, 106, 112, 107, 105, 102, 103, 112, 114, 110, 104, 126, 109];
-    const _p2 = [1, 9, 107, 85, 107, 121, 127, 48, 67, 29, 118, 114, 120, 104, 111, 116, 121, 104, 43, 80, 50, 114, 15, 18, 101, 121, 104, 24, 5, 25, 23, 16, 22, 1, 2, 7, 21, 47, 24];
-    const _k1 = "GHOST_SHIELD_PRO_PROTECT_2026_V6";
-
-    // 嚴格網域驗證
-    const _auth = ["liouyuting112.github.io", "localhost", "127.0.0.1"].some(d => window.location.hostname.includes(d));
-
+    const _a = [51, 77, 93, 98, 67, 63, 36, 0, 103, 66, 4, 74, 20, 6, 37, 20, 98, 119, 21, 81, 115, 82, 73, 56, 50, 102, 27, 20, 111, 3, 74, 123, 115, 62, 39, 21, 110, 4, 54];
+    const _b = [53, 76, 104, 80, 68, 25, 52, 127, 111, 55, 26, 65, 31, 44, 64, 110, 92, 119, 52, 87, 86, 118, 99, 93, 92, 13, 103, 98, 50, 111, 105, 44, 113, 34, 45, 15, 77, 3, 40];
+    const _s = "GHOST_SHIELD_PRO_PROTECT_2026_V6";
+    const _d = ["liouyuting112.github.io", "localhost", "127.0.0.1"];
+    const _ok = _d.some(function (h) { return window.location.hostname.indexOf(h) !== -1; });
     return {
-        isAuthorized: _auth,
-        // 僅在呼叫時於記憶體內極短暫存在
+        isAuthorized: _ok,
         getKey: function () {
-            if (!_auth) return null;
-            let result = "";
-            for (let i = 0; i < _p1.length; i++) {
-                const charCode = (_p1[i] ^ _p2[i] ^ _k1.charCodeAt(i % _k1.length));
-                result += String.fromCharCode(charCode);
-            }
-            return result;
+            if (!_ok) return "";
+            var r = "";
+            for (var i = 0; i < _a.length; i++) r += String.fromCharCode(_a[i] ^ _b[i] ^ _s.charCodeAt(i % _s.length));
+            return r;
         }
     };
 })();
