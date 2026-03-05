@@ -4,13 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Road Master - 智慧單車規劃助理 (v3.7)</title>
+    <title>Road Master - 智慧單車規劃助理 (v3.8)</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Noto+Sans+TC:wght@400;700;900&display=swap"
         rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <!-- 加入快取破除器，確保讀取最新加密腳本 -->
-    <script src="security-v3.js?cachebuster=3.7"></script>
+    <script src="security-v3.js?v=3.8"></script>
     <style>
         :root {
             --p: #f97316;
@@ -333,13 +332,13 @@
 <body>
     <div class="lo" id="lock" style="display:none">
         <h2 style="color:var(--d);margin-bottom:1rem">🔒 授權鎖定中</h2>
-        <p style="color:var(--m)">Security v3.7 | Domain Guard Active</p>
+        <p style="color:var(--m)">Security v3.8 | AI Studio Optimized</p>
     </div>
 
     <div class="ac" id="main">
         <header>
             <h1>Road Master ⚡</h1>
-            <p class="tg">智慧單車規畫師 · 安全加固版 v3.7</p>
+            <p class="tg">智慧單車規畫師 · 安全加固版 v3.8</p>
         </header>
 
         <div class="pw">
@@ -356,13 +355,13 @@
 
         <div class="da" id="ca">
             <div class="rc">
-                <h3>🛡️ v3.7 版本說明</h3>
-                <p>如遇錯誤，請點擊 **[檢查 API 金鑰健康度]**。本版已排除快取干擾，並優化了金鑰解密邏輯。</p>
+                <h3>🛡️ v3.8 AI Studio 穩定版</h3>
+                <p>本版本已專為 Google AI Studio 金鑰優化。請確保您的金鑰未過期，並具備 Gemini 1.5 存取權限。</p>
             </div>
         </div>
 
         <div class="iw">
-            <div class="st" id="as">Secure Connection: Anti-Cache Mode (v3.7)</div>
+            <div class="st" id="as">Connected: AI Studio Secure Tunnel (v3.8)</div>
             <div class="ibc">
                 <div class="ib">
                     <input type="text" id="ui" placeholder="輸入單車需求..." onkeypress="if(event.keyCode===13)_sm()">
@@ -374,7 +373,6 @@
 
     <script>
         (function () {
-            // 檢查安全核心是否存在
             if (typeof _SECURITY_CORE === 'undefined' || !_SECURITY_CORE.isAuthorized) {
                 document.getElementById('lock').style.display = 'flex';
                 document.getElementById('main').style.display = 'none';
@@ -395,19 +393,20 @@
                 window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
             };
 
+            // 診斷功能：檢查 AI Studio 金鑰狀態
             window._diag = async () => {
-                window._am('user', '正在啟動 API 權限深度掃描...');
+                window._am('user', '正在執行 AI Studio 金鑰診斷...');
                 try {
                     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${_k}`);
                     const d = await res.json();
                     if (!res.ok) {
-                        window._am('ai', `❌ **診斷報告**\n\n原因：${d.error?.message}\n\n**解決建議：**\n1. 進入 Google Cloud Console。\n2. 搜尋 **"Generative Language API"** 並確認已點擊「啟用」。\n3. 確認 API Key 沒過期。`);
+                        window._am('ai', `❌ **診斷報告**\n\n原因：${d.error?.message}\n\n**AI Studio 金鑰常見問題：**\n1. 請確認這把金鑰是否在 AI Studio 網站中顯示為 Active。\n2. 您的 GitHub Pages 網址是否被 Google 的內容過濾器攔截。`);
                     } else {
                         const models = d.models.map(m => m.name.split('/').pop()).join(', ');
-                        window._am('ai', `✅ **權限驗證成功**\n\n您的 Key 目前可用的模型有：\n${models}`);
+                        window._am('ai', `✅ **金鑰狀態正常**\n\n可用模型列表：\n${models}\n\n系統已自動準備就緒，請再次嘗試生成行程。`);
                     }
                 } catch (e) {
-                    window._am('ai', '❌ **連線被阻斷**\n\n這通常發生在手機瀏覽器或是網域鎖定設定錯誤。請嘗試用電腦的無痕視窗開啟測試。');
+                    window._am('ai', '❌ **連線超時**\n\n無法連接至 Google 伺服器，請檢查您的網路環境。');
                 }
             };
 
@@ -416,11 +415,11 @@
                 const e = document.getElementById('ep').value;
                 const d = document.getElementById('du').value;
                 if (!s || !e || !d) { alert("請填寫所有欄位！"); return; }
-                window._sm(`規劃從「${s}」出發，目標「${e}」，天數「${d}」。請用 Markdown 表格呈現。`);
+                window._sm(`規劃從「${s}」出發，目標「${e}」，預計天數「${d}」。請用 Markdown 表格呈現。`);
             };
 
             window._rnd = () => {
-                const routes = ["台北到基隆", "鵝鑾鼻大挑戰", "台中大肚山", "宜蘭海岸線"];
+                const routes = ["台北到基隆", "兩塔挑戰", "台中深度騎行", "花蓮海岸慢旅"];
                 const r = routes[Math.floor(Math.random() * routes.length)];
                 window._sm("請提供詳細規劃：" + r);
             };
@@ -438,23 +437,22 @@
                 tph.id = 'ti'; tph.className = 'tp'; tph.innerHTML = '<span></span><span></span><span></span>';
                 document.getElementById('ca').appendChild(tph);
 
-                // v3.7 暴力連環測試組合
-                const endpoints = [
-                    "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent",
-                    "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent",
-                    "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent"
+                // AI Studio 專用線路：回歸最純粹的 v1beta 呼叫
+                const models = [
+                    "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent",
+                    "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent"
                 ];
 
                 let ok = false;
                 let err = "";
 
-                for (const url of endpoints) {
+                for (const url of models) {
                     try {
                         const res = await fetch(`${url}?key=${_k}`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
-                                contents: [{ parts: [{ text: "你是單車規畫師。嚴禁廢話。回答用 Markdown 表格。需求：" + t }] }]
+                                contents: [{ parts: [{ text: "你是專業規畫師。嚴禁廢話。回答必須用 Markdown 表格呈現行程規劃。需求：" + t }] }]
                             })
                         });
                         const data = await res.json();
@@ -468,7 +466,7 @@
 
                 if (!ok) {
                     if (document.getElementById('ti')) document.getElementById('ti').remove();
-                    window._am('system', `❌ AI 目前無法回應。\n\n**原因：** ${err}\n\n**強烈建議：** 點擊下方的「檢查 API 金鑰健康度」看看發生什麼事。`);
+                    window._am('system', `❌ 規劃生成失敗。\n\n**最終訊息：** ${err}\n\n**建議：** 如果看到 "model not found"，請點擊藍色 [檢查 API 金鑰健康度] 按鈕確認。`);
                 }
                 _busy = false;
             };
