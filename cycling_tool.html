@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Road Master - 智慧單車規劃助理 (v5.1 Sync)</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="security-v3.js?v=5.1"></script>
+    <style>
+        /* 同步 index.html 的精美樣式 */
+        :root {
+            --p: #f97316;
+            --bg: #0f172a;
+            --c: #1e293b;
+            --t: #f1f5f9;
+            --m: #94a3b8;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--t);
+            font-family: sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .ac {
+            max-width: 800px;
+            margin: 2rem auto;
+            width: 100%;
+            padding: 1rem;
+            flex: 1;
+        }
+
+        .rc {
+            background: var(--c);
+            padding: 2rem;
+            border-radius: 20px;
+            border-left: 6px solid var(--p);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .iw {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 2rem 1rem;
+            background: linear-gradient(transparent, var(--bg));
+        }
+
+        .ibc {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #fff;
+            padding: 0 20px;
+            outline: none;
+            font-size: 1rem;
+        }
+
+        button {
+            background: var(--p);
+            border: none;
+            color: #fff;
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="ac">
+        <div id="ca" class="rc">
+            <h3>🚵 v5.1 同步版</h3>
+            <p>本檔案已同步 v5.1 核心修復邏輯。請直接問問題測試。</p>
+        </div>
+    </div>
+    <div class="iw">
+        <div class="ibc">
+            <input type="text" id="ui" placeholder="輸入您的單車需求..." onkeypress="if(event.keyCode===13)_sm()">
+            <button onclick="_sm()">發送</button>
+        </div>
+    </div>
+    <script>
+        (function () {
+            if (typeof _SECURITY_CORE === 'undefined') return;
+            const _k = _SECURITY_CORE.getKey();
+            let _am = null;
+
+            window._sm = async () => {
+                const i = document.getElementById('ui');
+                const t = i.value.trim();
+                if (!t) return;
+                i.value = '';
+                document.getElementById('ca').innerHTML = '正在分析您的行程...';
+
+                try {
+                    // 自動探測
+                    if (!_am) {
+                        const pr = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${_k}`);
+                        const pd = await pr.json();
+                        _am = pd.models.find(m => m.supportedGenerationMethods.includes('generateContent'))?.name || "models/gemini-pro";
+                    }
+
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/${_am}:generateContent?key=${_k}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ contents: [{ parts: [{ text: t }] }] })
+                    });
+                    const d = await res.json();
+                    document.getElementById('ca').innerHTML = marked.parse(d.candidates[0].content.parts[0].text);
+                } catch (e) {
+                    document.getElementById('ca').innerHTML = '❌ 錯誤：' + e.message;
+                }
+            };
+        })();
+    </script>
+</body>
+
+</html>
