@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Road Master - 智慧單車規劃助理 (v3.3)</title>
+    <title>Road Master - 智慧單車規劃助理 (v3.4)</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Noto+Sans+TC:wght@400;700;900&display=swap"
         rel="stylesheet">
@@ -33,7 +33,6 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            overflow-x: hidden;
         }
 
         .ac {
@@ -104,11 +103,6 @@
             outline: none;
         }
 
-        .wi:focus {
-            border-color: var(--p);
-            background: #1e293b;
-        }
-
         .wb {
             background: var(--p);
             border: none;
@@ -116,11 +110,9 @@
             font-weight: 900;
             border-radius: 12px;
             cursor: pointer;
-            transition: 0.2s;
             height: 44px;
             margin-top: 22px;
-            font-size: 0.9rem;
-            box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
+            transition: 0.2s;
         }
 
         .rnd-btn {
@@ -134,7 +126,6 @@
             cursor: pointer;
             align-self: flex-end;
             margin-bottom: 1.5rem;
-            transition: 0.2s;
         }
 
         .da {
@@ -161,7 +152,6 @@
             padding: 0.8rem 1.4rem;
             border-radius: 20px 20px 4px 20px;
             font-weight: 800;
-            font-size: 1rem;
         }
 
         .rc {
@@ -252,7 +242,6 @@
             font-weight: 900;
             color: #fff;
             height: 44px;
-            transition: 0.2s;
         }
 
         .st {
@@ -327,13 +316,13 @@
     <div class="lo" id="lock" style="display:none">
         <h2 style="color:var(--d);margin-bottom:1rem">🔒 存取未獲得授權</h2>
         <p style="color:var(--m)">請從授權網域或透過本地 Server 伺服器啟動。</p>
-        <p style="font-size:0.6rem;margin-top:20px;opacity:0.5">Security v3.3 Built-in</p>
+        <p style="font-size:0.6rem;margin-top:20px;opacity:0.5">Security v3.4 Encrypted</p>
     </div>
 
     <div class="ac" id="main">
         <header>
             <h1>Road Master ⚡</h1>
-            <p class="tg">智慧單車規畫師 · 安全加固版 v3.3</p>
+            <p class="tg">智慧單車規畫師 · 安全加固版 v3.4</p>
         </header>
 
         <div class="pw">
@@ -347,13 +336,13 @@
 
         <div class="da" id="ca">
             <div class="rc">
-                <h3>🛡️ 端對端加密連接</h3>
-                <p>版本 v3.3 已啟動。如果下方顯示錯誤訊息，請確認您的 API Key 是否正確以及是否有設定網域鎖定。</p>
+                <h3>🛡️ 智能備援系統已就緒</h3>
+                <p>版本 v3.4：已加入自動跳頻模式。如果單一線路卡死，系統將自動切換備援。如果看到紅字報錯，請將內容提供給顧問。</p>
             </div>
         </div>
 
         <div class="iw">
-            <div class="st" id="as">Secure Session Established (v3.3)</div>
+            <div class="st" id="as">Secure Connection: Auto-Fallback Mode (v3.4)</div>
             <div class="ibc">
                 <div class="ib">
                     <input type="text" id="ui" placeholder="問任何環島問題..." onkeypress="if(event.keyCode===13)_sm()">
@@ -398,7 +387,7 @@
                     "從台北出發，騎往基隆北海岸，一日挑戰 80 公里。",
                     "從屏東出發，挑戰兩塔（鵝鑾鼻與大武崙）。",
                     "台中出發，環大肚山半日輕鬆騎 30 公里。",
-                    "從花蓮出發，沿台 11 線海岸線南下到台東，3 天行程。"
+                    "從花蓮出發到台東，3 天海岸行程。"
                 ];
                 const r = routes[Math.floor(Math.random() * routes.length)];
                 window._sm("請針對這個建議提供詳細規劃：" + r);
@@ -417,32 +406,47 @@
                 tph.id = 'ti'; tph.className = 'tp'; tph.innerHTML = '<span></span><span></span><span></span>';
                 document.getElementById('ca').appendChild(tph);
 
-                try {
-                    // 使用最新的穩定版 API 線路
-                    const res = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${_k}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            contents: [{ parts: [{ text: "你是專業規畫師。嚴禁廢話。回答必須用 Markdown 表格呈現旅遊 / 單車行程規劃小卡。需求：" + t }] }]
-                        })
-                    });
-                    const d = await res.json();
-                    if (document.getElementById('ti')) document.getElementById('ti').remove();
+                // 備援模型列表
+                const models = [
+                    "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent",
+                    "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-002:generateContent",
+                    "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-8b:generateContent"
+                ];
 
-                    if (!res.ok) {
-                        const em = d.error?.message || "Google 伺服器拒絕連線";
-                        window._am('system', `❌ 服務中斷。原因：${em}\n\n這通常是 Google 網域鎖定問題，請檢查您的 API Key 設定。`);
-                        return;
+                let success = false;
+                let lastError = "";
+
+                for (const url of models) {
+                    try {
+                        console.log("Trying endpoint: " + url);
+                        const res = await fetch(`${url}?key=${_k}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                contents: [{ parts: [{ text: "你是專業規畫師。嚴禁廢話。回答必須用 Markdown 表格呈現旅遊 / 單車行程規劃小卡。需求：" + t }] }]
+                            })
+                        });
+                        const d = await res.json();
+
+                        if (res.ok && d.candidates?.[0]?.content?.parts?.[0]?.text) {
+                            if (document.getElementById('ti')) document.getElementById('ti').remove();
+                            window._am('ai', d.candidates[0].content.parts[0].text);
+                            success = true;
+                            break; // 成功就跳出迴圈
+                        } else {
+                            lastError = d.error?.message || "線路忙碌";
+                        }
+                    } catch (e) {
+                        lastError = "連線失敗";
                     }
+                }
 
-                    const reply = d.candidates?.[0]?.content?.parts?.[0]?.text;
-                    if (reply) window._am('ai', reply);
-                    else window._am('system', "❌ AI 沒有產生回覆，請嘗試換個說法。");
-
-                } catch (e) {
+                if (!success) {
                     if (document.getElementById('ti')) document.getElementById('ti').remove();
-                    window._am('system', "❌ 網路連線異常或瀏覽器攔截了請求。");
-                } finally { _busy = false; }
+                    window._am('system', `❌ 所有備援線路均失敗。最後報錯：${lastError}\n\n請檢查 Google Cloud 是否啟用了 Generative Language API。`);
+                }
+
+                _busy = false;
             };
         })();
     </script>
