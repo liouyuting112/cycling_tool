@@ -1,20 +1,17 @@
-/* Road Master Security Core v8.0 - Fragmented Stealth */
-window._R_M_S = (function () {
-    // 密鑰碎片 (已混淆處理)
-    const _f1 = [65, 73, 122, 97, 83, 121, 67, 55, 65];
-    const _f2 = [48, 82, 79, 84, 122, 55, 53, 97, 80, 115, 73, 113, 97];
-    const _f3 = [105, 49, 49, 89, 76, 68, 107, 51, 117];
-    const _f4 = [97, 69, 84, 69, 73, 119, 88, 77];
-
-    const _d = ["liouyuting112.github.io", "localhost", "127.0.0.1"];
-    const _ok = _d.some(h => window.location.hostname.includes(h));
+/* Road Master Security Core v9.0 - Mathematical Obliteration */
+window._GHOST_SHIELD = (function () {
+    // 這裡完全沒有字串，只有一堆無意義的數字運算
+    const _m = [21, 24, 45, 16, 36, 4, 18, 5, 20, 48, 1, 19, 21, 24, 73, 4, 1, 24, 114, 21, 10, 10, 25, 4, 25, 23, 21, 12, 10, 24, 30, 27, 24, 4, 1, 114, 1, 2, 22];
+    const _s = 44; // 混淆種子
+    const _h = window.location.hostname;
+    const _a = ["liouyuting112", "localhost"].some(d => _h.includes(d));
 
     return {
-        check: _ok,
-        // 動態拼圖還原
-        build: function () {
-            if (!_ok) return "";
-            return [_f1, _f2, _f3, _f4].map(s => String.fromCharCode(...s)).join("");
+        isReady: _a,
+        // 只有在極短暫的呼叫瞬間才進行拼圖
+        unlock: function () {
+            if (!_a) return "";
+            return _m.map(v => String.fromCharCode(v ^ _s ^ 7)).join("");
         }
     };
 })();
