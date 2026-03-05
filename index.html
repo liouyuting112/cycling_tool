@@ -4,12 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Road Master - 智慧單車導遊 (v9.0 Stealth)</title>
+    <title>Road Master - 智慧單車導遊 (v11.0 Ultimate)</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Noto+Sans+TC:wght@400;700;900&display=swap"
         rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="security-v3.js?v=9.0"></script>
     <style>
         :root {
             --p: #f97316;
@@ -32,7 +31,6 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            overflow-x: hidden;
         }
 
         .ac {
@@ -47,28 +45,26 @@
 
         header {
             text-align: center;
-            padding: 2rem 0;
+            padding: 2.5rem 0;
         }
 
         h1 {
-            font-size: 2.8rem;
+            font-size: 3rem;
             color: var(--p);
             font-weight: 900;
             font-style: italic;
             letter-spacing: -2px;
-            text-shadow: 0 0 30px rgba(249, 115, 22, 0.3);
         }
 
         .pw {
             background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 32px;
-            padding: 1.8rem;
+            padding: 2rem;
             margin-bottom: 2rem;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
         }
 
         .wg label {
@@ -77,25 +73,17 @@
             font-weight: 900;
             color: var(--p);
             margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
         }
 
         .wi {
             width: 100%;
             background: #000;
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             color: #fff;
-            padding: 15px;
+            padding: 16px;
             border-radius: 14px;
-            font-size: 1.1rem;
             outline: none;
             transition: 0.3s;
-        }
-
-        .wi:focus {
-            border-color: var(--p);
-            box-shadow: 0 0 20px rgba(249, 115, 22, 0.1);
         }
 
         .wb {
@@ -105,16 +93,9 @@
             font-weight: 900;
             border-radius: 14px;
             cursor: pointer;
-            transition: 0.3s;
             height: 55px;
             margin-top: 25px;
-            font-size: 1.1rem;
             box-shadow: 0 10px 25px rgba(249, 115, 22, 0.3);
-        }
-
-        .wb:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 35px rgba(249, 115, 22, 0.5);
         }
 
         .da {
@@ -128,35 +109,32 @@
             padding: 2.5rem;
             border-left: 8px solid var(--p);
             box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
-            animation: sweep 0.6s ease-out;
         }
 
         .rc h3 {
             margin-bottom: 1.5rem;
             font-size: 1.8rem;
             color: #fff;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.05);
-            padding-bottom: 12px;
         }
 
         .rc table {
             width: 100%;
             border-collapse: collapse;
-            margin: 25px 0;
+            margin: 20px 0;
             background: rgba(0, 0, 0, 0.3);
             border-radius: 16px;
             overflow: hidden;
         }
 
         .rc th {
-            background: rgba(249, 115, 22, 0.3);
+            background: rgba(249, 115, 22, 0.2);
             color: #fff;
-            padding: 18px;
+            padding: 15px;
             text-align: left;
         }
 
         .rc td {
-            padding: 18px;
+            padding: 15px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
@@ -165,8 +143,8 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: linear-gradient(to top, var(--bg) 90%, transparent);
-            padding: 2.5rem 1.5rem;
+            background: linear-gradient(to top, var(--bg) 95%, transparent);
+            padding: 2rem 1.5rem;
             z-index: 1000;
         }
 
@@ -174,12 +152,12 @@
             max-width: 850px;
             margin: 0 auto;
             display: flex;
-            gap: 12px;
+            gap: 10px;
             background: rgba(30, 41, 59, 0.95);
             border-radius: 100px;
             padding: 10px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(30px);
+            backdrop-filter: blur(20px);
         }
 
         .ibc input {
@@ -189,7 +167,6 @@
             color: #fff;
             padding: 0 25px;
             outline: none;
-            font-size: 1.15rem;
         }
 
         .ibc button {
@@ -197,32 +174,19 @@
             border: none;
             color: #fff;
             border-radius: 100px;
-            padding: 0 35px;
+            padding: 0 30px;
             font-weight: 900;
             cursor: pointer;
-            height: 52px;
+            height: 48px;
         }
 
-        .shield-hint {
+        .status {
             text-align: center;
-            font-size: 0.6rem;
             color: var(--m);
-            letter-spacing: 4px;
+            font-size: 0.6rem;
+            letter-spacing: 3px;
             font-weight: 900;
-            margin-bottom: 12px;
-            opacity: 0.5;
-        }
-
-        @keyframes sweep {
-            from {
-                opacity: 0;
-                transform: translateX(-20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+            margin-bottom: 10px;
         }
     </style>
 </head>
@@ -231,25 +195,30 @@
     <div class="ac">
         <header>
             <h1>Road Master ⚡</h1>
-            <p class="tg">智慧單車導遊 · 終極保密版 v9.0</p>
+            <p style="text-align:center;color:var(--m);font-weight:800;font-size:0.7rem;">ULTIMATE SECURITY VERSION 11.0
+            </p>
         </header>
 
         <div class="pw">
-            <div class="wg"><label>起點區域</label><input type="text" id="sp" class="wi" placeholder="例如：台北市"></div>
-            <div class="wg"><label>最終目標</label><input type="text" id="ep" class="wi" placeholder="例如：恆春"></div>
-            <div class="wg"><label>天數安排</label><input type="text" id="du" class="wi" placeholder="例如：5天行程"></div>
+            <div class="wg"><label>起點</label><input type="text" id="sp" class="wi" placeholder="例如：台北市"></div>
+            <div class="wg"><label>終點</label><input type="text" id="ep" class="wi" placeholder="例如：台南市"></div>
+            <div class="wg"><label>天數</label><input type="text" id="du" class="wi" placeholder="例如：4天"></div>
             <button class="wb" onclick="_gp()">⚡ 立即生成自動產出</button>
         </div>
 
         <div id="ca" class="da">
             <div class="rc">
-                <h3>🚵 視覺隱身防禦系統 Ready</h3>
-                <p>版本 v9.0 已全面銷毀原始碼中的 API 字串。系統現在使用「碎片運算」技術，F12 的搜尋工具將無法查找到您的金鑰字串。</p>
+                <h3>🚵 行程系統已備就緒</h3>
+                <p>本版本使用 **Cloudflare Workers** 進行後端加密。</p>
+                <div style="background:rgba(255,255,255,0.05);padding:1.5rem;border-radius:15px;margin-top:1.5rem;">
+                    <p style="font-weight:bold;color:var(--p);">🚀 狀態確認：</p>
+                    <p id="setup-msg" style="margin-top:10px;color:var(--m);">正在尋找您的 Cloudflare 代理節點...</p>
+                </div>
             </div>
         </div>
 
         <div class="iw">
-            <div class="shield-hint">ULTIMATE GHOST SHIELD: ACTIVE (v9.0)</div>
+            <div class="status">ENCRYPTED GATEWAY ACTIVE</div>
             <div class="ibc">
                 <input type="text" id="ui" placeholder="或是問任何單車問題..." onkeypress="if(event.keyCode===13)_sm()">
                 <button onclick="_sm()">發送</button>
@@ -259,14 +228,14 @@
 
     <script>
         (function () {
-            if (!window._GHOST_SHIELD || !window._GHOST_SHIELD.isReady) return alert("System Error.");
             let _busy = false;
-            let _model = null;
+            // 🔒 這是您的 Cloudflare 網址
+            const _CF_GATEWAY = "https://cycling-api.liouyuting112.workers.dev";
 
             window._am = (r, c) => {
                 const a = document.getElementById('ca');
                 const d = document.createElement('div');
-                if (r === 'ai') d.innerHTML = `<div class="rc"><h3>🔍 規劃小卡產出</h3>${marked.parse(c)}</div>`;
+                if (r === 'ai') d.innerHTML = `<div class="rc"><h3>🔍 規劃結果產出</h3>${marked.parse(c)}</div>`;
                 else d.innerHTML = `<p style="text-align:center;padding:20px;color:var(--p);font-size:0.9rem;">${c}</p>`;
                 a.appendChild(d);
                 window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
@@ -274,49 +243,43 @@
 
             window._gp = () => {
                 const s = document.getElementById('sp').value, e = document.getElementById('ep').value, d = document.getElementById('du').value;
-                if (!s || !e || !d) return alert("請填妥資料");
-                window._sm(`你是一個專業助理。請直接產出 Markdown 表格，不要問問題。起點：${s}，終點：${e}，天數：${d}。`);
+                if (!s || !e || !d) return alert("請填妥行程資料");
+                window._sm(`你現在是全自動單車行程生成器。請直接為起點「${s}」，終點「${e}」，天數「${d}」產出一份 Markdown 表格。嚴禁廢話與反問！`);
             };
-
-            async function _p() {
-                try {
-                    const k = window._GHOST_SHIELD.unlock();
-                    const r = await fetch('https://generativelanguage.googleapis.com/v1beta/models?key=' + k);
-                    const data = await r.json();
-                    return data.models.find(it => it.supportedGenerationMethods.includes('generateContent'))?.name;
-                } catch (e) { }
-                return "models/gemini-1.5-flash";
-            }
 
             window._sm = async (ot = null) => {
                 const i = document.getElementById('ui');
                 const t = ot || i.value.trim();
                 if (!t || _busy) return;
                 _busy = true; if (!ot) i.value = '';
-                document.getElementById('ca').innerHTML = '<p style="text-align:center;padding:80px;color:var(--p);">🚀 正在深度計算您的行程...</p>';
+                document.getElementById('ca').innerHTML = '<p style="text-align:center;padding:80px;color:var(--p);">🚀 正在透過伺服器進行計算...</p>';
 
                 try {
-                    if (!_model) _model = await _p();
-                    const k = window._GHOST_SHIELD.unlock();
-                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/${_model}:generateContent?key=${k}`, {
+                    const res = await fetch(_CF_GATEWAY, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ contents: [{ parts: [{ text: t }] }] })
                     });
 
+                    if (!res.ok) throw new Error("Server Response Error");
                     const data = await res.json();
                     document.getElementById('ca').innerHTML = '';
-
-                    if (res.ok && data.candidates?.[0]?.content?.parts?.[0]?.text) {
+                    if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
                         window._am('ai', data.candidates[0].content.parts[0].text);
                     } else {
-                        window._am('error', "系統連線過熱，請重新點擊生成。");
-                        _model = null;
+                        window._am('error', "產出失敗，請確認 Cloudflare 端已設定 API_KEY。");
                     }
                 } catch (e) {
-                    window._am('error', "網路連線異常，請重新整理頁面。");
+                    window._am('error', "❌ 無法連接到您的 Cloudflare 伺服器。<br>請確認您的 Worker 網址為：" + _CF_GATEWAY);
                 } finally { _busy = false; }
             };
+
+            // 啟動自我檢查
+            fetch(_CF_GATEWAY, { method: 'OPTIONS' }).then(r => {
+                if (r.ok) document.getElementById('setup-msg').innerHTML = "✅ 已成功連線至 Cloudflare！資安防護已完全開啟。";
+            }).catch(e => {
+                document.getElementById('setup-msg').innerHTML = "⚠️ 伺服器目前離線。請依照下一動教學架設 Cloudflare Worker。";
+            });
         })();
     </script>
 </body>
