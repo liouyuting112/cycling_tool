@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Road Master - 智慧單車規劃助理</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Noto+Sans+TC:wght@400;700;900&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- 安全核心外掛 -->
+    <script src="security-v3.js"></script>
+    <style>
+        :root {
+            --p: #f97316;
+            --bg: #0f172a;
+            --c: #1e293b;
+            --t: #f1f5f9;
+            --m: #94a3b8;
+            --d: #ff4757;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', 'Noto Sans TC', sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--t);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        .ac {
+            max-width: 850px;
+            margin: 0 auto;
+            width: 100%;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+        }
+
+        header {
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            color: var(--p);
+            font-weight: 900;
+            letter-spacing: -2px;
+            font-style: italic;
+        }
+
+        .tg {
+            font-size: 0.8rem;
+            color: var(--m);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 800;
+        }
+
+        .pw {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 1.2rem;
+            margin-bottom: 1.5rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+        }
+
+        .wg {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .wg label {
+            font-size: 0.75rem;
+            font-weight: 900;
+            color: var(--p);
+            padding-left: 5px;
+            opacity: 0.8;
+        }
+
+        .wi {
+            background: #111827;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .wb {
+            background: var(--p);
+            border: none;
+            color: #fff;
+            font-weight: 900;
+            border-radius: 12px;
+            cursor: pointer;
+            height: 44px;
+            margin-top: 22px;
+        }
+
+        .da {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            padding-bottom: 140px;
+        }
+
+        .msg {
+            width: 100%;
+            animation: si 0.3s ease-out;
+        }
+
+        .msg.user {
+            text-align: right;
+        }
+
+        .msg.user .bubble {
+            display: inline-block;
+            background: var(--p);
+            color: #fff;
+            padding: 0.8rem 1.4rem;
+            border-radius: 20px 20px 4px 20px;
+            font-weight: 800;
+        }
+
+        .rc {
+            background: var(--c);
+            border-radius: 28px;
+            padding: 1.8rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+            border-left: 6px solid var(--p);
+        }
+
+        .rc h3 {
+            color: #fff;
+            font-size: 1.4rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 10px;
+        }
+
+        .rc table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            border-radius: 12px;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .rc th {
+            background: rgba(249, 115, 22, 0.2);
+            color: var(--p);
+            text-align: left;
+            padding: 12px;
+            font-size: 0.8rem;
+        }
+
+        .rc td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .iw {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, var(--bg) 90%, transparent);
+            padding: 1.5rem 1rem 2rem;
+            z-index: 100;
+        }
+
+        .ibc {
+            max-width: 850px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .ib {
+            background: rgba(30, 41, 59, 0.9);
+            border-radius: 100px;
+            padding: 8px;
+            display: flex;
+            gap: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+        }
+
+        input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 0 1.5rem;
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+            font-weight: 600;
+        }
+
+        .sb {
+            background: var(--p);
+            border: none;
+            padding: 0 25px;
+            border-radius: 100px;
+            cursor: pointer;
+            font-weight: 900;
+            color: #fff;
+            height: 44px;
+        }
+
+        .st {
+            text-align: center;
+            font-size: 0.65rem;
+            color: var(--m);
+            margin-bottom: 0.5rem;
+            font-weight: 800;
+        }
+
+        .tp {
+            display: flex;
+            gap: 5px;
+            padding: 1rem;
+            justify-content: center;
+        }
+
+        .tp span {
+            width: 6px;
+            height: 6px;
+            background: var(--p);
+            border-radius: 50%;
+            animation: bn 1.2s infinite;
+        }
+
+        @keyframes bn {
+
+            0%,
+            100% {
+                transform: scale(0.5);
+                opacity: 0.3;
+            }
+
+            40% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes si {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .lo {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg);
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+            padding: 2rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 安全門禁 -->
+    <div class="lo" id="lock" style="display:none">
+        <h2 style="color:var(--d);margin-bottom:1rem">🔒 存取未獲得授權</h2>
+        <p style="color:var(--m)">請從授權網域或透過本地 Server 伺服器啟動。</p>
+    </div>
+
+    <div class="ac" id="main">
+        <header>
+            <h1>Road Master ⚡</h1>
+            <p class="tg">智慧單車規畫師 · 安全加固版</p>
+        </header>
+
+        <div class="pw">
+            <div class="wg"><label>起點區域</label><input type="text" id="sp" class="wi" placeholder="例如：台北"></div>
+            <div class="wg"><label>目標終點</label><input type="text" id="ep" class="wi" placeholder="例如：100公里"></div>
+            <div class="wg"><label>天數/強度</label><input type="text" id="du" class="wi" placeholder="例如：2天"></div>
+            <button class="wb" onclick="_gp()">生成規劃小卡</button>
+        </div>
+
+        <div class="da" id="ca">
+            <div class="rc">
+                <h3>🛡️ 加密連線就緒</h3>
+                <p>API 金鑰已封裝。網域驗證已啟動。</p>
+            </div>
+        </div>
+
+        <div class="iw">
+            <div class="st" id="as">Secure Session Established</div>
+            <div class="ibc">
+                <div class="ib">
+                    <input type="text" id="ui" placeholder="輸入單車問題..." onkeypress="if(event.keyCode===13)_sm()">
+                    <button class="sb" id="sn" onclick="_sm()">發送</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            if (!_SECURITY_CORE || !_SECURITY_CORE.isAuthorized) {
+                document.getElementById('lock').style.display = 'flex';
+                document.getElementById('main').style.display = 'none';
+                return;
+            }
+
+            const _k = _SECURITY_CORE.getKey();
+            let _busy = false;
+
+            window._am = (r, c) => {
+                const a = document.getElementById('ca');
+                const d = document.createElement('div');
+                d.className = 'msg ' + r;
+                if (r === 'user') d.innerHTML = `<div class="bubble">${c}</div>`;
+                else if (r === 'ai') d.innerHTML = `<div class="rc"><h3>顧問規劃建議</h3>${marked.parse(c)}</div>`;
+                else d.innerHTML = `<div style="text-align:center;color:var(--d);font-size:0.8rem;background:rgba(255,71,87,0.1);padding:1rem;border-radius:12px;">${c}</div>`;
+                a.appendChild(d);
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            };
+
+            window._gp = () => {
+                const s = document.getElementById('sp').value;
+                const e = document.getElementById('ep').value;
+                const d = document.getElementById('du').value;
+                if (!s || !e || !d) return;
+                window._sm(`新手，從「${s}」到「${e}」，天數「${d}」。Markdown 表格帶補給。`);
+            };
+
+            window._sm = async (ot = null) => {
+                const i = document.getElementById('ui');
+                const t = ot || i.value.trim();
+                if (!t || _busy) return;
+                _busy = true;
+                i.value = '';
+                document.getElementById('ca').innerHTML = '';
+                window._am('user', t);
+
+                const tph = document.createElement('div');
+                tph.id = 'ti'; tph.className = 'tp'; tph.innerHTML = '<span></span><span></span><span></span>';
+                document.getElementById('ca').appendChild(tph);
+
+                try {
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${_k}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ parts: [{ text: "你是專業規畫師。嚴禁廢話。回答用 Markdown 表格。需求：" + t }] }]
+                        })
+                    });
+                    const d = await res.json();
+                    document.getElementById('ti').remove();
+                    if (!res.ok) throw new Error(d.error?.message || "線路繁忙");
+                    window._am('ai', d.candidates[0].content.parts[0].text);
+                } catch (e) {
+                    if (document.getElementById('ti')) document.getElementById('ti').remove();
+                    window._am('system', "❌ 服務暫時中斷，請確認您的 Google Cloud 權限與網紅限制設定。");
+                } finally { _busy = false; }
+            };
+        })();
+    </script>
+</body>
+
+</html>
