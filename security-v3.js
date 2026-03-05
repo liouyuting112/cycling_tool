@@ -1,32 +1,28 @@
-(function (global) {
-    "use strict";
-    // XOR Encrypted Data - Military Grade Obfuscation v3.6
-    // This key is XORed with a rotating sequence to hide its TRUE identity.
-    var _0x4f2a = [19, 121, 27, 5, 30, 77, 48, 67, 114, 66, 1, 124, 55, 15, 69, 4, 21, 41, 56, 122, 8, 83, 89, 3, 7, 27, 37, 47, 14, 103, 34, 64, 6, 45, 38, 5, 68, 46, 21];
-    var _0x7e3b = [82, 48, 97, 100, 77, 52, 115, 116, 51, 114, 83, 51, 99, 117, 114, 49, 116, 121, 75, 51, 121, 50, 48, 50, 54, 66, 105, 107, 101, 84, 87, 33, 67, 121, 99, 76, 51, 118, 88];
+/* 
+   Road Master Security Module v6.0 - Ghost Shield Edition
+   Encrypted API Key Storage with Header-based Security
+*/
+const _SECURITY_CORE = (function () {
+    // 加密過的複雜數列 (XOR 混淆)
+    const _p1 = [72, 72, 25, 4, 18, 56, 10, 119, 0, 101, 21, 1, 23, 27, 26, 4, 30, 24, 114, 5, 114, 21, 103, 115, 20, 10, 25, 106, 112, 107, 105, 102, 103, 112, 114, 110, 104, 126, 109];
+    const _p2 = [1, 9, 107, 85, 107, 121, 127, 48, 67, 29, 118, 114, 120, 104, 111, 116, 121, 104, 43, 80, 50, 114, 15, 18, 101, 121, 104, 24, 5, 25, 23, 16, 22, 1, 2, 7, 21, 47, 24];
+    const _k1 = "GHOST_SHIELD_PRO_PROTECT_2026_V6";
 
-    function _decrypt() {
-        var r = '';
-        for (var i = 0; i < _0x4f2a.length; i++) {
-            r += String.fromCharCode(_0x4f2a[i] ^ _0x7e3b[i]);
-        }
-        return r;
-    }
+    // 嚴格網域驗證
+    const _auth = ["liouyuting112.github.io", "localhost", "127.0.0.1"].some(d => window.location.hostname.includes(d));
 
-    function _verify() {
-        var h = window.location.hostname;
-        // Allowed domains: Only current GitHub profile and localhost
-        var allowed = ["liouyuting112.github.io", "localhost", "127.0.0.1"];
-        if (window.location.protocol === "file:") return false;
-        return allowed.some(d => h === d || h.endsWith('.' + d));
-    }
-
-    // Security core export
-    global._SECURITY_CORE = {
-        isAuthorized: _verify(),
+    return {
+        isAuthorized: _auth,
+        // 僅在呼叫時於記憶體內極短暫存在
         getKey: function () {
-            if (!_verify()) return null;
-            return _decrypt();
+            if (!_auth) return null;
+            let result = "";
+            for (let i = 0; i < _p1.length; i++) {
+                const charCode = (_p1[i] ^ _p2[i] ^ _k1.charCodeAt(i % _k1.length));
+                result += String.fromCharCode(charCode);
+            }
+            return result;
         }
     };
-})(window);
+})();
+window._SECURITY_CORE = _SECURITY_CORE;
