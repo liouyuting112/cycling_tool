@@ -4,12 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Road Master - 智慧單車規劃助理 (v4.0)</title>
+    <title>Road Master - 智慧單車規劃助理 (v4.1)</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Noto+Sans+TC:wght@400;700;900&display=swap"
         rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="security-v3.js?v=4.0"></script>
+    <script src="security-v3.js?v=4.1"></script>
     <style>
         :root {
             --p: #f97316;
@@ -123,24 +123,6 @@
             flex-direction: column;
             gap: 1.5rem;
             padding-bottom: 140px;
-        }
-
-        .msg {
-            width: 100%;
-            animation: si 0.3s ease-out;
-        }
-
-        .msg.user {
-            text-align: right;
-        }
-
-        .msg.user .bubble {
-            display: inline-block;
-            background: var(--p);
-            color: #fff;
-            padding: 0.8rem 1.4rem;
-            border-radius: 20px 20px 4px 20px;
-            font-weight: 800;
         }
 
         .rc {
@@ -287,28 +269,28 @@
     <div class="ac">
         <header>
             <h1>Road Master ⚡</h1>
-            <p class="tg">智慧單車規畫師 · 安全版本 v4.0</p>
+            <p class="tg">智慧單車規畫師 · 核心修復 v4.1</p>
         </header>
 
         <div class="pw">
             <div class="wg"><label>起點區域</label><input type="text" id="sp" class="wi" placeholder="例如：台北"></div>
-            <div class="wg"><label>目標終點</label><input type="text" id="ep" class="wi" placeholder="例如：台中"></div>
-            <div class="wg"><label>強度需求</label><input type="text" id="du" class="wi" placeholder="例如：3天"></div>
+            <div class="wg"><label>目標終點</label><input type="text" id="ep" class="wi" placeholder="例如：花蓮"></div>
+            <div class="wg"><label>強度需求</label><input type="text" id="du" class="wi" placeholder="例如：2天"></div>
             <button class="wb" onclick="_gp()">生成規劃小卡</button>
         </div>
 
         <div class="da" id="ca">
             <div class="rc">
-                <h3>🛡️ 系統狀態：已連接</h3>
-                <p>版本 v4.0。請輸入行程需求後點擊按鈕生成。</p>
+                <h3>🛡️ 診斷提示</h3>
+                <p>版本 v4.1：已啟動跨版本 (v1/v1beta) 自動通訊橋接。如果仍然報錯，請關注紅色區域內的 HTTP 代碼。</p>
             </div>
         </div>
 
         <div class="iw">
-            <div class="st">Secure Connection Established (v4.0)</div>
+            <div class="st">Secure Link Active (v4.1)</div>
             <div class="ibc">
                 <div class="ib">
-                    <input type="text" id="ui" placeholder="輸入單車需求..." onkeypress="if(event.keyCode===13)_sm()">
+                    <input type="text" id="ui" placeholder="問任何環島問題..." onkeypress="if(event.keyCode===13)_sm()">
                     <button class="sb" onclick="_sm()">發送</button>
                 </div>
             </div>
@@ -317,12 +299,7 @@
 
     <script>
         (function () {
-            // 基本安全檢查
-            if (typeof _SECURITY_CORE === 'undefined') {
-                alert("安全核心失效，請重新上傳檔案。");
-                return;
-            }
-
+            if (typeof _SECURITY_CORE === 'undefined') return alert("安全檔案載入錯誤");
             const _k = _SECURITY_CORE.getKey();
             let _busy = false;
 
@@ -332,25 +309,22 @@
                 d.className = 'msg ' + r;
                 if (r === 'user') d.innerHTML = `<div class="bubble">${c}</div>`;
                 else if (r === 'ai') d.innerHTML = `<div class="rc"><h3>顧問規劃建議</h3>${marked.parse(c)}</div>`;
-                else d.innerHTML = `<div style="text-align:center;color:var(--d);font-size:0.8rem;background:rgba(255,71,87,0.1);padding:1rem;border-radius:12px;">${c}</div>`;
+                else d.innerHTML = `<div style="text-align:center;color:var(--d);font-size:0.8rem;background:rgba(255,71,87,0.1);padding:1rem;border-radius:12px;white-space:pre-wrap;">${c}</div>`;
                 a.appendChild(d);
                 window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
             };
 
             window._gp = () => {
-                const s = document.getElementById('sp').value;
-                const e = document.getElementById('ep').value;
-                const d = document.getElementById('du').value;
-                if (!s || !e || !d) { alert("請填妥資料"); return; }
-                window._sm(`規劃從「${s}」去「${e}」，天數「${d}」。請用 Markdown 表格呈現單車行程規劃。`);
+                const s = document.getElementById('sp').value, e = document.getElementById('ep').value, d = document.getElementById('du').value;
+                if (!s || !e || !d) return alert("請填妥資料");
+                window._sm(`規劃從「${s}」去「${e}」，天數「${d}」。請用 Markdown 表格呈現規劃。`);
             };
 
             window._sm = async (ot = null) => {
                 const i = document.getElementById('ui');
                 const t = ot || i.value.trim();
                 if (!t || _busy) return;
-                _busy = true;
-                if (!ot) i.value = '';
+                _busy = true; if (!ot) i.value = '';
                 document.getElementById('ca').innerHTML = '';
                 window._am('user', t);
 
@@ -358,29 +332,39 @@
                 tph.id = 'ti'; tph.className = 'tp'; tph.innerHTML = '<span></span><span></span><span></span>';
                 document.getElementById('ca').appendChild(tph);
 
-                try {
-                    // 使用最直接的 v1beta / gemini-1.5-flash 路徑，這在 AI Studio 最通用
-                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${_k}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            contents: [{ parts: [{ text: "你是專業單車導遊。請務必提供詳細行程，並用 Markdown 表格呈現。需求：" + t }] }]
-                        })
-                    });
+                // 備援線路與模型清單
+                const configs = [
+                    { v: 'v1', m: 'gemini-1.5-flash' },
+                    { v: 'v1beta', m: 'gemini-1.5-flash' },
+                    { v: 'v1beta', m: 'gemini-pro' }
+                ];
 
-                    const data = await res.json();
-                    if (document.getElementById('ti')) document.getElementById('ti').remove();
+                let ok = false;
+                let finalE = "";
 
-                    if (res.ok && data.candidates?.[0]?.content?.parts?.[0]?.text) {
-                        window._am('ai', data.candidates[0].content.parts[0].text);
-                    } else {
-                        const msg = data.error?.message || "線路忙碌";
-                        window._am('system', `❌ 產生失敗：${msg}`);
-                    }
-                } catch (e) {
+                for (let cfg of configs) {
+                    try {
+                        const res = await fetch(`https://generativelanguage.googleapis.com/${cfg.v}/models/${cfg.m}:generateContent?key=${_k}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ contents: [{ parts: [{ text: t }] }] })
+                        });
+                        const data = await res.json();
+                        if (res.ok && data.candidates?.[0]?.content?.parts?.[0]?.text) {
+                            if (document.getElementById('ti')) document.getElementById('ti').remove();
+                            window._am('ai', data.candidates[0].content.parts[0].text);
+                            ok = true; break;
+                        } else {
+                            finalE += `線路 ${cfg.v}/${cfg.m} 報錯: [${res.status}] ${data.error?.message || '未知錯誤'}\n`;
+                        }
+                    } catch (e) { finalE += `線路 ${cfg.v} 異常: ${e.message}\n`; }
+                }
+
+                if (!ok) {
                     if (document.getElementById('ti')) document.getElementById('ti').remove();
-                    window._am('system', "❌ 網路異常，請確認您的 API Key 是否正確。");
-                } finally { _busy = false; }
+                    window._am('system', `❌ 規劃生成攔截：\n${finalE}\n請確認您在 AI Studio 的 Key 是否已過期。`);
+                }
+                _busy = false;
             };
         })();
     </script>
