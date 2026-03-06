@@ -118,7 +118,7 @@
             color: var(--t);
         }
 
-        /* --- ✨ 旗艦級資訊展示元件 ✨ --- */
+        /* --- ✨ 旗艦級資訊展示元件 (Timeline) ✨ --- */
         .timeline-card {
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid var(--border);
@@ -131,13 +131,12 @@
         }
 
         .timeline-card:hover {
-            border-color: var(--p);
-            transform: translateY(-3px);
-            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(249, 115, 22, 0.4);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
         }
 
         .day-header {
-            background: rgba(249, 115, 22, 0.2);
+            background: rgba(249, 115, 22, 0.15);
             padding: 14px 20px;
             display: flex;
             justify-content: space-between;
@@ -167,65 +166,144 @@
         }
 
         .day-body {
-            padding: 20px;
-            display: grid;
-            gap: 20px;
-            grid-template-columns: 1fr;
-        }
-
-        @media(min-width: 768px) {
-            .day-body {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        .info-section {
+            padding: 15px 20px 20px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 12px;
+        }
+
+        /* ✅ 全新設計：可點擊展開的資訊手風琴 (Accordion) ✅ */
+        .info-accordion {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .info-accordion[open] {
+            background: rgba(255, 255, 255, 0.02);
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .info-accordion.challenge[open] {
+            border-color: rgba(248, 113, 113, 0.4);
+            background: rgba(248, 113, 113, 0.05);
+        }
+
+        .info-summary {
+            padding: 14px 18px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            list-style: none;
+            /* 隱藏原生三角形 */
+            color: #e2e8f0;
+            font-weight: 700;
+            user-select: none;
+            transition: 0.2s;
+        }
+
+        .info-summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .info-summary:hover {
+            background: rgba(255, 255, 255, 0.04);
         }
 
         .info-label {
-            font-size: 0.85rem;
-            color: var(--p);
-            font-weight: 900;
             display: flex;
             align-items: center;
-            gap: 8px;
-        }
-
-        .info-label::before {
-            content: "";
-            width: 4px;
-            height: 14px;
-            background: var(--p);
-            border-radius: 2px;
-        }
-
-        .info-text {
+            gap: 10px;
+            font-weight: 800;
             font-size: 0.95rem;
+            color: var(--p-light);
+        }
+
+        .challenge .info-label {
+            color: #fca5a5;
+        }
+
+        .chevron {
+            width: 18px;
+            height: 18px;
+            opacity: 0.6;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: #94a3b8;
+        }
+
+        .info-accordion[open] .chevron {
+            transform: rotate(180deg);
+            opacity: 1;
+            color: var(--p-light);
+        }
+
+        .info-accordion.challenge[open] .chevron {
+            color: #fca5a5;
+        }
+
+        .info-content {
+            padding: 0 18px 18px 18px;
             color: #cbd5e1;
-            line-height: 1.6;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            animation: slideDown 0.3s ease-out;
+            border-top: 1px solid transparent;
         }
 
-        .info-text ul {
-            list-style: none;
-            padding-left: 0;
-            margin-top: 5px;
+        .info-accordion[open] .info-content {
+            border-top-color: rgba(255, 255, 255, 0.05);
+            padding-top: 14px;
+            margin-top: 4px;
         }
 
-        .info-text li {
+        .info-accordion.challenge[open] .info-content {
+            border-top-color: rgba(248, 113, 113, 0.15);
+        }
+
+        /* 富文本設定 */
+        .info-content p {
+            margin-bottom: 0.8rem;
+        }
+
+        .info-content p:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-content ul,
+        .info-content ol {
+            margin-left: 20px;
+            margin-bottom: 0.8rem;
+        }
+
+        .info-content li {
             margin-bottom: 6px;
-            padding-left: 18px;
-            position: relative;
         }
 
-        .info-text li::before {
-            content: "•";
-            position: absolute;
-            left: 0;
-            color: var(--p);
-            font-weight: 900;
+        .info-content strong {
+            color: var(--p-light);
+            font-weight: 800;
+            background: none;
+            padding: 0;
+        }
+
+        .info-accordion.challenge .info-content strong {
+            color: #f87171;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* 裝備清單網格 */
@@ -262,7 +340,7 @@
             font-size: 1.1rem;
         }
 
-        /* --- 修正手機版跑版：捲動式 Tabs --- */
+        /* --- Tabs --- */
         .tabs-container {
             border-radius: 20px;
             border: 1px solid var(--border);
@@ -279,7 +357,6 @@
             scrollbar-width: none;
             border-bottom: 1px solid var(--border);
             -webkit-overflow-scrolling: touch;
-            /* 讓手機捲動更順暢 */
         }
 
         .tabs-nav::-webkit-scrollbar {
@@ -288,7 +365,6 @@
 
         .tab-btn {
             flex: 0 0 auto;
-            /* 禁止壓縮，解決手機跑版關鍵 */
             padding: 18px 25px;
             border: none;
             background: transparent;
@@ -527,24 +603,24 @@
         const thread = document.getElementById('chat-thread');
         const input = document.getElementById('chat-input');
 
-        const SYSTEM_PROMPT = `你是單車傳奇嚮導。你的每一份報告都必須極度詳盡且專業，嚴格拒絕簡略。
+        const SYSTEM_PROMPT = `你是核心單車專家。嚴禁廢話前言或結語。
+當收到規劃需求時，必須產出以下三個標題：
 
-【規劃指令集】：
-1. ### 📅 詳細路線與環境分佈
-這部分必須產出詳細的 Markdown 表格，欄位嚴格如下：
-- **天數**
-- **路線節點**
-- **路徑數據** (KM/爬升)
-- **站點活動與風景** (必須詳盡描述必推美食、特殊景觀、適合停留拍照的地點)
-- **技術挑戰與風險** (必須詳細分析：坡度陡度、路肩寬度、逆風概率、砂石車流量、安全死角)
+### 📅 詳細路線與行程流
+必須產出 Markdown 表格，欄位嚴格如下：
+1. **天數**
+2. **路線**
+3. **數據** (公里/爬升)
+4. **必看風景與補給** (必須詳盡描述美食、風景)
+5. **路線挑戰與提醒** (必須詳細分析坡度陡度、逆風、車流量等風險)
 
-2. ### 🎒 戰術配備與補給建議
-- **名稱**：詳述用途與為什麼該準備。
+### 🎒 戰術裝備建議
+(清單格式：- **裝備名**：精簡用途)
 
-3. ### ⚠️ 極限實戰風險提醒
-- **主題**：具體情境分析與對應避險策略。
+### ⚠️ 實戰風險提示
+(清單格式：- **主題**：具體應對)
 
-所有對話禁止前言廢話。內容必須豐富到讓使用者感到專業震撼。`;
+不准有表格之外的說明文字扣除標題。文字必須極簡化但資訊要極度詳細。`;
 
         function iv(id, v) { document.getElementById(id).value = v; }
 
@@ -561,6 +637,7 @@
             return m;
         }
 
+        // ✨ 全新突破：利用 Accordion 收納巨量文字，保持版面清爽 ✨
         function transformToTimeline(tableHtml) {
             const div = document.createElement('div');
             div.innerHTML = tableHtml;
@@ -579,14 +656,23 @@
                 <div class="day-route">${cols[1]}</div>
                 <div class="day-stats"><span>📏 距離/爬升：${cols[2]}</span></div>
                 <div class="day-body">
-                    <div class="info-section">
-                        <div class="info-label">📍 風景、美食與活動</div>
-                        <div class="info-text">${cols[3]}</div>
-                    </div>
-                    <div class="info-section">
-                        <div class="info-label">⚡ 路線挑戰與技術限制</div>
-                        <div class="info-text">${cols[4]}</div>
-                    </div>
+                    
+                    <details class="info-accordion">
+                        <summary class="info-summary">
+                            <span class="info-label">📍 風景、美食與活動探勘</span>
+                            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </summary>
+                        <div class="info-content">${cols[3]}</div>
+                    </details>
+                    
+                    <details class="info-accordion challenge">
+                        <summary class="info-summary">
+                            <span class="info-label">⚡ 路線挑戰與技術風險</span>
+                            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </summary>
+                        <div class="info-content">${cols[4]}</div>
+                    </details>
+
                 </div>
             </div>`;
             });
@@ -644,7 +730,7 @@
             const d = document.getElementById('days').value;
             if (!s || !e || !d) return alert("請完整填寫起訖點與天數規劃。");
             addMessage('user', `分析需求：從 **${s}** 騎行至 **${e}**，預定天數 **${d}**。請提供專業戰略報告。`);
-            await callAI(`請為我規劃 ${s} 到 ${e}，${d}天的單車行程。要求：內容必須極度詳細，包含每一天的具體美食推薦、風景細節、以及精確的技術坡度與交通安全分析，嚴禁內容過於簡略。`);
+            await callAI(`請為我規劃 ${s} 到 ${e}，${d}天的單車行程。極度詳細地列出每一天的美食、風景細節、精確技術坡度與交通安全分析。以Markdown表格輸出。`);
         }
 
         async function submitChat() {
@@ -670,7 +756,7 @@
                 });
                 const data = await res.json();
                 loader.remove();
-                addMessage('ai', renderTabs(data.candidates?.[0]?.content?.parts?.[0]?.text || "連線異常"), true);
+                addMessage('ai', renderTabs(data.candidates?.[0]?.content?.parts?.[0]?.text || "無回應"), true);
             } catch (e) {
                 loader.remove();
                 addMessage('ai', "連線錯誤，請刷新頁面再試。");
