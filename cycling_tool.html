@@ -306,57 +306,55 @@
             }
         }
 
-        /* 裝備清單網格 */
+        /* 裝備與風險卡片網格 */
         .tab-pane.grid-layout ul {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
             gap: 15px;
             padding: 0;
             list-style: none;
         }
 
-        @media(min-width: 768px) {
-            .tab-pane.grid-layout ul {
-                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-                gap: 20px;
-            }
-        }
-
         .tab-pane.grid-layout li {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border);
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 16px;
             padding: 1.25rem;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
+            color: #cbd5e1;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
         }
 
         .tab-pane.grid-layout li strong {
-            color: var(--p);
+            color: #fff;
             display: block;
-            border-bottom: 1px solid rgba(249, 115, 22, 0.2);
-            padding-bottom: 6px;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+            padding-bottom: 8px;
+            margin-bottom: 4px;
             font-size: 1.1rem;
         }
 
-        /* --- Tabs --- */
+        .tab-pane.grid-layout li p {
+            margin: 0;
+        }
+
+        /* --- Floating Tabs (Pills) --- */
         .tabs-container {
-            border-radius: 20px;
-            border: 1px solid var(--border);
-            overflow: hidden;
             margin-top: 1.25rem;
             width: 100%;
-            background: rgba(0, 0, 0, 0.2);
         }
 
         .tabs-nav {
             display: flex;
-            background: rgba(15, 23, 42, 0.9);
+            gap: 12px;
             overflow-x: auto;
             scrollbar-width: none;
-            border-bottom: 1px solid var(--border);
             -webkit-overflow-scrolling: touch;
+            padding-bottom: 8px;
         }
 
         .tabs-nav::-webkit-scrollbar {
@@ -365,35 +363,29 @@
 
         .tab-btn {
             flex: 0 0 auto;
-            padding: 18px 25px;
-            border: none;
-            background: transparent;
-            color: var(--m);
-            font-weight: 800;
+            padding: 12px 22px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.03);
+            color: #94a3b8;
+            font-weight: 700;
             font-size: 0.95rem;
             cursor: pointer;
             white-space: nowrap;
-            transition: 0.3s;
-            border-bottom: 4px solid transparent;
-            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 50px;
         }
 
         .tab-btn.active {
-            color: var(--p);
-            border-bottom-color: var(--p);
-            background: rgba(249, 115, 22, 0.1);
+            color: #fff;
+            background: var(--p);
+            border-color: var(--p);
+            box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
         }
 
         .tab-pane {
             display: none;
-            padding: 1.5rem;
+            padding: 1rem 0 0 0;
             animation: fadeIn 0.4s ease-out;
-        }
-
-        @media(min-width: 768px) {
-            .tab-pane {
-                padding: 2rem;
-            }
         }
 
         .tab-pane.active {
@@ -616,24 +608,19 @@
         const thread = document.getElementById('chat-thread');
         const input = document.getElementById('chat-input');
 
-        const SYSTEM_PROMPT = `你是核心單車專家。嚴禁廢話前言或結語。
-當收到規劃需求時，必須產出以下三個標題：
+        const SYSTEM_PROMPT = `你是核心單車專家。嚴禁廢話。
+收到任務時，請產出以下三大區塊：
 
 ### 📅 詳細路線與行程流
-必須產出 Markdown 表格，欄位嚴格如下：
-1. **天數**
-2. **路線**
-3. **數據** (公里/爬升)
-4. **必看風景與補給** (必須詳盡描述美食、風景)
-5. **路線挑戰與提醒** (必須詳細分析坡度陡度、逆風、車流量等風險)
+(請以 Markdown 表格呈現，必須包含：天數、路線、距離/爬升、必看風景美食、路線風險)
 
 ### 🎒 戰術裝備建議
-(清單格式：- **裝備名**：精簡用途)
+請使用 Markdown 無序清單條列，格式嚴格如下(禁止添加冒號)：
+* **裝備名稱**說明具體用途。
 
 ### ⚠️ 實戰風險提示
-(清單格式：- **主題**：具體應對)
-
-不准有表格之外的說明文字扣除標題。文字必須極簡化但資訊要極度詳細。`;
+請使用 Markdown 無序清單條列，格式嚴格如下(禁止添加冒號)：
+* **風險主題**說明具體情境與應對方案。`;
 
         function iv(id, v) { document.getElementById(id).value = v; }
 
@@ -717,6 +704,9 @@
                 if (title.match(/裝備|清單|提示|提醒|守則|風險/)) layoutClass = 'grid-layout';
 
                 let parsedBody = marked.parse(body);
+                // 修復 AI 產生的異常換行與無用冒號，讓排版更乾淨
+                parsedBody = parsedBody.replace(/<\/strong>[\s:：\-<br/>]+/g, '</strong>');
+
                 if (count === 0 && parsedBody.includes('<table')) {
                     parsedBody = transformToTimeline(parsedBody);
                 }
