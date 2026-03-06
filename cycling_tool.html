@@ -94,10 +94,10 @@
         }
 
         .bubble {
-            padding: 1.5rem;
+            padding: 1.25rem;
             border-radius: 24px;
-            line-height: 1.7;
-            font-size: 1rem;
+            line-height: 1.6;
+            font-size: 0.95rem;
             box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4);
             width: 100%;
         }
@@ -404,12 +404,12 @@
         .plan-card {
             background: rgba(0, 0, 0, 0.4);
             border: 1px solid var(--border);
-            padding: 1.75rem;
+            padding: 1.25rem;
             border-radius: 20px;
             margin-top: 1.5rem;
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
+            gap: 1.25rem;
         }
 
         .form-row {
@@ -419,11 +419,18 @@
         }
 
         .form-label {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             font-weight: 800;
             color: var(--p-light);
             display: flex;
             justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .form-label span {
+            white-space: nowrap;
         }
 
         .quick-chips {
@@ -483,7 +490,7 @@
             bottom: 0;
             left: 0;
             right: 0;
-            padding: 1.5rem 1.5rem 3rem;
+            padding: 1rem 1rem 2.5rem;
             background: linear-gradient(transparent, var(--bg) 60%);
             z-index: 200;
             pointer-events: none;
@@ -496,7 +503,7 @@
             background: #1e293b;
             border: 1px solid rgba(255, 255, 255, 0.25);
             border-radius: 99px;
-            padding: 8px 8px 8px 24px;
+            padding: 6px 6px 6px 16px;
             display: flex;
             align-items: center;
             box-shadow: 0 25px 80px rgba(0, 0, 0, 0.8);
@@ -508,21 +515,27 @@
             background: transparent;
             border: none;
             color: white;
-            padding: 12px 0;
-            font-size: 1.05rem;
+            padding: 10px 0;
+            font-size: 1rem;
             outline: none;
+            min-width: 0;
+            /* 防止輸入框在 flex 容器中撐破版面 */
         }
 
         .dock-btn {
             background: var(--p);
             color: white;
             border: none;
-            padding: 0 25px;
-            height: 50px;
+            padding: 0 20px;
+            height: 44px;
             border-radius: 99px;
             font-weight: 900;
             cursor: pointer;
             transition: 0.2s;
+            flex-shrink: 0;
+            /* 防止按鈕被壓縮 */
+            white-space: nowrap;
+            /* 防止文字換行 */
         }
 
         .dock-btn:hover {
