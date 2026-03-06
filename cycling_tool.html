@@ -49,7 +49,7 @@
             background: rgba(3, 7, 18, 0.8);
             backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--border);
-            z-index: 10;
+            z-index: 100;
         }
 
         .logo {
@@ -63,18 +63,18 @@
         main {
             flex: 1;
             overflow-y: auto;
-            padding: 2rem 1.5rem 220px;
-            /* 增加底部墊高，確保對話能完全浮出 Dock 以上 */
+            padding: 2rem 1.5rem 240px;
+            /* 增加底部墊高 */
             scroll-behavior: smooth;
         }
 
         #chat-thread {
             max-width: 800px;
-            /* 限制閱讀寬度，黃金比例 */
             margin: 0 auto;
             display: flex;
             flex-direction: column;
             gap: 2rem;
+            width: 100%;
         }
 
         /* Message Bubbles */
@@ -94,15 +94,19 @@
         }
 
         .bubble {
-            max-width: 90%;
+            max-width: 95%;
+            /* 稍微加寬 */
             padding: 1.25rem;
             border-radius: 16px;
             line-height: 1.6;
             font-size: 0.95rem;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            /* 強制對齊 */
         }
 
         .msg.user .bubble {
+            max-width: fit-content;
             background: var(--p);
             color: #fff;
             border-bottom-right-radius: 4px;
@@ -115,7 +119,6 @@
             border-bottom-left-radius: 4px;
             backdrop-filter: blur(10px);
             color: var(--t);
-            width: 100%;
         }
 
         /* Rich content styling */
@@ -127,22 +130,20 @@
             background: rgba(0, 0, 0, 0.2);
             border-radius: 8px;
             overflow-x: auto;
-            display: block;
+            display: table;
         }
 
         .bubble th {
             background: rgba(255, 255, 255, 0.05);
             color: var(--p-light);
-            padding: 10px;
+            padding: 12px;
             text-align: left;
-            border-bottom: 1px solid var(--border);
-            white-space: nowrap;
+            border-bottom: 2px solid var(--p);
         }
 
         .bubble td {
-            padding: 10px;
+            padding: 12px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-            min-width: 80px;
         }
 
         .bubble p {
@@ -152,51 +153,44 @@
         .bubble strong {
             color: var(--p-light);
             font-weight: 700;
-            background: rgba(249, 115, 22, 0.1);
-            padding: 0 4px;
-            border-radius: 4px;
         }
 
-        /* --- 視覺化卡片元件 --- */
-        .tab-pane.equipment-grid ul {
+        /* --- 視覺化卡片元件 - 完美對齊網格 --- */
+        .tab-pane.grid-layout ul {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 12px;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px;
             padding: 0;
             list-style: none;
+            margin: 0;
         }
 
-        .tab-pane.equipment-grid li {
+        .tab-pane.grid-layout li {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 1rem;
-            font-size: 0.85rem;
+            border-radius: 12px;
+            padding: 1.25rem;
+            font-size: 0.9rem;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            transition: 0.2s;
         }
 
-        .tab-pane.equipment-grid li strong {
+        .tab-pane.grid-layout li:hover {
+            border-color: var(--p);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .tab-pane.grid-layout li strong {
             display: block;
-            font-size: 1rem;
-            margin-bottom: 4px;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
             color: var(--p);
             background: none;
             padding: 0;
-        }
-
-        .tab-pane.notes-grid ul {
-            list-style: none;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .tab-pane.notes-grid li {
-            background: rgba(249, 115, 22, 0.05);
-            border-left: 3px solid var(--p);
-            padding: 10px 15px;
-            border-radius: 0 6px 6px 0;
-            font-size: 0.85rem;
+            border-bottom: 1px solid rgba(249, 115, 22, 0.2);
+            padding-bottom: 4px;
         }
 
         /* ----------------------- */
@@ -228,13 +222,13 @@
             background: transparent;
             color: var(--m);
             border: none;
-            padding: 12px 10px;
-            font-size: 0.85rem;
-            font-weight: 700;
+            padding: 14px 12px;
+            font-size: 0.9rem;
+            font-weight: 800;
             cursor: pointer;
             white-space: nowrap;
-            border-bottom: 2px solid transparent;
-            min-width: 100px;
+            border-bottom: 3px solid transparent;
+            min-width: 120px;
         }
 
         .tab-btn.active {
@@ -245,8 +239,8 @@
 
         .tab-pane {
             display: none;
-            padding: 1.25rem;
-            animation: fadeIn 0.2s;
+            padding: 1.5rem;
+            animation: fadeIn 0.3s;
         }
 
         .tab-pane.active {
@@ -257,22 +251,22 @@
         .plan-card {
             background: rgba(0, 0, 0, 0.2);
             border: 1px solid var(--border);
-            padding: 1.2rem;
+            padding: 1.5rem;
             border-radius: 12px;
             margin-top: 1rem;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 15px;
         }
 
         .form-row {
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 8px;
         }
 
         .form-label {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             font-weight: 700;
             color: var(--p-light);
             display: flex;
@@ -282,26 +276,32 @@
 
         .quick-chips {
             display: flex;
-            gap: 6px;
+            gap: 8px;
             flex-wrap: wrap;
         }
 
         .chip {
             background: #334155;
             color: #cbd5e1;
-            padding: 3px 10px;
+            padding: 4px 12px;
             border-radius: 50px;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .chip:hover {
+            background: var(--p);
+            color: #fff;
         }
 
         .form-input {
             background: #0f172a;
             border: 1px solid #334155;
             color: #fff;
-            padding: 10px;
+            padding: 12px;
             border-radius: 8px;
-            font-size: 0.9rem;
+            font-size: 1rem;
             outline: none;
         }
 
@@ -309,12 +309,17 @@
             background: var(--p);
             color: #fff;
             border: none;
-            padding: 12px;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 0.95rem;
+            padding: 14px;
+            border-radius: 10px;
+            font-weight: 900;
+            font-size: 1rem;
             cursor: pointer;
             transition: 0.2s;
+            box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
         }
 
         /* Input Dock Panel */
@@ -324,9 +329,8 @@
             left: 0;
             right: 0;
             padding: 1.5rem;
-            background: linear-gradient(transparent, var(--bg) 60%);
-            /* 降低漸層透明度覆蓋範圍 */
-            z-index: 20;
+            background: linear-gradient(transparent, var(--bg) 40%);
+            z-index: 200;
             pointer-events: none;
         }
 
@@ -335,12 +339,12 @@
             max-width: 800px;
             margin: 0 auto;
             background: #1e293b;
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 5px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 8px;
             display: flex;
             align-items: center;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
             pointer-events: auto;
         }
 
@@ -358,10 +362,10 @@
             background: var(--p);
             color: #fff;
             border: none;
-            padding: 0 15px;
-            height: 38px;
-            border-radius: 12px;
-            font-weight: 700;
+            padding: 0 20px;
+            height: 44px;
+            border-radius: 16px;
+            font-weight: 800;
             cursor: pointer;
         }
 
@@ -369,12 +373,12 @@
         .typing {
             display: flex;
             gap: 4px;
-            padding: 5px;
+            padding: 8px;
         }
 
         .dot {
-            width: 6px;
-            height: 6px;
+            width: 8px;
+            height: 8px;
             background: var(--p);
             border-radius: 50%;
             animation: bounce 1.4s infinite ease-in-out both;
@@ -419,38 +423,38 @@
 
     <header>
         <div class="logo">ROAD MASTER</div>
-        <div style="font-size:0.8rem; color:var(--m); font-weight:600;">AI 單車管家</div>
+        <div style="font-size:0.8rem; color:var(--m); font-weight:600;">專業單車教練</div>
     </header>
 
     <main id="chat-scroller">
         <div id="chat-thread">
             <div class="msg ai">
                 <div class="bubble">
-                    <p>🚵 您好！準備好單車冒險了嗎？</p>
-                    <p style="color:var(--m); font-size:0.85rem;">使用下方表單可快速產生分類行程，或直接問我裝備、維修、路況問題。</p>
+                    <p>🚵 您好！我是您的單車教練 Road Master。</p>
+                    <p style="color:var(--m); font-size:0.85rem;">填寫下方表單即刻產出「分類視覺化行程」卡片，或直接對話詢問。</p>
                     <div class="plan-card">
                         <div class="form-row">
                             <div class="form-label"><span>📍 起點</span>
                                 <div class="quick-chips"><span class="chip" onclick="iv('start','台北')">台北</span><span
-                                        class="chip" onclick="iv('start','台南')">台南</span></div>
+                                        class="chip" onclick="iv('start','新竹')">新竹</span></div>
                             </div>
-                            <input type="text" id="start" class="form-input" placeholder="起點">
+                            <input type="text" id="start" class="form-input" placeholder="例如：台北火車站">
                         </div>
                         <div class="form-row">
                             <div class="form-label"><span>🏁 終點</span>
                                 <div class="quick-chips"><span class="chip" onclick="iv('end','恆春')">恆春</span><span
                                         class="chip" onclick="iv('end','環島')">環島</span></div>
                             </div>
-                            <input type="text" id="end" class="form-input" placeholder="終點">
+                            <input type="text" id="end" class="form-input" placeholder="例如：台東火車站">
                         </div>
                         <div class="form-row">
                             <div class="form-label"><span>⏱️ 天數</span>
                                 <div class="quick-chips"><span class="chip" onclick="iv('days','3天')">3天</span><span
                                         class="chip" onclick="iv('days','9天')">9天</span></div>
                             </div>
-                            <input type="text" id="days" class="form-input" placeholder="天數">
+                            <input type="text" id="days" class="form-input" placeholder="例如：3天">
                         </div>
-                        <button class="btn-primary" onclick="submitForm()">產出智慧行程報表</button>
+                        <button class="btn-primary" onclick="submitForm()">⚡ 產出智慧行程分析</button>
                     </div>
                 </div>
             </div>
@@ -459,7 +463,7 @@
 
     <div class="dock">
         <div class="dock-bar">
-            <input type="text" id="chat-input" class="dock-input" placeholder="問問路況或裝備..."
+            <input type="text" id="chat-input" class="dock-input" placeholder="輸入任何單車問題..."
                 onkeypress="if(event.key==='Enter')submitChat()">
             <button class="dock-btn" onclick="submitChat()">傳送</button>
         </div>
@@ -471,18 +475,26 @@
         const thread = document.getElementById('chat-thread');
         const input = document.getElementById('chat-input');
 
-        const SYSTEM_PROMPT = `你是單車專家。請嚴格遵守以下格式：
-如果是給「行程規劃」，必須包含 ### 📅 路線排程, ### 🎒 裝備清單, ### ⚠️ 實戰守則。
-每個標題後必須換行。每個清單項必須使用「- **名稱**：描述」。
-文字要精簡，避免廢話語助詞。`;
+        const SYSTEM_PROMPT = `你是單車專家教練。
+你的回應必須結構化，嚴禁雜亂的文字。
+
+【規劃專屬規則】：
+當使用者提供起訖點與天數，你必須嚴格輸出以下內容，且每個標題前必須有 ### ：
+### 📅 路線排程
+(提供 Markdown 表格：天數 | 路線 | 公里 | 重點)
+### 🎒 裝備建議
+(使用清單：- **名稱**：說明)
+### ⚠️ 實戰提示
+(使用清單：- **名稱**：說明)
+
+如果是普通對話，也要保持條列式與重點標註。`;
 
         function iv(id, v) { document.getElementById(id).value = v; }
 
         function scrollBottom() {
-            // 使用 setTimeout 確保內容已完全渲染後才滾動
             setTimeout(() => {
-                scroller.scrollTo({ top: scroller.scrollHeight + 500, behavior: 'smooth' });
-            }, 100);
+                scroller.scrollTo({ top: scroller.scrollHeight + 100, behavior: 'smooth' });
+            }, 300);
         }
 
         function addMessage(role, content, raw = false) {
@@ -494,33 +506,43 @@
             return m;
         }
 
-        // 重寫 Tab 渲染邏輯，修正 \n 與分段問題
-        function renderTabs(rawText) {
-            // 解決不同平台換行符號問題，先統一轉為 \n
-            const text = rawText.replace(/\r\n/g, '\n');
-            const sections = text.split(/### /);
+        // 強化版解析器：精準分割標題與內容
+        function renderTabs(text) {
+            // 先處理可能的換行符號問題
+            const cleanText = text.replace(/\\n/g, '\n');
+            const sections = cleanText.split(/\n?(?=### )/);
 
-            if (sections.length <= 1) return marked.parse(text);
+            if (sections.length <= 1) return marked.parse(cleanText);
 
             let tabsNav = `<div class="tabs-container"><div class="tabs-nav">`;
             let tabsContent = `</div><div class="tabs-content">`;
             let count = 0;
 
             sections.forEach(sec => {
-                if (!sec.trim()) return;
+                const trimmed = sec.trim();
+                if (!trimmed) return;
 
-                // 找到第一行作為標題
-                const lines = sec.split('\n');
-                const title = lines[0].trim();
-                const body = lines.slice(1).join('\n').trim();
+                let title = "分析說明";
+                let body = trimmed;
+
+                if (trimmed.startsWith('###')) {
+                    const firstLineEnd = trimmed.indexOf('\n');
+                    if (firstLineEnd !== -1) {
+                        title = trimmed.substring(0, firstLineEnd).replace(/###\s*/, '').trim();
+                        body = trimmed.substring(firstLineEnd).trim();
+                    } else {
+                        title = trimmed.replace(/###\s*/, '').trim();
+                        body = "";
+                    }
+                }
 
                 const active = count === 0 ? 'active' : '';
-                let typeClass = '';
-                if (title.includes('裝備')) typeClass = 'equipment-grid';
-                if (title.includes('守則') || title.includes('注意')) typeClass = 'notes-grid';
+                // 判斷是否需要網格排版 (包含裝備, 提示, 守則等關鍵字)
+                let layoutClass = '';
+                if (title.match(/裝備|提示|守則|注意|亮點/)) layoutClass = 'grid-layout';
 
                 tabsNav += `<button class="tab-btn ${active}" onclick="switchTab(this, ${count})">${title}</button>`;
-                tabsContent += `<div class="tab-pane ${active} ${typeClass}" data-index="${count}">${marked.parse(body)}</div>`;
+                tabsContent += `<div class="tab-pane ${active} ${layoutClass}" data-index="${count}">${marked.parse(body)}</div>`;
                 count++;
             });
 
@@ -539,13 +561,13 @@
             const s = document.getElementById('start').value;
             const e = document.getElementById('end').value;
             const d = document.getElementById('days').value;
-            if (!s || !e || !d) return alert("請填好規劃條件喔！");
-            addMessage('user', `📍 從 ${s} 到 ${e}，騎乘 ${d} 天，請給我專業建議。`);
-            await callAI(`規劃：${s} 到 ${e}，${d}天。`);
+            if (!s || !e || !d) return alert("請填寫起點、終點與欲騎乘天數！");
+            addMessage('user', `📍 從 **${s}** 出發到 **${e}**，預計騎乘 **${d}**。請規劃行程。`);
+            await callAI(`規劃：${s} 到 ${e}，${d}。`);
         }
 
         async function submitChat() {
-            const v = input.value.trim();
+            const v = chatInput.value = input.value.trim();
             if (!v) return;
             input.value = '';
             addMessage('user', v);
@@ -563,7 +585,7 @@
                 const res = await fetch(CF_GATEWAY, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: SYSTEM_PROMPT + "\n需求：" + q }] }] })
+                    body: JSON.stringify({ contents: [{ parts: [{ text: SYSTEM_PROMPT + "\n\n目前需求：" + q }] }] })
                 });
                 const data = await res.json();
                 loader.remove();
@@ -571,7 +593,7 @@
                 addMessage('ai', renderTabs(reply), true);
             } catch (e) {
                 loader.remove();
-                addMessage('ai', "連線錯誤，請檢查網路。");
+                addMessage('ai', "連線錯誤，請檢查網路狀態。");
             }
         }
     </script>
