@@ -306,6 +306,55 @@
             }
         }
 
+        /* ✨ 視覺化標記內容樣式 (視覺關鍵點) ✨ */
+        .content-segment {
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 3px solid var(--p);
+            padding: 10px 14px;
+            margin-bottom: 15px;
+            border-radius: 4px 12px 12px 4px;
+        }
+
+        .segment-title {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 5px;
+            font-size: 1rem;
+        }
+
+        .highlight-tag {
+            background: rgba(249, 115, 22, 0.15);
+            color: var(--p-light);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            border: 1px solid rgba(249, 115, 22, 0.3);
+            display: inline-block;
+            margin-right: 5px;
+            font-weight: 900;
+        }
+
+        .risk-tag {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            display: inline-block;
+            margin-right: 5px;
+            font-weight: 900;
+        }
+
+        .segment-desc {
+            color: #94a3b8;
+            font-size: 0.92rem;
+            line-height: 1.6;
+        }
+
         /* 裝備與風險卡片網格 */
         .tab-pane.grid-layout ul {
             display: grid;
@@ -608,24 +657,24 @@
         const thread = document.getElementById('chat-thread');
         const input = document.getElementById('chat-input');
 
-        const SYSTEM_PROMPT = `你是台灣頂級單車嚮導。你的特色是給出的報告「細膩度極高、資訊量極大」。
-收到任務時，請產出以下三大區塊：
+        const SYSTEM_PROMPT = `你是單車旅遊界的大師級嚮導。
+你的報告必須具備「路段感知」與「精準標籤化」，絕對嚴禁整坨文字混在一起。
 
+應答規則：
 ### 📅 詳細路線與行程流
 (請以 Markdown 表格呈現，必須包含：天數、路線、距離/爬升、必看風景美食、路線風險)
-【強制要求】：
-1. 「必看風景美食」欄位：請寫出 3-5 句話的長篇敘述，詳細推薦沿路經過的具體美食名店（列出店名與必點）、私房打卡點、歷史人文特色。絕不准只給幾個單詞！
-2. 「路線風險」欄位：請寫出 3-5 句話的長篇敘述，深度解析該天的省道/縣道編號上的隱藏殺機。列出明確的長上坡與陡度(%)、砂石車威脅區、逆風季風警告、無補給真空地帶。必須極度專業且長篇詳盡！
+
+【風景美食與路線風險欄位】強制格式：
+必須使用「[路段/位置] 名稱：描述內容」的標籤結構。
+例如：
+[龍潭➔關西] 仙草巷：這是關西必吃的名店，冰鮮草奶凍消暑一流。
+[注意] 龍潭大坡：這段長達2公里的緩上坡，冬天逆風會讓你體力歸零。
 
 ### 🎒 戰術裝備建議
-請嚴格使用以下格式產出清單，不准加冒號，不准換行，直接接說明：
-- **安全帽**保護頭部安全，必須符合規範。
-- **補胎工具**遇到破胎時能快速自救。
+清單格式：- **裝備名稱**說明具體用途。
 
 ### ⚠️ 實戰風險提示
-請嚴格使用以下格式產出清單，不准加冒號，不准換行，直接接說明：
-- **高溫中暑**每日補充大量水分與電解質防範。
-- **逆風體力流失**採用低風阻騎姿並調整齒比。`;
+清單格式：- **風險主題**說明具體情境與應對方案。`;
 
         function iv(id, v) { document.getElementById(id).value = v; }
 
@@ -642,7 +691,24 @@
             return m;
         }
 
-        // ✨ 全新突破：利用 Accordion 收納巨量文字，保持版面清爽 ✨
+        // ✨ 強化渲染引擎：自動將 [標籤] 轉換為精美的視覺區塊 ✨
+        function prettifyContent(text, isRisk = false) {
+            // 將 [位置] 名稱：描述 轉換為 HTML 結構
+            return text.replace(/\[(.*?)\]\s*(.*?)[：|:](.*?)(?=\n|\[|$)/gs, (match, loc, name, desc) => {
+                const tagClass = isRisk ? 'risk-tag' : 'highlight-tag';
+                return `
+                    <div class="content-segment">
+                        <div class="segment-title">
+                            <span class="${tagClass}">${loc}</span>
+                            <span>${name}</span>
+                        </div>
+                        <div class="segment-desc">${desc.trim()}</div>
+                    </div>
+                `;
+            });
+        }
+
+        // ✨ 修改 Timeline 渲染邏輯，導入內容強化引擎 ✨
         function transformToTimeline(tableHtml) {
             const div = document.createElement('div');
             div.innerHTML = tableHtml;
@@ -662,20 +728,20 @@
                 <div class="day-stats"><span>📏 距離/爬升：${cols[2]}</span></div>
                 <div class="day-body">
                     
-                    <details class="info-accordion">
+                    <details class="info-accordion" open>
                         <summary class="info-summary">
                             <span class="info-label">📍 風景、美食與活動探勘</span>
                             <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                         </summary>
-                        <div class="info-content">${cols[3]}</div>
+                        <div class="info-content">${prettifyContent(cols[3])}</div>
                     </details>
                     
-                    <details class="info-accordion challenge">
+                    <details class="info-accordion challenge" open>
                         <summary class="info-summary">
                             <span class="info-label">⚡ 路線挑戰與技術風險</span>
                             <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                         </summary>
-                        <div class="info-content">${cols[4]}</div>
+                        <div class="info-content">${prettifyContent(cols[4], true)}</div>
                     </details>
 
                 </div>
