@@ -4,133 +4,455 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Road Master - 智慧單車規劃助理 (v5.1 Sync)</title>
+    <title>Road Master | 台灣單車環島智慧顧問</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+TC:wght@400;700;900&display=swap"
+        rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="security-v3.js?v=5.1"></script>
+    <script src="security-v3.js?v=9.0"></script>
     <style>
-        /* 同步 index.html 的精美樣式 */
         :root {
-            --p: #f97316;
-            --bg: #0f172a;
-            --c: #1e293b;
-            --t: #f1f5f9;
-            --m: #94a3b8;
+            --primary: #ff4d00;
+            --primary-glow: rgba(255, 77, 0, 0.3);
+            --bg: #030712;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --border: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --accent: #38bdf8;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
         }
 
         body {
             background: var(--bg);
-            color: var(--t);
-            font-family: sans-serif;
+            background-image:
+                radial-gradient(circle at 0% 0%, rgba(255, 77, 0, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, rgba(56, 189, 248, 0.1) 0%, transparent 50%);
+            color: var(--text-main);
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
             margin: 0;
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
+            height: 100vh;
+            overflow: hidden;
         }
 
-        .ac {
-            max-width: 800px;
-            margin: 2rem auto;
-            width: 100%;
-            padding: 1rem;
-            flex: 1;
+        /* Header Area */
+        header {
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(3, 7, 18, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 10;
         }
 
-        .rc {
-            background: var(--c);
-            padding: 2rem;
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo span {
+            color: var(--primary);
+        }
+
+        .status-badge {
+            background: rgba(34, 197, 94, 0.1);
+            color: #4ade80;
+            padding: 4px 12px;
             border-radius: 20px;
-            border-left: 6px solid var(--p);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 1px solid rgba(34, 197, 94, 0.2);
         }
 
-        .iw {
-            position: fixed;
-            bottom: 0;
+        /* Chat History */
+        #chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            scroll-behavior: smooth;
+        }
+
+        .message {
+            max-width: 85%;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .message.ai {
+            align-self: flex-start;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            background: var(--primary);
+            padding: 12px 20px;
+            border-radius: 20px 20px 0 20px;
+            box-shadow: 0 4px 15px var(--primary-glow);
+            font-weight: 600;
+        }
+
+        .ai-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
             left: 0;
-            right: 0;
-            padding: 2rem 1rem;
-            background: linear-gradient(transparent, var(--bg));
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
         }
 
-        .ibc {
-            max-width: 800px;
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Markdown Styling inside AI card */
+        .ai-card h1,
+        .ai-card h2,
+        .ai-card h3 {
+            color: var(--primary);
+            margin-top: 0;
+        }
+
+        .ai-card ul,
+        .ai-card ol {
+            padding-left: 1.2rem;
+        }
+
+        .ai-card li {
+            margin-bottom: 0.8rem;
+            color: var(--text-main);
+        }
+
+        .ai-card table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .ai-card th {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            text-align: left;
+            color: var(--accent);
+        }
+
+        .ai-card td {
+            padding: 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .action-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            border-radius: 12px;
+            color: var(--text-dim);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            border-color: var(--primary);
+        }
+
+        /* Input Area */
+        .input-wrapper {
+            padding: 1.5rem 2rem 2.5rem;
+            background: linear-gradient(to top, var(--bg) 80%, transparent);
+            position: relative;
+        }
+
+        .input-container {
+            max-width: 900px;
             margin: 0 auto;
+            position: relative;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 8px;
             display: flex;
             gap: 10px;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 10px;
-            border-radius: 50px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            transition: border-color 0.3s;
         }
 
-        input {
+        .input-container:focus-within {
+            border-color: var(--primary);
+        }
+
+        #user-input {
             flex: 1;
             background: transparent;
             border: none;
             color: #fff;
-            padding: 0 20px;
+            padding: 12px 20px;
             outline: none;
             font-size: 1rem;
+            font-family: inherit;
         }
 
-        button {
-            background: var(--p);
+        .send-btn {
+            background: var(--primary);
+            color: white;
             border: none;
-            color: #fff;
-            padding: 10px 25px;
-            border-radius: 50px;
-            font-weight: bold;
+            border-radius: 14px;
+            padding: 0 24px;
+            font-weight: 700;
             cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .send-btn:hover {
+            background: #ff5e1a;
+            transform: scale(1.02);
+        }
+
+        .send-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Loading Animation */
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 10px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .dot:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            80%,
+            100% {
+                transform: scale(0);
+            }
+
+            40% {
+                transform: scale(1);
+            }
+        }
+
+        /* Scrollbar */
+        #chat-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #chat-container::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 10px;
         }
     </style>
 </head>
 
 <body>
-    <div class="ac">
-        <div id="ca" class="rc">
-            <h3>🚵 v5.1 同步版</h3>
-            <p>本檔案已同步 v5.1 核心修復邏輯。請直接問問題測試。</p>
+    <header>
+        <div class="logo">ROAD <span>MASTER</span></div>
+        <div class="status-badge">AI 專家在線</div>
+    </header>
+
+    <main id="chat-container">
+        <div class="message ai">
+            <div class="ai-card">
+                <h3>� 你好！我是您的單車環島專家 Road Master</h3>
+                <p>我能為您規劃台灣環島路線、解答單車維修疑惑、或是提供最道地的補給站建議。請問今天想去哪裡騎車？</p>
+                <div class="quick-actions">
+                    <button class="action-btn" onclick="quickAsk('幫我規劃台北到花蓮的 3 天兩夜行程')">🗺️ 北花行程規劃</button>
+                    <button class="action-btn" onclick="quickAsk('環島一定要帶什麼裝備？')">🎒 裝備檢查表</button>
+                    <button class="action-btn"
+                        onclick="quickAsk('蘇花公路現在適合騎單車嗎？'), alert('請注意：蘇花改不開方單車，建議搭火車或走舊蘇花，但需注意落石。')">⚠️ 路況諮詢</button>
+                    <button class="action-btn" onclick="quickAsk('上坡騎不動怎麼辦？變速技巧教學')">⚙️ 變速技巧</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="input-wrapper">
+        <div class="input-container">
+            <input type="text" id="user-input" placeholder="輸入您的單車問題 (例如：逆時針環島建議...)"
+                onkeypress="if(event.key==='Enter')sendMessage()">
+            <button class="send-btn" onclick="sendMessage()">
+                發送
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+            </button>
         </div>
     </div>
-    <div class="iw">
-        <div class="ibc">
-            <input type="text" id="ui" placeholder="輸入您的單車需求..." onkeypress="if(event.keyCode===13)_sm()">
-            <button onclick="_sm()">發送</button>
-        </div>
-    </div>
+
     <script>
-        (function () {
-            if (typeof _SECURITY_CORE === 'undefined') return;
-            const _k = _SECURITY_CORE.getKey();
-            let _am = null;
+        const chatContainer = document.getElementById('chat-container');
+        const userInput = document.getElementById('user-input');
+        let modelName = null;
 
-            window._sm = async () => {
-                const i = document.getElementById('ui');
-                const t = i.value.trim();
-                if (!t) return;
-                i.value = '';
-                document.getElementById('ca').innerHTML = '正在分析您的行程...';
+        const SYSTEM_PROMPT = `你是一位名為 'Road Master' 的台灣單車環島專家。
+你的任務是僅針對『台灣單車環島、單車旅行、單車維修、路線規劃、補給建議、台灣單車賽事』等相關問題提供專業回答。
 
-                try {
-                    // 自動探測
-                    if (!_am) {
-                        const pr = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${_k}`);
-                        const pd = await pr.json();
-                        _am = pd.models.find(m => m.supportedGenerationMethods.includes('generateContent'))?.name || "models/gemini-pro";
-                    }
+【核心規則】：
+1. 如果使用者問的問題與單車、單車旅行、環島無關，請禮貌地拒絕。例如：「抱歉，我專精於單車旅行規劃，暫時無法回答非單車相關的問題喔！要不要聊聊您的下一個騎行目標？」
+2. 規劃行程時要極度詳細但視覺化。多用表格、粗體、清單、Emoji。
+3. 語氣要熱情、專業、充滿熱血騎行者的感覺。
 
-                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/${_am}:generateContent?key=${_k}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ contents: [{ parts: [{ text: t }] }] })
-                    });
-                    const d = await res.json();
-                    document.getElementById('ca').innerHTML = marked.parse(d.candidates[0].content.parts[0].text);
-                } catch (e) {
-                    document.getElementById('ca').innerHTML = '❌ 錯誤：' + e.message;
+【回答格式建議】：
+- 使用 ### 標題區分章節。
+- 行程建議使用 Markdown 表格整理。
+- 裝備或注意清單使用 - [ ] 或 - 清單。
+- 加入「專家悄悄話」或「💡 獨家建議」區塊。`;
+
+        function appendMessage(role, content) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${role}`;
+
+            if (role === 'ai') {
+                msgDiv.innerHTML = `<div class="ai-card">${marked.parse(content)}</div>`;
+            } else {
+                msgDiv.textContent = content;
+            }
+
+            chatContainer.appendChild(msgDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            return msgDiv;
+        }
+
+        function showLoading() {
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'message ai';
+            loadingDiv.id = 'temp-loading';
+            loadingDiv.innerHTML = `
+                <div class="ai-card">
+                    <div class="typing-indicator">
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
+                </div>
+            `;
+            chatContainer.appendChild(loadingDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function quickAsk(text) {
+            userInput.value = text;
+            sendMessage();
+        }
+
+        async function sendMessage() {
+            const text = userInput.value.trim();
+            if (!text) return;
+
+            // Clear input
+            userInput.value = '';
+            appendMessage('user', text);
+            showLoading();
+
+            try {
+                if (typeof _GHOST_SHIELD === 'undefined') throw new Error("Security Core Missing");
+                const apiKey = _GHOST_SHIELD.unlock();
+
+                if (!modelName) {
+                    const modelRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+                    const modelData = await modelRes.json();
+                    modelName = modelData.models.find(m => m.supportedGenerationMethods.includes('generateContent'))?.name || "models/gemini-pro";
                 }
-            };
-        })();
+
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/${modelName}:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [
+                            { role: "user", parts: [{ text: SYSTEM_PROMPT + "\n\n現在開始對話，使用者的問題是：" + text }] }
+                        ],
+                        generationConfig: {
+                            temperature: 0.7,
+                            topK: 40,
+                            topP: 0.95,
+                            maxOutputTokens: 2048,
+                        }
+                    })
+                });
+
+                const data = await response.json();
+                document.getElementById('temp-loading').remove();
+
+                if (data.candidates && data.candidates[0].content.parts[0].text) {
+                    appendMessage('ai', data.candidates[0].content.parts[0].text);
+                } else {
+                    throw new Error("無法生成內容");
+                }
+
+            } catch (error) {
+                console.error(error);
+                if (document.getElementById('temp-loading')) document.getElementById('temp-loading').remove();
+                appendMessage('ai', "❌ 抱歉，Road Master 暫時斷線了。錯誤訊息：" + error.message);
+            }
+        }
     </script>
 </body>
 
