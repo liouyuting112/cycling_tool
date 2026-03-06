@@ -59,22 +59,19 @@
             letter-spacing: 0.5px;
         }
 
-        /* Main Chat Area - Centered and Max Width */
+        /* Main Chat Area */
         main {
             flex: 1;
             overflow-y: auto;
-            padding: 2rem 1.5rem 180px;
-            /* 大幅增加底部空間以防被 Dock 擋住 */
+            padding: 2rem 1.5rem 220px;
+            /* 增加底部墊高，確保對話能完全浮出 Dock 以上 */
             scroll-behavior: smooth;
-            display: flex;
-            justify-content: center;
-            /* Center the chat thread */
         }
 
         #chat-thread {
-            width: 100%;
             max-width: 800px;
-            /* limits width so text is readable */
+            /* 限制閱讀寬度，黃金比例 */
+            margin: 0 auto;
             display: flex;
             flex-direction: column;
             gap: 2rem;
@@ -85,6 +82,7 @@
             display: flex;
             flex-direction: column;
             animation: fadeIn 0.3s ease-out;
+            width: 100%;
         }
 
         .msg.user {
@@ -96,11 +94,11 @@
         }
 
         .bubble {
-            max-width: 100%;
-            padding: 1.5rem;
+            max-width: 90%;
+            padding: 1.25rem;
             border-radius: 16px;
-            line-height: 1.7;
-            font-size: 1rem;
+            line-height: 1.6;
+            font-size: 0.95rem;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
         }
 
@@ -117,234 +115,112 @@
             border-bottom-left-radius: 4px;
             backdrop-filter: blur(10px);
             color: var(--t);
+            width: 100%;
         }
 
-        /* Rich content styling inside AI bubble */
-        .bubble h3 {
-            color: var(--p-light);
-            margin: 1.5rem 0 1rem;
-            font-size: 1.2rem;
-        }
-
-        .bubble h3:first-child {
-            margin-top: 0;
-        }
-
-        .bubble p {
-            margin-bottom: 1rem;
-        }
-
-        .bubble p:last-child {
-            margin-bottom: 0;
-        }
-
-        .bubble strong {
-            color: #fff;
-            font-weight: 700;
-            background: rgba(249, 115, 22, 0.2);
-            padding: 0 4px;
-            border-radius: 4px;
-        }
-
-        .bubble ul,
-        .bubble ol {
-            margin: 1rem 0;
-            padding-left: 1.5rem;
-        }
-
-        .bubble li {
-            margin-bottom: 0.5rem;
-        }
-
-        /* Premium Table */
+        /* Rich content styling */
         .bubble table {
             width: 100%;
             border-collapse: collapse;
-            margin: 1.5rem 0;
-            font-size: 0.95rem;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 12px;
-            overflow: hidden;
+            margin: 1rem 0;
+            font-size: 0.85rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            overflow-x: auto;
+            display: block;
         }
 
         .bubble th {
             background: rgba(255, 255, 255, 0.05);
             color: var(--p-light);
-            padding: 12px;
+            padding: 10px;
             text-align: left;
             border-bottom: 1px solid var(--border);
+            white-space: nowrap;
         }
 
         .bubble td {
-            padding: 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+            padding: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            min-width: 80px;
         }
 
-        .bubble tr:last-child td {
-            border-bottom: none;
+        .bubble p {
+            margin-bottom: 0.8rem;
         }
 
-        .bubble tr:nth-child(even) td {
-            background: rgba(255, 255, 255, 0.01);
+        .bubble strong {
+            color: var(--p-light);
+            font-weight: 700;
+            background: rgba(249, 115, 22, 0.1);
+            padding: 0 4px;
+            border-radius: 4px;
         }
 
-        /* --- ✨ 新增：自動將文字清單轉化為精美卡片模組 ✨ --- */
-        /* 裝備清單 - 網格卡片 */
+        /* --- 視覺化卡片元件 --- */
         .tab-pane.equipment-grid ul {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 1rem;
-            padding-left: 0;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+            padding: 0;
             list-style: none;
         }
 
         .tab-pane.equipment-grid li {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1.2rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            margin-bottom: 0;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            padding: 1rem;
+            font-size: 0.85rem;
         }
 
         .tab-pane.equipment-grid li strong {
-            color: var(--p-light);
-            font-size: 1.1rem;
-            background: transparent;
+            display: block;
+            font-size: 1rem;
+            margin-bottom: 4px;
+            color: var(--p);
+            background: none;
             padding: 0;
         }
 
-        /* 實戰守則 - 強調型卡片 */
         .tab-pane.notes-grid ul {
             list-style: none;
             padding: 0;
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: 10px;
         }
 
         .tab-pane.notes-grid li {
             background: rgba(249, 115, 22, 0.05);
-            border-left: 4px solid var(--p);
-            padding: 1rem 1.5rem;
-            border-radius: 0 8px 8px 0;
-            margin-bottom: 0;
-        }
-
-        .tab-pane.notes-grid li strong {
-            color: var(--p);
-            background: transparent;
-            padding: 0;
-            font-size: 1.05rem;
-            display: block;
-            margin-bottom: 0.3rem;
-        }
-
-        /* ----------------------------------------------------- */
-
-        /* Form Card */
-        .plan-card {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--border);
-            padding: 1.5rem;
-            border-radius: 12px;
-            margin-top: 1rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .form-row {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .form-label {
+            border-left: 3px solid var(--p);
+            padding: 10px 15px;
+            border-radius: 0 6px 6px 0;
             font-size: 0.85rem;
-            font-weight: 700;
-            color: var(--p-light);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
         }
 
-        .quick-chips {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
+        /* ----------------------- */
 
-        .chip {
-            background: #334155;
-            color: #cbd5e1;
-            padding: 4px 12px;
-            border-radius: 50px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: 0.2s;
-            border: 1px solid transparent;
-        }
-
-        .chip:hover {
-            background: var(--p);
-            color: #fff;
-        }
-
-        .form-input {
-            background: #0f172a;
-            border: 1px solid #334155;
-            color: #fff;
-            padding: 12px 16px;
-            border-radius: 8px;
-            font-size: 1rem;
-            outline: none;
-            transition: 0.2s;
-        }
-
-        .form-input:focus {
-            border-color: var(--p);
-        }
-
-        .btn-primary {
-            background: var(--p);
-            color: #fff;
-            border: none;
-            padding: 14px;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: 0.2s;
-            text-align: center;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-primary:hover {
-            background: #ea580c;
-            transform: translateY(-2px);
-        }
-
-        /* Tab Widget Styling */
+        /* Tab System Fixes */
         .tabs-container {
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.3);
             border: 1px solid var(--border);
             border-radius: 12px;
             overflow: hidden;
             margin-top: 1rem;
+            width: 100%;
         }
 
         .tabs-nav {
             display: flex;
-            background: rgba(0, 0, 0, 0.4);
+            background: rgba(0, 0, 0, 0.5);
             border-bottom: 1px solid var(--border);
             overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .tabs-nav::-webkit-scrollbar {
+            display: none;
         }
 
         .tab-btn {
@@ -352,18 +228,13 @@
             background: transparent;
             color: var(--m);
             border: none;
-            padding: 12px 16px;
-            font-size: 0.95rem;
-            font-weight: 600;
+            padding: 12px 10px;
+            font-size: 0.85rem;
+            font-weight: 700;
             cursor: pointer;
-            transition: 0.2s;
             white-space: nowrap;
             border-bottom: 2px solid transparent;
-        }
-
-        .tab-btn:hover {
-            color: #fff;
-            background: rgba(255, 255, 255, 0.05);
+            min-width: 100px;
         }
 
         .tab-btn.active {
@@ -374,40 +245,103 @@
 
         .tab-pane {
             display: none;
-            padding: 1.5rem;
-            animation: fadeIn 0.3s;
+            padding: 1.25rem;
+            animation: fadeIn 0.2s;
         }
 
         .tab-pane.active {
             display: block;
         }
 
-        /* Input Dock */
+        /* Form Card */
+        .plan-card {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border);
+            padding: 1.2rem;
+            border-radius: 12px;
+            margin-top: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .form-row {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--p-light);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .quick-chips {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .chip {
+            background: #334155;
+            color: #cbd5e1;
+            padding: 3px 10px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+
+        .form-input {
+            background: #0f172a;
+            border: 1px solid #334155;
+            color: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .btn-primary {
+            background: var(--p);
+            color: #fff;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        /* Input Dock Panel */
         .dock {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            padding: 1rem 1.5rem 1.5rem;
-            background: linear-gradient(transparent, var(--bg) 80%);
-            display: flex;
-            justify-content: center;
+            padding: 1.5rem;
+            background: linear-gradient(transparent, var(--bg) 60%);
+            /* 降低漸層透明度覆蓋範圍 */
+            z-index: 20;
             pointer-events: none;
-            /* 穿透點擊，讓捲動條順利運作 */
         }
 
         .dock-bar {
-            pointer-events: auto;
-            /* 恢復輸入框的點擊 */
             width: 100%;
             max-width: 800px;
-            background: var(--c);
+            margin: 0 auto;
+            background: #1e293b;
             border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 6px;
+            border-radius: 16px;
+            padding: 5px;
             display: flex;
             align-items: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            pointer-events: auto;
         }
 
         .dock-input {
@@ -415,7 +349,7 @@
             background: transparent;
             border: none;
             color: #fff;
-            padding: 10px 16px;
+            padding: 10px 15px;
             font-size: 1rem;
             outline: none;
         }
@@ -424,38 +358,33 @@
             background: var(--p);
             color: #fff;
             border: none;
-            padding: 0 20px;
-            height: 40px;
-            border-radius: 14px;
-            font-weight: 600;
+            padding: 0 15px;
+            height: 38px;
+            border-radius: 12px;
+            font-weight: 700;
             cursor: pointer;
-            transition: 0.2s;
         }
 
-        .dock-btn:hover {
-            background: #ea580c;
-        }
-
-        /* Loader */
-        .typing-dots {
+        /* Typing Dots */
+        .typing {
             display: flex;
-            gap: 5px;
-            padding: 10px 5px;
+            gap: 4px;
+            padding: 5px;
         }
 
         .dot {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
             background: var(--p);
             border-radius: 50%;
             animation: bounce 1.4s infinite ease-in-out both;
         }
 
-        .dot:nth-child(1) {
+        .dot:nth-child(2) {
             animation-delay: -0.32s;
         }
 
-        .dot:nth-child(2) {
+        .dot:nth-child(3) {
             animation-delay: -0.16s;
         }
 
@@ -483,17 +412,6 @@
                 transform: translateY(0);
             }
         }
-
-        /* Hide Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #334155;
-            border-radius: 10px;
-        }
     </style>
 </head>
 
@@ -501,70 +419,47 @@
 
     <header>
         <div class="logo">ROAD MASTER</div>
-        <div style="font-size:0.85rem; color:var(--m); font-weight:600;">AI 單車管家</div>
+        <div style="font-size:0.8rem; color:var(--m); font-weight:600;">AI 單車管家</div>
     </header>
 
     <main id="chat-scroller">
         <div id="chat-thread">
-            <!-- AI Welcome Bubble with Form -->
             <div class="msg ai">
                 <div class="bubble">
-                    <p>👋 您好！我是 Road Master，專門處理單車行程規劃與疑難雜症。</p>
-                    <p style="color:var(--m); font-size:0.9rem;">直接填寫下方表單以產生專屬「智慧行程分類卡」，或在底部對話框問我任何裝備、路況問題。</p>
-
+                    <p>🚵 您好！準備好單車冒險了嗎？</p>
+                    <p style="color:var(--m); font-size:0.85rem;">使用下方表單可快速產生分類行程，或直接問我裝備、維修、路況問題。</p>
                     <div class="plan-card">
                         <div class="form-row">
-                            <div class="form-label">
-                                <span>📍 出發點</span>
-                                <div class="quick-chips">
-                                    <span class="chip" onclick="iv('start','台北火車站')">台北</span>
-                                    <span class="chip" onclick="iv('start','新竹高鐵站')">新竹</span>
-                                    <span class="chip" onclick="iv('start','台中朝馬')">台中</span>
-                                </div>
+                            <div class="form-label"><span>📍 起點</span>
+                                <div class="quick-chips"><span class="chip" onclick="iv('start','台北')">台北</span><span
+                                        class="chip" onclick="iv('start','台南')">台南</span></div>
                             </div>
-                            <input type="text" id="start" class="form-input" placeholder="輸入出發地點">
+                            <input type="text" id="start" class="form-input" placeholder="起點">
                         </div>
                         <div class="form-row">
-                            <div class="form-label">
-                                <span>🏁 目的地</span>
-                                <div class="quick-chips">
-                                    <span class="chip" onclick="iv('end','花蓮太魯閣')">太魯閣</span>
-                                    <span class="chip" onclick="iv('end','恆春古城')">恆春</span>
-                                    <span class="chip" onclick="iv('end','大環島一圈')">環島</span>
-                                </div>
+                            <div class="form-label"><span>🏁 終點</span>
+                                <div class="quick-chips"><span class="chip" onclick="iv('end','恆春')">恆春</span><span
+                                        class="chip" onclick="iv('end','環島')">環島</span></div>
                             </div>
-                            <input type="text" id="end" class="form-input" placeholder="輸入目的地">
+                            <input type="text" id="end" class="form-input" placeholder="終點">
                         </div>
                         <div class="form-row">
-                            <div class="form-label">
-                                <span>⏱️ 騎乘天數</span>
-                                <div class="quick-chips">
-                                    <span class="chip" onclick="iv('days','1天')">1天</span>
-                                    <span class="chip" onclick="iv('days','3天')">3天</span>
-                                    <span class="chip" onclick="iv('days','9天')">9天</span>
-                                </div>
+                            <div class="form-label"><span>⏱️ 天數</span>
+                                <div class="quick-chips"><span class="chip" onclick="iv('days','3天')">3天</span><span
+                                        class="chip" onclick="iv('days','9天')">9天</span></div>
                             </div>
-                            <input type="text" id="days" class="form-input" placeholder="預計使用天數">
+                            <input type="text" id="days" class="form-input" placeholder="天數">
                         </div>
-                        <button class="btn-primary" onclick="submitForm()">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-                            </svg>
-                            產出行程分析報表
-                        </button>
+                        <button class="btn-primary" onclick="submitForm()">產出智慧行程報表</button>
                     </div>
                 </div>
             </div>
-
-            <!-- Dynamic Messages will be injected here -->
         </div>
     </main>
 
-    <!-- Bottom Chat Input -->
     <div class="dock">
         <div class="dock-bar">
-            <input type="text" id="chat-input" class="dock-input" placeholder="或者您可以直接在這裡問我問題 (例: 蘇花公路怎麼騎?)"
+            <input type="text" id="chat-input" class="dock-input" placeholder="問問路況或裝備..."
                 onkeypress="if(event.key==='Enter')submitChat()">
             <button class="dock-btn" onclick="submitChat()">傳送</button>
         </div>
@@ -576,167 +471,107 @@
         const thread = document.getElementById('chat-thread');
         const input = document.getElementById('chat-input');
 
-        // System prompt forces AI to use EXACT headings so we can parse them into tabs
-        const SYSTEM_PROMPT = `你是高階單車規劃教練。
-使用者需要豐富的資訊，但討厭文字冗長難讀，所以你**必須以結構化的方式產出**，嚴禁長篇大論。
+        const SYSTEM_PROMPT = `你是單車專家。請嚴格遵守以下格式：
+如果是給「行程規劃」，必須包含 ### 📅 路線排程, ### 🎒 裝備清單, ### ⚠️ 實戰守則。
+每個標題後必須換行。每個清單項必須使用「- **名稱**：描述」。
+文字要精簡，避免廢話語助詞。`;
 
-【強制輸出規範】：
-如果是規劃行程，你必須嚴格輸出以下三個標題，不要多也不要少：
-### 📅 路線排程
-(在此用 Markdown 表格詳細列出每天的 路線、公里數、爬升、詳細重點說明，表格一定要清晰)
-### 🎒 裝備清單
-(必須使用「- **裝備名稱**：重點說明」的清單格式，列出必備裝備)
-### ⚠️ 實戰守則
-(必須使用「- **守則名稱**：重點說明」的清單格式，寫出針對此路線該注意的天氣、交通、體能建議)
-
-如果是普通問答，直接使用 Markdown 表格或條列式結構化回答，絕對不要給出一整坨文字。`;
-
-        function iv(id, val) {
-            document.getElementById(id).value = val;
-        }
+        function iv(id, v) { document.getElementById(id).value = v; }
 
         function scrollBottom() {
-            requestAnimationFrame(() => {
-                scroller.scrollTo({ top: scroller.scrollHeight, behavior: 'smooth' });
-            });
+            // 使用 setTimeout 確保內容已完全渲染後才滾動
+            setTimeout(() => {
+                scroller.scrollTo({ top: scroller.scrollHeight + 500, behavior: 'smooth' });
+            }, 100);
         }
 
-        function addMessage(role, htmlContent) {
-            const msg = document.createElement('div');
-            msg.className = `msg ${role}`;
-            msg.innerHTML = `<div class="bubble">${htmlContent}</div>`;
-            thread.appendChild(msg);
+        function addMessage(role, content, raw = false) {
+            const m = document.createElement('div');
+            m.className = `msg ${role}`;
+            m.innerHTML = `<div class="bubble">${raw ? content : marked.parse(content)}</div>`;
+            thread.appendChild(m);
             scrollBottom();
-            return msg;
+            return m;
         }
 
-        function showLoader() {
-            const id = 'loader-' + Date.now();
-            const msg = document.createElement('div');
-            msg.id = id;
-            msg.className = `msg ai`;
-            msg.innerHTML = `<div class="bubble" style="padding: 10px 15px;"><div class="typing-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>`;
-            thread.appendChild(msg);
-            scrollBottom();
-            return id;
-        }
+        // 重寫 Tab 渲染邏輯，修正 \n 與分段問題
+        function renderTabs(rawText) {
+            // 解決不同平台換行符號問題，先統一轉為 \n
+            const text = rawText.replace(/\r\n/g, '\n');
+            const sections = text.split(/### /);
 
-        function removeLoader(id) {
-            const el = document.getElementById(id);
-            if (el) el.remove();
-        }
+            if (sections.length <= 1) return marked.parse(text);
 
-        // Function to parse markdown and convert H3 sections into interactive tabs with specific module classes
-        function renderTabbedContent(markdownText) {
-            // Look for occurrences of "### "
-            const parts = markdownText.split(/(?=### )/);
+            let tabsNav = `<div class="tabs-container"><div class="tabs-nav">`;
+            let tabsContent = `</div><div class="tabs-content">`;
+            let count = 0;
 
-            if (parts.length <= 1) {
-                // No sections found, return regular parsed markdown
-                return marked.parse(markdownText);
-            }
+            sections.forEach(sec => {
+                if (!sec.trim()) return;
 
-            let tabsHtml = `<div class="tabs-container"><div class="tabs-nav">`;
-            let contentHtml = `</div><div class="tabs-content">`;
+                // 找到第一行作為標題
+                const lines = sec.split('\n');
+                const title = lines[0].trim();
+                const body = lines.slice(1).join('\n').trim();
 
-            let validTabs = 0;
+                const active = count === 0 ? 'active' : '';
+                let typeClass = '';
+                if (title.includes('裝備')) typeClass = 'equipment-grid';
+                if (title.includes('守則') || title.includes('注意')) typeClass = 'notes-grid';
 
-            parts.forEach((part, index) => {
-                if (part.trim() === '') return;
-
-                let titleLine = '';
-                let body = part;
-
-                if (part.startsWith('### ')) {
-                    const nlIndex = part.indexOf('\\n');
-                    if (nlIndex !== -1) {
-                        titleLine = part.substring(4, nlIndex).trim();
-                        body = part.substring(nlIndex + 1);
-                    } else {
-                        titleLine = part.substring(4).trim();
-                        body = '';
-                    }
-                } else {
-                    titleLine = "綜合說明";
-                }
-
-                const activeClass = validTabs === 0 ? 'active' : '';
-
-                // 根據標題注入對應的特殊排版 CSS Class
-                let tabClass = '';
-                if (titleLine.includes('裝備')) tabClass = 'equipment-grid';
-                if (titleLine.includes('實戰') || titleLine.includes('守則') || titleLine.includes('注意')) tabClass = 'notes-grid';
-
-                tabsHtml += `<button class="tab-btn ${activeClass}" onclick="switchTab(this, ${validTabs})">${marked.parseInline(titleLine)}</button>`;
-                contentHtml += `<div class="tab-pane ${activeClass} ${tabClass}" data-index="${validTabs}">${marked.parse(body)}</div>`;
-                validTabs++;
+                tabsNav += `<button class="tab-btn ${active}" onclick="switchTab(this, ${count})">${title}</button>`;
+                tabsContent += `<div class="tab-pane ${active} ${typeClass}" data-index="${count}">${marked.parse(body)}</div>`;
+                count++;
             });
 
-            contentHtml += `</div></div>`;
-            return validTabs > 0 ? (tabsHtml + contentHtml) : marked.parse(markdownText);
+            return tabsNav + tabsContent + `</div></div>`;
         }
 
-        window.switchTab = function (btn, index) {
-            const container = btn.closest('.tabs-container');
-            container.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        window.switchTab = function (btn, idx) {
+            const con = btn.closest('.tabs-container');
+            con.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            container.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-            container.querySelector(`.tab-pane[data-index="${index}"]`).classList.add('active');
+            con.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+            con.querySelector(`.tab-pane[data-index="${idx}"]`).classList.add('active');
         };
 
         async function submitForm() {
             const s = document.getElementById('start').value;
             const e = document.getElementById('end').value;
             const d = document.getElementById('days').value;
-            if (!s || !e || !d) {
-                alert("麻煩填寫一下出發點、目的地與天數喔！");
-                return;
-            }
-
-            const query = `幫我規劃單車行程。起點：${s}，終點：${e}，預計天數：${d}。`;
-            addMessage('user', `📍 從 **${s}** 出發，騎到 **${e}**，預計花 **${d}** 完成。請幫我出報告。`);
-            await requestAI(query);
+            if (!s || !e || !d) return alert("請填好規劃條件喔！");
+            addMessage('user', `📍 從 ${s} 到 ${e}，騎乘 ${d} 天，請給我專業建議。`);
+            await callAI(`規劃：${s} 到 ${e}，${d}天。`);
         }
 
         async function submitChat() {
-            const txt = input.value.trim();
-            if (!txt) return;
+            const v = input.value.trim();
+            if (!v) return;
             input.value = '';
-            addMessage('user', txt);
-            await requestAI(txt);
+            addMessage('user', v);
+            await callAI(v);
         }
 
-        async function requestAI(promptText) {
-            const loaderId = showLoader();
+        async function callAI(q) {
+            const loader = document.createElement('div');
+            loader.className = 'msg ai';
+            loader.innerHTML = `<div class="bubble"><div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>`;
+            thread.appendChild(loader);
+            scrollBottom();
 
             try {
                 const res = await fetch(CF_GATEWAY, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{
-                            parts: [{
-                                text: SYSTEM_PROMPT + "\\n\\n使用者：" + promptText
-                            }]
-                        }]
-                    })
+                    body: JSON.stringify({ contents: [{ parts: [{ text: SYSTEM_PROMPT + "\n需求：" + q }] }] })
                 });
-
-                if (!res.ok) throw new Error("API 連線失敗");
                 const data = await res.json();
-                removeLoader(loaderId);
-
-                const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-                if (!rawText) throw new Error("無效內容");
-
-                // Use our custom tab parser
-                const htmlContent = renderTabbedContent(rawText);
-                addMessage('ai', htmlContent);
-
+                loader.remove();
+                const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "抱歉，連線失敗。";
+                addMessage('ai', renderTabs(reply), true);
             } catch (e) {
-                console.error(e);
-                removeLoader(loaderId);
-                addMessage('ai', `<span style="color:#ef4444">連線中斷：${e.message}。請檢查網路狀態。</span>`);
+                loader.remove();
+                addMessage('ai', "連線錯誤，請檢查網路。");
             }
         }
     </script>
