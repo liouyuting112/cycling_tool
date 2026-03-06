@@ -17,8 +17,8 @@
             --c: #1e293b;
             --t: #f1f5f9;
             --m: #94a3b8;
-            --border: rgba(255, 255, 255, 0.08);
-            --glass: rgba(30, 41, 59, 0.7);
+            --border: rgba(255, 255, 255, 0.1);
+            --glass: rgba(15, 23, 42, 0.8);
         }
 
         * {
@@ -26,6 +26,7 @@
             margin: 0;
             padding: 0;
             font-family: 'Inter', 'Noto Sans TC', sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -36,52 +37,51 @@
             flex-direction: column;
             overflow: hidden;
             background-image:
-                radial-gradient(circle at 0% 0%, rgba(249, 115, 22, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 0% 0%, rgba(249, 115, 22, 0.1) 0%, transparent 40%),
                 radial-gradient(circle at 100% 100%, rgba(56, 189, 248, 0.05) 0%, transparent 40%);
         }
 
-        /* Header */
+        /* Responsive Header */
         header {
-            padding: 1rem 1.5rem;
+            padding: 0.8rem 1.2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(3, 7, 18, 0.8);
-            backdrop-filter: blur(10px);
+            background: rgba(3, 7, 18, 0.9);
+            backdrop-filter: blur(15px);
             border-bottom: 1px solid var(--border);
             z-index: 100;
         }
 
         .logo {
             font-weight: 900;
-            font-size: 1.25rem;
+            font-size: 1.1rem;
             color: var(--p);
             letter-spacing: 0.5px;
         }
 
-        /* Main Chat Area */
+        /* Main Area */
         main {
             flex: 1;
             overflow-y: auto;
-            padding: 2rem 1.5rem 240px;
+            padding: 1.5rem 1rem 300px;
             scroll-behavior: smooth;
         }
 
         #chat-thread {
-            max-width: 900px;
-            /* 增加寬度以顯示更多表格內容 */
+            max-width: 850px;
             margin: 0 auto;
             display: flex;
             flex-direction: column;
-            gap: 2.5rem;
+            gap: 2rem;
             width: 100%;
         }
 
-        /* Message Bubbles - 強化 OCD 對齊 */
+        /* Message Bubbles */
         .msg {
             display: flex;
             flex-direction: column;
-            animation: fadeIn 0.3s ease-out;
+            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             width: 100%;
         }
 
@@ -93,17 +93,13 @@
             align-items: center;
         }
 
-        /* 強制 AI 報表置中對齊 */
-
         .bubble {
-            max-width: 100%;
-            padding: 1.5rem;
+            padding: 1.2rem;
             border-radius: 20px;
-            line-height: 1.7;
-            font-size: 1rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            line-height: 1.6;
+            font-size: 0.95rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
             width: 100%;
-            position: relative;
         }
 
         .msg.user .bubble {
@@ -112,104 +108,142 @@
             color: #fff;
             border-bottom-right-radius: 4px;
             font-weight: 600;
-            padding: 1rem 1.5rem;
-            box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
+            box-shadow: 0 4px 20px rgba(249, 115, 22, 0.3);
         }
 
         .msg.ai .bubble {
             background: var(--glass);
             border: 1px solid var(--border);
             border-bottom-left-radius: 4px;
-            backdrop-filter: blur(15px);
             color: var(--t);
         }
 
-        /* 表格排版高度優化 */
-        .bubble table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1.5rem 0;
-            font-size: 0.9rem;
-            background: rgba(0, 0, 0, 0.4);
-            border-radius: 12px;
-            overflow: hidden;
+        /* --- ✨ 旗艦級 Timeline 視覺模體 ✨ --- */
+        .timeline-card {
+            background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--border);
+            border-radius: 16px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: 0.3s;
         }
 
-        .bubble th {
-            background: rgba(249, 115, 22, 0.2);
+        .timeline-card:hover {
+            border-color: var(--p);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .day-header {
+            background: rgba(249, 115, 22, 0.15);
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            font-weight: 900;
             color: var(--p-light);
-            padding: 15px 12px;
-            text-align: left;
-            font-weight: 800;
-            border-bottom: 2px solid var(--p);
+            font-size: 1.1rem;
         }
 
-        .bubble td {
-            padding: 15px 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            vertical-align: top;
+        .day-route {
+            padding: 15px 16px;
+            font-weight: 700;
+            color: #fff;
+            border-bottom: 1px dashed var(--border);
+        }
+
+        .day-stats {
+            display: flex;
+            gap: 15px;
+            padding: 10px 16px;
+            background: rgba(0, 0, 0, 0.2);
+            font-size: 0.85rem;
+            color: var(--m);
+            font-weight: 600;
+        }
+
+        .day-body {
+            padding: 15px 16px;
+            display: grid;
+            gap: 15px;
+            grid-template-columns: 1fr;
+        }
+
+        @media(min-width: 600px) {
+            .day-body {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .info-section {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .info-label {
+            font-size: 0.75rem;
+            color: var(--p);
+            font-weight: 900;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .info-label::before {
+            content: "";
+            width: 4px;
+            height: 12px;
+            background: var(--p);
+            border-radius: 2px;
+        }
+
+        .info-text {
+            font-size: 0.9rem;
             color: #cbd5e1;
+            line-height: 1.5;
         }
 
-        .bubble tr:last-child td {
-            border-bottom: none;
-        }
-
-        .bubble tr:hover {
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        .bubble strong {
-            color: var(--p-light);
-            font-weight: 800;
-            background: rgba(249, 115, 22, 0.1);
-            padding: 0 4px;
-            border-radius: 4px;
-        }
-
-        /* 卡片網格模組 - OCD 完美網格 */
+        /* Equipment Cards */
         .tab-pane.grid-layout ul {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
             padding: 0;
             list-style: none;
-            margin: 0;
+        }
+
+        @media(min-width: 600px) {
+            .tab-pane.grid-layout ul {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+                gap: 16px;
+            }
         }
 
         .tab-pane.grid-layout li {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.04);
             border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 1.5rem;
+            border-radius: 12px;
+            padding: 1rem;
             display: flex;
             flex-direction: column;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .tab-pane.grid-layout li:hover {
-            border-color: var(--p);
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+            gap: 8px;
         }
 
         .tab-pane.grid-layout li strong {
-            display: block;
-            font-size: 1.2rem;
-            margin-bottom: 10px;
             color: var(--p);
-            border-bottom: 2px solid rgba(249, 115, 22, 0.2);
-            padding-bottom: 8px;
-            background: none;
-            padding-left: 0;
+            display: block;
+            border-bottom: 1px solid rgba(249, 115, 22, 0.2);
+            padding-bottom: 4px;
         }
 
-        /* Tab System - 旗艦級設計 */
+        /* Tabs Navigation */
         .tabs-container {
-            background: rgba(15, 23, 42, 0.3);
+            border-radius: 16px;
             border: 1px solid var(--border);
-            border-radius: 18px;
             overflow: hidden;
             margin-top: 1rem;
             width: 100%;
@@ -217,10 +251,10 @@
 
         .tabs-nav {
             display: flex;
-            background: rgba(0, 0, 0, 0.7);
-            border-bottom: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.6);
             overflow-x: auto;
             scrollbar-width: none;
+            border-bottom: 1px solid var(--border);
         }
 
         .tabs-nav::-webkit-scrollbar {
@@ -229,28 +263,36 @@
 
         .tab-btn {
             flex: 1;
+            min-width: 100px;
+            padding: 14px 10px;
+            border: none;
             background: transparent;
             color: var(--m);
-            border: none;
-            padding: 18px 15px;
-            font-size: 1rem;
-            font-weight: 900;
+            font-weight: 800;
+            font-size: 0.9rem;
             cursor: pointer;
             white-space: nowrap;
-            border-bottom: 4px solid transparent;
-            min-width: 150px;
-            transition: all 0.3s;
+            transition: 0.2s;
+            border-bottom: 3px solid transparent;
+        }
+
+        @media(min-width: 600px) {
+            .tab-btn {
+                min-width: 150px;
+                padding: 16px 20px;
+                font-size: 1rem;
+            }
         }
 
         .tab-btn.active {
             color: var(--p);
             border-bottom-color: var(--p);
-            background: rgba(249, 115, 22, 0.1);
+            background: rgba(249, 115, 22, 0.05);
         }
 
         .tab-pane {
             display: none;
-            padding: 2rem;
+            padding: 1.2rem;
             animation: fadeIn 0.4s ease-out;
         }
 
@@ -260,96 +302,75 @@
 
         /* Form Card */
         .plan-card {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 1.75rem;
-            border-radius: 20px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            border-radius: 18px;
             margin-top: 1.5rem;
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
+            gap: 1.2rem;
         }
 
         .form-row {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
         }
 
         .form-label {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 800;
             color: var(--p-light);
             display: flex;
-            align-items: center;
             justify-content: space-between;
         }
 
         .quick-chips {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             flex-wrap: wrap;
         }
 
         .chip {
             background: #334155;
             color: #cbd5e1;
-            padding: 5px 14px;
+            padding: 4px 10px;
             border-radius: 50px;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             cursor: pointer;
-            transition: 0.2s;
-            border: 1px solid transparent;
-        }
-
-        .chip:hover {
-            background: var(--p);
-            color: #fff;
-            border-color: var(--p-light);
         }
 
         .form-input {
             background: #0f172a;
             border: 1px solid #334155;
             color: #fff;
-            padding: 14px;
-            border-radius: 12px;
-            font-size: 1rem;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 0.95rem;
             outline: none;
-            transition: 0.2s;
-        }
-
-        .form-input:focus {
-            border-color: var(--p);
-            box-shadow: 0 0 10px rgba(249, 115, 22, 0.2);
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--p), #f97316);
+            background: linear-gradient(135deg, var(--p), #ea580c);
             color: #fff;
             border: none;
-            padding: 16px;
-            border-radius: 14px;
+            padding: 15px;
+            border-radius: 12px;
             font-weight: 900;
-            font-size: 1.1rem;
+            font-size: 1rem;
             cursor: pointer;
-            transition: 0.3s;
-            box-shadow: 0 8px 20px rgba(249, 115, 22, 0.4);
+            box-shadow: 0 8px 25px rgba(249, 115, 22, 0.3);
         }
 
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 25px rgba(249, 115, 22, 0.6);
-        }
-
-        /* Input Panel */
+        /* Bottom Dock Panel */
         .dock {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            padding: 1.5rem 2rem 2.5rem;
-            background: linear-gradient(transparent, var(--bg) 50%);
+            padding: 1rem 1.2rem 2rem;
+            background: linear-gradient(transparent, var(--bg) 60%);
             z-index: 200;
             pointer-events: none;
         }
@@ -360,11 +381,11 @@
             margin: 0 auto;
             background: #1e293b;
             border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 24px;
-            padding: 8px 12px;
+            border-radius: 99px;
+            padding: 6px 6px 6px 18px;
             display: flex;
             align-items: center;
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.8);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
             pointer-events: auto;
         }
 
@@ -373,8 +394,8 @@
             background: transparent;
             border: none;
             color: white;
-            padding: 12px;
-            font-size: 1.05rem;
+            padding: 10px 0;
+            font-size: 1rem;
             outline: none;
         }
 
@@ -382,23 +403,17 @@
             background: var(--p);
             color: white;
             border: none;
-            padding: 0 24px;
-            height: 48px;
-            border-radius: 18px;
+            padding: 0 18px;
+            height: 42px;
+            border-radius: 99px;
             font-weight: 900;
             cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .dock-btn:hover {
-            background: #ea580c;
-            transform: scale(1.05);
         }
 
         @keyframes fadeIn {
             from {
                 opacity: 0;
-                transform: translateY(15px);
+                transform: translateY(10px);
             }
 
             to {
@@ -413,38 +428,40 @@
 
     <header>
         <div class="logo">ROAD MASTER</div>
-        <div style="font-size:0.85rem; color:var(--m); font-weight:700;">AI 進階單車護照</div>
+        <div style="font-size:0.75rem; color:var(--m); font-weight:800; text-transform:uppercase; letter-spacing:1px;">
+            App Elite Pro</div>
     </header>
 
     <main id="chat-scroller">
         <div id="chat-thread">
             <div class="msg ai">
                 <div class="bubble">
-                    <p>🚵 您好！準備好產出您的戰術級單車規劃報告了嗎？</p>
-                    <p style="color:var(--m); font-size:0.9rem;">請在下方表單輸入起訖點與天數，我將為您算繪高精細度的「動態地圖與行程卡片」。</p>
+                    <p style="font-weight:700; font-size:1.1rem; color:var(--p-light);">🚵 歡迎來到單車專業規劃領域</p>
+                    <p style="color:var(--m); font-size:0.9rem; margin-top:5px;">我是 Road Master
+                        教練，請填寫下方座標，我將為您算繪高動態的行程流。</p>
                     <div class="plan-card">
                         <div class="form-row">
-                            <div class="form-label"><span>📍 起點</span>
-                                <div class="quick-chips"><span class="chip" onclick="iv('start','台北火車站')">台北</span><span
-                                        class="chip" onclick="iv('start','新竹高鐵站')">新竹</span></div>
+                            <div class="form-label"><span>📍 出發點</span>
+                                <div class="quick-chips"><span class="chip" onclick="iv('start','台北')">台北</span><span
+                                        class="chip" onclick="iv('start','新竹')">新竹</span></div>
                             </div>
                             <input type="text" id="start" class="form-input" placeholder="例如：台北火車站">
                         </div>
                         <div class="form-row">
-                            <div class="form-label"><span>🏁 目的地</span>
-                                <div class="quick-chips"><span class="chip" onclick="iv('end','恆春古城')">恆春</span><span
-                                        class="chip" onclick="iv('end','環島一圈')">環島</span></div>
+                            <div class="form-label"><span>🏁 終點</span>
+                                <div class="quick-chips"><span class="chip" onclick="iv('end','恆春')">恆春</span><span
+                                        class="chip" onclick="iv('end','環島')">環島</span></div>
                             </div>
                             <input type="text" id="end" class="form-input" placeholder="例如：恆春古城">
                         </div>
                         <div class="form-row">
-                            <div class="form-label"><span>⏱️ 騎乘天數</span>
+                            <div class="form-label"><span>⏱️ 天數</span>
                                 <div class="quick-chips"><span class="chip" onclick="iv('days','3天')">3天</span><span
                                         class="chip" onclick="iv('days','9天')">9天</span></div>
                             </div>
-                            <input type="text" id="days" class="form-input" placeholder="預計騎乘天數">
+                            <input type="text" id="days" class="form-input" placeholder="預定天數">
                         </div>
-                        <button class="btn-primary" onclick="submitForm()">🚀 啟動高精細度規劃分析</button>
+                        <button class="btn-primary" onclick="submitForm()">🚀 產出高級戰術行程</button>
                     </div>
                 </div>
             </div>
@@ -453,7 +470,7 @@
 
     <div class="dock">
         <div class="dock-bar">
-            <input type="text" id="chat-input" class="dock-input" placeholder="詢問裝備重點、單車維修或特定路況..."
+            <input type="text" id="chat-input" class="dock-input" placeholder="詢問裝備或特定路況..."
                 onkeypress="if(event.key==='Enter')submitChat()">
             <button class="dock-btn" onclick="submitChat()">傳送</button>
         </div>
@@ -465,31 +482,29 @@
         const thread = document.getElementById('chat-thread');
         const input = document.getElementById('chat-input');
 
-        const SYSTEM_PROMPT = `你是資深單車顧問。嚴禁廢話前言或總結。
+        const SYSTEM_PROMPT = `你是核心單車專家。嚴禁廢話前言或結語。
 當收到規劃需求時，必須產出以下三個標題：
 
-### 📅 詳細路線與環境分析
-必須呈現為 Markdown 表格，表格欄位如下：
+### 📅 詳細路線與行程流
+必須產出 Markdown 表格，欄位嚴格如下：
 1. **天數**
-2. **路線路段** (明確的起訖地點)
-3. **數據** (公里數/預估爬升)
-4. **景點與活動** (請詳細說明該路段可以幹嘛、值得停留的風景、補給名店、特殊地標)
-5. **挑戰與提醒** (在此詳細標註：挑戰等級、是否陡坡、逆風區、路況注意事項、交通風險)
+2. **路線**
+3. **數據** (公里/爬升)
+4. **必看風景與補給**
+5. **路線挑戰與提醒**
 
-### 🎒 建議裝備清單
-(格式：- **裝備名稱**：功能說明與建議)
+### 🎒 戰術裝備建議
+(清單格式：- **裝備名**：精簡用途)
 
-### ⚠️ 核心實戰提醒
-(格式：- **重點標題**：具體分析與應對方案)
+### ⚠️ 實戰風險提示
+(清單格式：- **主題**：具體應對)
 
-如果是普通問答，保持專業精簡，並使用 Markdown 結構化。`;
+不准有表格之外的說明文字扣除標題。文字必須極簡化。`;
 
         function iv(id, v) { document.getElementById(id).value = v; }
 
         function scrollBottom() {
-            setTimeout(() => {
-                scroller.scrollTo({ top: scroller.scrollHeight + 500, behavior: 'smooth' });
-            }, 350);
+            setTimeout(() => { scroller.scrollTo({ top: scroller.scrollHeight + 300, behavior: 'smooth' }); }, 300);
         }
 
         function addMessage(role, content, raw = false) {
@@ -501,16 +516,46 @@
             return m;
         }
 
-        // 智能解析：過濾非標題贅詞，直接從第一個 ### 開始
+        // ✨ 高級 UI 轉換器：將 Markdown 表格轉化為 Timeline Cards ✨
+        function transformToTimeline(tableHtml) {
+            const div = document.createElement('div');
+            div.innerHTML = tableHtml;
+            const rows = Array.from(div.querySelectorAll('tr')).slice(1); // 捨棄標頭
+
+            if (rows.length === 0) return tableHtml;
+
+            let timelineHtml = `<div class="timeline-flow">`;
+            rows.forEach(row => {
+                const cols = Array.from(row.querySelectorAll('td')).map(td => td.innerText.trim());
+                if (cols.length < 5) return;
+
+                timelineHtml += `
+            <div class="timeline-card">
+                <div class="day-header"><span>DAY ${cols[0]}</span> <div style="font-size:0.7rem; color:var(--m);">ELITE ROUTE</div></div>
+                <div class="day-route">${cols[1]}</div>
+                <div class="day-stats"><span>📏 ${cols[2]}</span></div>
+                <div class="day-body">
+                    <div class="info-section">
+                        <div class="info-label">📍 風景與補給</div>
+                        <div class="info-text">${cols[3]}</div>
+                    </div>
+                    <div class="info-section">
+                        <div class="info-label">⚡ 挑戰與提醒</div>
+                        <div class="info-text">${cols[4]}</div>
+                    </div>
+                </div>
+            </div>`;
+            });
+            timelineHtml += `</div>`;
+            return timelineHtml;
+        }
+
         function renderTabs(rawContent) {
             const cleanText = rawContent.replace(/\\n/g, '\n');
-
-            // 分割內容，並確保只保留包含 ### 的部分
             const firstHeaderIndex = cleanText.indexOf('### ');
             if (firstHeaderIndex === -1) return marked.parse(cleanText);
 
-            const meaningfulContent = cleanText.substring(firstHeaderIndex);
-            const sections = meaningfulContent.split(/\n?(?=### )/);
+            const sections = cleanText.substring(firstHeaderIndex).split(/\n?(?=### )/);
 
             let tabsNav = `<div class="tabs-container"><div class="tabs-nav">`;
             let tabsContent = `</div><div class="tabs-content">`;
@@ -518,34 +563,28 @@
 
             sections.forEach(sec => {
                 const trimmed = sec.trim();
-                if (!trimmed) return;
+                if (!trimmed.startsWith('###')) return;
 
                 const firstLineEnd = trimmed.indexOf('\n');
-                let title = "分析說明";
-                let body = trimmed;
-
-                if (trimmed.startsWith('###')) {
-                    if (firstLineEnd !== -1) {
-                        title = trimmed.substring(0, firstLineEnd).replace(/###\s*/, '').trim();
-                        body = trimmed.substring(firstLineEnd).trim();
-                    } else {
-                        title = trimmed.replace(/###\s*/, '').trim();
-                        body = "";
-                    }
-                } else return; // 跳過非標題區塊
+                let title = trimmed.substring(0, firstLineEnd !== -1 ? firstLineEnd : trimmed.length).replace(/###\s*/, '').trim();
+                let body = firstLineEnd !== -1 ? trimmed.substring(firstLineEnd).trim() : "";
 
                 const active = count === 0 ? 'active' : '';
                 let layoutClass = '';
-                if (title.match(/裝備|清單|提示|提醒|守則/)) layoutClass = 'grid-layout';
+                if (title.match(/裝備|提示|提醒|守則/)) layoutClass = 'grid-layout';
+
+                let parsedBody = marked.parse(body);
+                // 如果是第一個分頁 (行程)，嘗試轉換表格為 Timeline
+                if (count === 0 && parsedBody.includes('<table')) {
+                    parsedBody = transformToTimeline(parsedBody);
+                }
 
                 tabsNav += `<button class="tab-btn ${active}" onclick="switchTab(this, ${count})">${title}</button>`;
-                tabsContent += `<div class="tab-pane ${active} ${layoutClass}" data-index="${count}">${marked.parse(body)}</div>`;
+                tabsContent += `<div class="tab-pane ${active} ${layoutClass}" data-index="${count}">${parsedBody}</div>`;
                 count++;
             });
 
-            if (count === 0) return marked.parse(cleanText);
-
-            return tabsNav + tabsContent + `</div></div>`;
+            return count === 0 ? marked.parse(cleanText) : (tabsNav + tabsContent + `</div></div>`);
         }
 
         window.switchTab = function (btn, idx) {
@@ -560,9 +599,9 @@
             const s = document.getElementById('start').value;
             const e = document.getElementById('end').value;
             const d = document.getElementById('days').value;
-            if (!s || !e || !d) return alert("請填寫起點、終點與預計天數！");
-            addMessage('user', `📍 從 **${s}** 出發，騎到 **${e}**，預計 **${d}** 完成。請產出戰術分析報告。`);
-            await callAI(`詳細規劃：${s} 到 ${e}，${d}。務必包含景點與坡度挑戰分析。`);
+            if (!s || !e || !d) return alert("請填寫完整規劃資訊。");
+            addMessage('user', `分析：從 **${s}** 騎到 **${e}**，完成天數 **${d}**。`);
+            await callAI(`詳細行程規劃：${s} 至 ${e}，${d}。內容應包含坡度與景點細節。`);
         }
 
         async function submitChat() {
@@ -584,15 +623,14 @@
                 const res = await fetch(CF_GATEWAY, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: SYSTEM_PROMPT + "\n\n目前需求：" + q }] }] })
+                    body: JSON.stringify({ contents: [{ parts: [{ text: SYSTEM_PROMPT + "\n需求：" + q }] }] })
                 });
                 const data = await res.json();
                 loader.remove();
-                const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "連線失敗。";
-                addMessage('ai', renderTabs(reply), true);
+                addMessage('ai', renderTabs(data.candidates?.[0]?.content?.parts?.[0]?.text || "無回應"), true);
             } catch (e) {
                 loader.remove();
-                addMessage('ai', "連線錯誤，請檢查網路。");
+                addMessage('ai', "連線錯誤，請再次嘗試。");
             }
         }
     </script>
