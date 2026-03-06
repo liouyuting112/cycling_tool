@@ -615,12 +615,14 @@
 (請以 Markdown 表格呈現，必須包含：天數、路線、距離/爬升、必看風景美食、路線風險)
 
 ### 🎒 戰術裝備建議
-請使用 Markdown 無序清單條列，格式嚴格如下(禁止添加冒號)：
-* **裝備名稱**說明具體用途。
+請嚴格使用以下格式產出清單，不准加冒號，不准換行，直接接說明：
+- **安全帽**保護頭部安全，必須符合規範。
+- **補胎工具**遇到破胎時能快速自救。
 
 ### ⚠️ 實戰風險提示
-請使用 Markdown 無序清單條列，格式嚴格如下(禁止添加冒號)：
-* **風險主題**說明具體情境與應對方案。`;
+請嚴格使用以下格式產出清單，不准加冒號，不准換行，直接接說明：
+- **高溫中暑**每日補充大量水分與電解質防範。
+- **逆風體力流失**採用低風阻騎姿並調整齒比。`;
 
         function iv(id, v) { document.getElementById(id).value = v; }
 
@@ -704,8 +706,15 @@
                 if (title.match(/裝備|清單|提示|提醒|守則|風險/)) layoutClass = 'grid-layout';
 
                 let parsedBody = marked.parse(body);
-                // 修復 AI 產生的異常換行與無用冒號，讓排版更乾淨
-                parsedBody = parsedBody.replace(/<\/strong>[\s:：\-<br/>]+/g, '</strong>');
+                // 終極淨化：徹底干掉 AI 愛亂加的換行、冒號、全形冒號與不必要的段落標籤
+                if (layoutClass === 'grid-layout') {
+                    parsedBody = parsedBody
+                        .replace(/<\/strong>[\s:：<br>]*\n*/gi, '</strong>') // 移除 strong 後面的冒號與空白換行
+                        .replace(/<\/strong>\s*<p>/gi, '</strong>') // 移除 strong 後被錯誤切割的 p 標籤
+                        .replace(/<\/strong><\/p>\s*<ul>/gi, '</strong><ul>')
+                        .replace(/<li><p>/gi, '<li>')
+                        .replace(/<\/p><\/li>/gi, '</li>');
+                }
 
                 if (count === 0 && parsedBody.includes('<table')) {
                     parsedBody = transformToTimeline(parsedBody);
