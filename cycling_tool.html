@@ -6,17 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Road Master | 單車智慧導航</title>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Noto+Sans+TC:wght@400;700;900&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap"
         rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         :root {
             --p: #f97316;
+            --p-light: #fdba74;
             --bg: #030712;
             --c: #1e293b;
             --t: #f1f5f9;
             --m: #94a3b8;
             --border: rgba(255, 255, 255, 0.08);
+            --glass: rgba(30, 41, 59, 0.7);
         }
 
         * {
@@ -28,12 +30,14 @@
 
         body {
             background: var(--bg);
-            background-image: radial-gradient(circle at top right, rgba(249, 115, 22, 0.05), transparent);
             color: var(--t);
             height: 100vh;
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            background-image:
+                radial-gradient(circle at 0% 0%, rgba(249, 115, 22, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(56, 189, 248, 0.05) 0%, transparent 40%);
         }
 
         /* Header */
@@ -50,186 +54,366 @@
 
         .logo {
             font-weight: 900;
-            font-size: 1.2rem;
+            font-size: 1.25rem;
             color: var(--p);
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
         }
 
-        /* Chat Area */
-        #chat-scroller {
+        /* Main Chat Area - Centered and Max Width */
+        main {
             flex: 1;
             overflow-y: auto;
-            padding: 1.5rem;
+            padding: 2rem 1.5rem 6rem;
+            scroll-behavior: smooth;
+            display: flex;
+            justify-content: center;
+            /* Center the chat thread */
+        }
+
+        #chat-thread {
+            width: 100%;
+            max-width: 800px;
+            /* limits width so text is readable */
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
-            scroll-behavior: smooth;
+            gap: 2rem;
         }
 
-        .m {
-            max-width: 85%;
-            align-self: flex-start;
-            animation: slideUp 0.3s ease-out;
+        /* Message Bubbles */
+        .msg {
+            display: flex;
+            flex-direction: column;
+            animation: fadeIn 0.3s ease-out;
         }
 
-        .m.u {
-            align-self: flex-end;
+        .msg.user {
+            align-items: flex-end;
+        }
+
+        .msg.ai {
+            align-items: flex-start;
         }
 
         .bubble {
-            padding: 1.2rem;
-            border-radius: 20px;
-            background: var(--c);
-            border: 1px solid var(--border);
-            line-height: 1.6;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .m.u .bubble {
-            background: var(--p);
-            color: white;
-            border: none;
-            border-radius: 20px 20px 0 20px;
-            font-weight: 600;
-        }
-
-        /* Interactive Form inside AI card */
-        .plan-form {
-            background: rgba(0, 0, 0, 0.2);
+            max-width: 100%;
             padding: 1.5rem;
             border-radius: 16px;
+            line-height: 1.7;
+            font-size: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .msg.user .bubble {
+            background: var(--p);
+            color: #fff;
+            border-bottom-right-radius: 4px;
+            font-weight: 500;
+        }
+
+        .msg.ai .bubble {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-bottom-left-radius: 4px;
+            backdrop-filter: blur(10px);
+            color: var(--t);
+        }
+
+        /* Rich content styling inside AI bubble */
+        .bubble h3 {
+            color: var(--p-light);
+            margin: 1.5rem 0 1rem;
+            font-size: 1.2rem;
+        }
+
+        .bubble h3:first-child {
+            margin-top: 0;
+        }
+
+        .bubble p {
+            margin-bottom: 1rem;
+        }
+
+        .bubble p:last-child {
+            margin-bottom: 0;
+        }
+
+        .bubble strong {
+            color: #fff;
+            font-weight: 700;
+            background: rgba(249, 115, 22, 0.2);
+            padding: 0 4px;
+            border-radius: 4px;
+        }
+
+        .bubble ul,
+        .bubble ol {
+            margin: 1rem 0;
+            padding-left: 1.5rem;
+        }
+
+        .bubble li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Premium Table */
+        .bubble table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            font-size: 0.95rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .bubble th {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--p-light);
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .bubble td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+        }
+
+        .bubble tr:last-child td {
+            border-bottom: none;
+        }
+
+        .bubble tr:nth-child(even) td {
+            background: rgba(255, 255, 255, 0.01);
+        }
+
+        /* Form Card */
+        .plan-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            border-radius: 12px;
             margin-top: 1rem;
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            gap: 1rem;
         }
 
-        .plan-row {
+        .form-row {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
         }
 
-        .plan-row label {
-            font-size: 0.8rem;
-            color: var(--p);
-            font-weight: 800;
-            text-transform: uppercase;
-        }
-
-        .plan-row input {
-            background: #0f172a;
-            border: 1px solid #334155;
-            color: white;
-            padding: 10px;
-            border-radius: 8px;
-            outline: none;
-        }
-
-        .plan-row input:focus {
-            border-color: var(--p);
+        .form-label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--p-light);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
         .quick-chips {
             display: flex;
-            gap: 6px;
-            overflow-x: auto;
-            padding-bottom: 4px;
+            gap: 8px;
+            flex-wrap: wrap;
         }
 
         .chip {
             background: #334155;
             color: #cbd5e1;
-            padding: 4px 10px;
+            padding: 4px 12px;
             border-radius: 50px;
-            font-size: 0.75rem;
-            white-space: nowrap;
+            font-size: 0.8rem;
             cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid transparent;
         }
 
         .chip:hover {
             background: var(--p);
-            color: white;
+            color: #fff;
         }
 
-        /* Table & Content Styling */
-        .bubble table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1rem 0;
-            font-size: 0.9rem;
+        .form-input {
+            background: #0f172a;
+            border: 1px solid #334155;
+            color: #fff;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.2s;
         }
 
-        .bubble th {
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--p);
-            padding: 8px;
-            text-align: left;
-            border-bottom: 2px solid #334155;
+        .form-input:focus {
+            border-color: var(--p);
         }
 
-        .bubble td {
-            padding: 8px;
-            border-bottom: 1px solid #444;
-            color: #cbd5e1;
-        }
-
-        .bubble ul {
-            padding-left: 20px;
-            margin: 0.5rem 0;
-        }
-
-        .bubble h3 {
-            color: var(--p);
-            margin-bottom: 0.8rem;
-            font-size: 1.1rem;
-        }
-
-        /* Input Panel */
-        .input-dock {
-            padding: 1rem 1.5rem 2.5rem;
-            background: linear-gradient(transparent, var(--bg) 50%);
-        }
-
-        .input-box {
-            max-width: 800px;
-            margin: 0 auto;
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border);
-            border-radius: 24px;
+        .btn-primary {
+            background: var(--p);
+            color: #fff;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            text-align: center;
             display: flex;
-            padding: 8px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
         }
 
-        #chat-input {
+        .btn-primary:hover {
+            background: #ea580c;
+            transform: translateY(-2px);
+        }
+
+        /* Tab Widget Styling */
+        .tabs-container {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        .tabs-nav {
+            display: flex;
+            background: rgba(0, 0, 0, 0.4);
+            border-bottom: 1px solid var(--border);
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: transparent;
+            color: var(--m);
+            border: none;
+            padding: 12px 16px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            white-space: nowrap;
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab-btn:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .tab-btn.active {
+            color: var(--p);
+            border-bottom-color: var(--p);
+            background: rgba(249, 115, 22, 0.05);
+        }
+
+        .tab-pane {
+            display: none;
+            padding: 1.5rem;
+            animation: fadeIn 0.3s;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        /* Input Dock */
+        .dock {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 1rem 1.5rem 1.5rem;
+            background: linear-gradient(transparent, var(--bg) 70%);
+            display: flex;
+            justify-content: center;
+        }
+
+        .dock-bar {
+            width: 100%;
+            max-width: 800px;
+            background: var(--c);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 6px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .dock-input {
             flex: 1;
             background: transparent;
             border: none;
-            color: white;
-            padding: 0 15px;
+            color: #fff;
+            padding: 10px 16px;
             font-size: 1rem;
             outline: none;
         }
 
-        .send-btn {
+        .dock-btn {
             background: var(--p);
-            color: white;
+            color: #fff;
             border: none;
             padding: 0 20px;
-            height: 44px;
-            border-radius: 18px;
-            font-weight: 800;
+            height: 40px;
+            border-radius: 14px;
+            font-weight: 600;
             cursor: pointer;
+            transition: 0.2s;
         }
 
-        /* Animations */
-        @keyframes slideUp {
+        .dock-btn:hover {
+            background: #ea580c;
+        }
+
+        /* Loader */
+        .typing-dots {
+            display: flex;
+            gap: 5px;
+            padding: 10px 5px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            background: var(--p);
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .dot:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            80%,
+            100% {
+                transform: scale(0);
+            }
+
+            40% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes fadeIn {
             from {
                 opacity: 0;
-                transform: translateY(15px);
+                transform: translateY(10px);
             }
 
             to {
@@ -238,44 +422,13 @@
             }
         }
 
-        .typing {
-            display: flex;
-            gap: 4px;
-            padding: 10px;
-        }
-
-        .dot {
+        /* Hide Scrollbar */
+        ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
-            background: var(--p);
-            border-radius: 50%;
-            animation: blink 1s infinite alternate;
         }
 
-        .dot:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
-        .dot:nth-child(3) {
-            animation-delay: 0.4s;
-        }
-
-        @keyframes blink {
-            from {
-                opacity: 0.3;
-            }
-
-            to {
-                opacity: 1;
-            }
-        }
-
-        /* Hide Scrollbar */
-        #chat-scroller::-webkit-scrollbar {
-            width: 5px;
-        }
-
-        #chat-scroller::-webkit-scrollbar-thumb {
+        ::-webkit-scrollbar-thumb {
             background: #334155;
             border-radius: 10px;
         }
@@ -286,123 +439,240 @@
 
     <header>
         <div class="logo">ROAD MASTER</div>
-        <div style="font-size:0.8rem; color:var(--m);">AI 專家在線</div>
+        <div style="font-size:0.85rem; color:var(--m); font-weight:600;">AI 單車管家</div>
     </header>
 
     <main id="chat-scroller">
-        <!-- Initial Welcome with Inline Form -->
-        <div class="m">
-            <div class="bubble">
-                <h3>🚵 你好！我是您的環島嚮導</h3>
-                <p>讓我幫您規劃最精簡、無廢話的單車行程。您可以直接在下面填寫需求，或是在對話框問我任何單車問題。</p>
+        <div id="chat-thread">
+            <!-- AI Welcome Bubble with Form -->
+            <div class="msg ai">
+                <div class="bubble">
+                    <p>👋 您好！我是 Road Master，專門處理單車行程規劃與疑難雜症。</p>
+                    <p style="color:var(--m); font-size:0.9rem;">直接填寫下方表單以產生專屬「智慧行程分類卡」，或在底部對話框問我任何裝備、路況問題。</p>
 
-                <div class="plan-form">
-                    <div class="plan-row">
-                        <label>📍 起點</label>
-                        <div class="quick-chips">
-                            <span class="chip" onclick="iv('start','台北')">台北</span>
-                            <span class="chip" onclick="iv('start','新竹')">新竹</span>
-                            <span class="chip" onclick="iv('start','高雄')">高雄</span>
+                    <div class="plan-card">
+                        <div class="form-row">
+                            <div class="form-label">
+                                <span>📍 出發點</span>
+                                <div class="quick-chips">
+                                    <span class="chip" onclick="iv('start','台北火車站')">台北</span>
+                                    <span class="chip" onclick="iv('start','新竹高鐵站')">新竹</span>
+                                    <span class="chip" onclick="iv('start','台中朝馬')">台中</span>
+                                </div>
+                            </div>
+                            <input type="text" id="start" class="form-input" placeholder="輸入出發地點">
                         </div>
-                        <input type="text" id="start" placeholder="例：台北">
-                    </div>
-                    <div class="plan-row">
-                        <label>🏁 終點</label>
-                        <div class="quick-chips">
-                            <span class="chip" onclick="iv('end','花蓮')">花蓮</span>
-                            <span class="chip" onclick="iv('end','恆春')">恆春</span>
-                            <span class="chip" onclick="iv('end','環島')">環島</span>
+                        <div class="form-row">
+                            <div class="form-label">
+                                <span>🏁 目的地</span>
+                                <div class="quick-chips">
+                                    <span class="chip" onclick="iv('end','花蓮太魯閣')">太魯閣</span>
+                                    <span class="chip" onclick="iv('end','恆春古城')">恆春</span>
+                                    <span class="chip" onclick="iv('end','大環島一圈')">環島</span>
+                                </div>
+                            </div>
+                            <input type="text" id="end" class="form-input" placeholder="輸入目的地">
                         </div>
-                        <input type="text" id="end" placeholder="例：台東">
-                    </div>
-                    <div class="plan-row">
-                        <label>⏱️ 天數</label>
-                        <div class="quick-chips">
-                            <span class="chip" onclick="iv('days','1天')">1天</span>
-                            <span class="chip" onclick="iv('days','3天')">3天</span>
-                            <span class="chip" onclick="iv('days','9天')">9天</span>
+                        <div class="form-row">
+                            <div class="form-label">
+                                <span>⏱️ 騎乘天數</span>
+                                <div class="quick-chips">
+                                    <span class="chip" onclick="iv('days','1天')">1天</span>
+                                    <span class="chip" onclick="iv('days','3天')">3天</span>
+                                    <span class="chip" onclick="iv('days','9天')">9天</span>
+                                </div>
+                            </div>
+                            <input type="text" id="days" class="form-input" placeholder="預計使用天數">
                         </div>
-                        <input type="text" id="days" placeholder="例：3天">
+                        <button class="btn-primary" onclick="submitForm()">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                            </svg>
+                            產出行程分析報表
+                        </button>
                     </div>
-                    <button class="send-btn" style="width:100%; margin-top:5px;" onclick="formPlan()">⚡ 開始規劃</button>
                 </div>
             </div>
+
+            <!-- Dynamic Messages will be injected here -->
         </div>
     </main>
 
-    <div class="input-dock">
-        <div class="input-box">
-            <input type="text" id="chat-input" placeholder="有任何單車問題嗎？直接問..."
-                onkeypress="if(event.key==='Enter')sendChat()">
-            <button class="send-btn" onclick="sendChat()">傳送</button>
+    <!-- Bottom Chat Input -->
+    <div class="dock">
+        <div class="dock-bar">
+            <input type="text" id="chat-input" class="dock-input" placeholder="或者您可以直接在這裡問我問題 (例: 蘇花公路怎麼騎?)"
+                onkeypress="if(event.key==='Enter')submitChat()">
+            <button class="dock-btn" onclick="submitChat()">傳送</button>
         </div>
     </div>
 
     <script>
         const CF_GATEWAY = "https://hidden-surf-0579.love7053150.workers.dev/";
-        const chatScroller = document.getElementById('chat-scroller');
-        const chatInput = document.getElementById('chat-input');
+        const scroller = document.getElementById('chat-scroller');
+        const thread = document.getElementById('chat-thread');
+        const input = document.getElementById('chat-input');
 
-        const DRY_PROMPT = `你是單車教練 Road Master。
-【說話準則】：
-1. 絕對不說客套話（如：你好、沒問題、我為您規劃）。
-2. 直接輸出核心內容：表格（天數|路線|KM|亮點）或 精簡條列（3點以內）。
-3. 嚴禁長篇大論，每句話都要有含金量。
-4. 針對規劃需求，直接給表格。`;
+        // System prompt forces AI to use EXACT headings so we can parse them into tabs
+        const SYSTEM_PROMPT = `你是高階單車規劃教練。
+使用者需要豐富的資訊，但討厭文字冗長難讀，所以你**必須以結構化的方式產出**，並利用豐富的說明。
 
-        function iv(id, v) { document.getElementById(id).value = v; }
+【強制輸出規範】：
+如果是規劃行程，你必須嚴格輸出以下三個標題，不要多也不要少：
+### 📅 路線排程
+(在此用表格詳細列出每天的 路線、公里數、爬升、詳細重點說明)
+### 🎒 裝備清單
+(在此列出必備的衣服、維修工具與補給建議)
+### ⚠️ 實戰守則
+(在此寫出針對此路線該注意的天氣、交通、體能建議)
 
-        function appendBubble(role, content, isMD = true) {
-            const m = document.createElement('div');
-            m.className = role === 'u' ? 'm u' : 'm';
-            m.innerHTML = `<div class="bubble">${isMD ? marked.parse(content) : content}</div>`;
-            chatScroller.appendChild(m);
-            chatScroller.scrollTop = chatScroller.scrollHeight;
-            return m;
+如果是普通問答，直接使用 Markdown 清晰條列回答即可，確保有完整的說明與分析。避免流水帳。`;
+
+        function iv(id, val) {
+            document.getElementById(id).value = val;
         }
 
-        function showTyping() {
-            const t = document.createElement('div');
-            t.id = 'typing';
-            t.className = 'm';
-            t.innerHTML = `<div class="bubble"><div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>`;
-            chatScroller.appendChild(t);
-            chatScroller.scrollTop = chatScroller.scrollHeight;
+        function scrollBottom() {
+            requestAnimationFrame(() => {
+                scroller.scrollTo({ top: scroller.scrollHeight, behavior: 'smooth' });
+            });
         }
 
-        async function formPlan() {
+        function addMessage(role, htmlContent) {
+            const msg = document.createElement('div');
+            msg.className = `msg ${role}`;
+            msg.innerHTML = `<div class="bubble">${htmlContent}</div>`;
+            thread.appendChild(msg);
+            scrollBottom();
+            return msg;
+        }
+
+        function showLoader() {
+            const id = 'loader-' + Date.now();
+            const msg = document.createElement('div');
+            msg.id = id;
+            msg.className = `msg ai`;
+            msg.innerHTML = `<div class="bubble" style="padding: 10px 15px;"><div class="typing-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>`;
+            thread.appendChild(msg);
+            scrollBottom();
+            return id;
+        }
+
+        function removeLoader(id) {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        }
+
+        // Function to parse markdown and convert H3 sections into interactive tabs
+        function renderTabbedContent(markdownText) {
+            // Look for occurrences of "### "
+            const parts = markdownText.split(/(?=### )/);
+
+            if (parts.length <= 1) {
+                // No sections found, return regular parsed markdown
+                return marked.parse(markdownText);
+            }
+
+            let tabsHtml = `<div class="tabs-container"><div class="tabs-nav">`;
+            let contentHtml = `</div><div class="tabs-content">`;
+
+            let validTabs = 0;
+
+            parts.forEach((part, index) => {
+                if (part.trim() === '') return;
+
+                // Extract the title from the line starting with ###
+                let titleLine = '';
+                let body = part;
+
+                if (part.startsWith('### ')) {
+                    const nlIndex = part.indexOf('\n');
+                    if (nlIndex !== -1) {
+                        titleLine = part.substring(4, nlIndex).trim();
+                        body = part.substring(nlIndex + 1);
+                    } else {
+                        titleLine = part.substring(4).trim();
+                        body = '';
+                    }
+                } else {
+                    titleLine = "綜合說明";
+                }
+
+                const activeClass = validTabs === 0 ? 'active' : '';
+                tabsHtml += `<button class="tab-btn ${activeClass}" onclick="switchTab(this, ${validTabs})">${marked.parseInline(titleLine)}</button>`;
+                contentHtml += `<div class="tab-pane ${activeClass}" data-index="${validTabs}">${marked.parse(body)}</div>`;
+                validTabs++;
+            });
+
+            contentHtml += `</div></div>`;
+            return validTabs > 0 ? (tabsHtml + contentHtml) : marked.parse(markdownText);
+        }
+
+        // Global function for tab switching
+        window.switchTab = function (btn, index) {
+            const container = btn.closest('.tabs-container');
+            // Reset all buttons
+            container.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            // Reset all panes
+            container.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+            container.querySelector(`.tab-pane[data-index="${index}"]`).classList.add('active');
+        };
+
+        async function submitForm() {
             const s = document.getElementById('start').value;
             const e = document.getElementById('end').value;
             const d = document.getElementById('days').value;
-            if (!s || !e || !d) return alert("請填好表單喔！");
+            if (!s || !e || !d) {
+                alert("麻煩填寫一下出發點、目的地與天數喔！");
+                return;
+            }
 
-            appendBubble('u', `📍從${s}出發到${e}，預計騎${d}。`, false);
-            await callAI(`規劃行程：起點${s}，終點${e}，天數${d}。直接給表。`);
+            const query = `幫我規劃單車行程。起點：${s}，終點：${e}，預計天數：${d}。`;
+            addMessage('user', `📍 從 **${s}** 出發，騎到 **${e}**，預計花 **${d}** 完成。請幫我出報告。`);
+            await requestAI(query);
         }
 
-        async function sendChat() {
-            const txt = chatInput.value.trim();
+        async function submitChat() {
+            const txt = input.value.trim();
             if (!txt) return;
-            chatInput.value = '';
-            appendBubble('u', txt, false);
-            await callAI(txt);
+            input.value = '';
+            addMessage('user', txt);
+            await requestAI(txt);
         }
 
-        async function callAI(text) {
-            showTyping();
+        async function requestAI(promptText) {
+            const loaderId = showLoader();
+
             try {
                 const res = await fetch(CF_GATEWAY, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: DRY_PROMPT + "\n\n需求：" + text }] }] })
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: SYSTEM_PROMPT + "\\n\\n使用者：" + promptText
+                            }]
+                        }]
+                    })
                 });
+
+                if (!res.ok) throw new Error("API 連線失敗");
                 const data = await res.json();
-                document.getElementById('typing').remove();
-                const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "連線異常";
-                appendBubble('ai', reply);
+                removeLoader(loaderId);
+
+                const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (!rawText) throw new Error("無效內容");
+
+                // Use our custom tab parser
+                const htmlContent = renderTabbedContent(rawText);
+                addMessage('ai', htmlContent);
+
             } catch (e) {
-                document.getElementById('typing').remove();
-                appendBubble('ai', "❌ 連線錯誤");
+                console.error(e);
+                removeLoader(loaderId);
+                addMessage('ai', `<span style="color:#ef4444">連線中斷：${e.message}。請檢查網路狀態。</span>`);
             }
         }
     </script>
