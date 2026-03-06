@@ -4,655 +4,337 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Road Master | 單車環島超級教練</title>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&family=Noto+Sans+TC:wght@400;700;900&display=swap"
-        rel="stylesheet">
+    <title>Road Master | 精準單車規劃</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         :root {
-            --p: #FF5722;
-            --p-glow: rgba(255, 87, 34, 0.4);
-            --s: #00E5FF;
-            --bg: #070B14;
-            --card-bg: rgba(20, 25, 40, 0.6);
-            --glass: rgba(255, 255, 255, 0.03);
-            --border: rgba(255, 255, 255, 0.08);
-            --text-main: #F1F5F9;
-            --text-muted: #94A3B8;
+            --bg: #0f172a;
+            --card: #1e293b;
+            --primary: #f97316;
+            --text: #f8fafc;
+            --muted: #94a3b8;
         }
 
         * {
             box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
             margin: 0;
             padding: 0;
-            font-family: 'Outfit', 'Noto Sans TC', sans-serif;
-            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background-color: var(--bg);
-            background-image:
-                radial-gradient(circle at 15% 50%, rgba(255, 87, 34, 0.08) 0%, transparent 40%),
-                radial-gradient(circle at 85% 30%, rgba(0, 229, 255, 0.06) 0%, transparent 40%);
-            background-attachment: fixed;
-            color: var(--text-main);
+            background: var(--bg);
+            color: var(--text);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            overflow-x: hidden;
-        }
-
-        /* Top Navigation */
-        nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 70px;
-            display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 0 2rem;
-            background: rgba(7, 11, 20, 0.8);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border);
-            z-index: 100;
+            padding: 2rem 1rem;
         }
 
-        .logo {
-            font-size: 1.5rem;
+        .container {
+            max-width: 600px;
+            width: 100%;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        header h1 {
+            font-size: 2rem;
             font-weight: 900;
-            letter-spacing: 1px;
-            text-transform: uppercase;
+            color: var(--primary);
+            letter-spacing: -1px;
         }
 
-        .logo span {
-            color: var(--p);
+        header p {
+            color: var(--muted);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
         }
 
-        .status-chip {
-            background: rgba(0, 229, 255, 0.1);
-            color: var(--s);
-            padding: 6px 16px;
+        .card {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+            color: #e2e8f0;
+            font-size: 0.95rem;
+        }
+
+        .form-control {
+            width: 100%;
+            background: #0f172a;
+            border: 1px solid #334155;
+            color: white;
+            padding: 14px 16px;
+            border-radius: 12px;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+        }
+
+        .tags {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            background: #334155;
+            color: #cbd5e1;
+            padding: 6px 12px;
             border-radius: 50px;
             font-size: 0.8rem;
-            font-weight: 700;
-            border: 1px solid rgba(0, 229, 255, 0.2);
-            box-shadow: 0 0 15px rgba(0, 229, 255, 0.1);
+            cursor: pointer;
+            transition: 0.2s;
         }
 
-        /* Main Container */
-        main {
-            flex: 1;
-            padding: 100px 2rem 140px 2rem;
-            max-width: 900px;
-            margin: 0 auto;
+        .tag:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn {
             width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-        }
-
-        /* Welcome & Quick Actions */
-        #welcome-view {
-            animation: fadeUp 0.6s ease-out both;
-        }
-
-        .hero-title {
-            font-size: 2.5rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 1.1rem;
             font-weight: 900;
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, #fff, var(--text-muted));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: 0.2s;
         }
 
-        .grid-actions {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.2rem;
+        .btn:hover {
+            background: #ea580c;
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .result-container {
             margin-top: 2rem;
+            display: none;
         }
 
-        .action-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            padding: 1.5rem;
+        .ai-result {
+            background: var(--card);
             border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-            position: relative;
-            overflow: hidden;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .action-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
+        /* 極簡 Markdown 樣式 */
+        .ai-result table {
             width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), transparent);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .action-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--p);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4), 0 0 20px var(--p-glow);
-        }
-
-        .action-card:hover::before {
-            opacity: 1;
-        }
-
-        .action-icon {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-            display: block;
-        }
-
-        .action-title {
-            font-weight: 700;
-            font-size: 1.1rem;
-            margin-bottom: 0.5rem;
-            color: #fff;
-        }
-
-        .action-desc {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            line-height: 1.5;
-        }
-
-        /* Result View (Dashboard style) */
-        #result-view {
-            display: none;
-            animation: sweep 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
-        }
-
-        .result-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            border-collapse: collapse;
             margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .result-query {
-            font-size: 1.4rem;
-            font-weight: 800;
-            color: var(--s);
-        }
-
-        .btn-clear {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border);
-            color: var(--text-main);
-            padding: 6px 14px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: all 0.2s;
-        }
-
-        .btn-clear:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        /* Magically styled AI Markdown Content */
-        .ai-content {
-            background: var(--card-bg);
-            border-radius: 24px;
-            padding: 2.5rem;
-            border: 1px solid var(--border);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            line-height: 1.8;
-            font-size: 1.05rem;
-        }
-
-        /* Beautiful Typography */
-        .ai-content h2,
-        .ai-content h3 {
-            font-size: 1.6rem;
-            background: linear-gradient(135deg, var(--p), #FF9800);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin: 2rem 0 1rem 0;
-            font-weight: 900;
-        }
-
-        .ai-content h2:first-child {
-            margin-top: 0;
-        }
-
-        .ai-content p {
-            margin-bottom: 1.5rem;
-        }
-
-        .ai-content strong {
-            color: #fff;
-            background: rgba(255, 87, 34, 0.15);
-            padding: 2px 6px;
-            border-radius: 4px;
-        }
-
-        /* Timeline style for lists */
-        .ai-content ul {
-            list-style: none;
-            padding-left: 24px;
-            border-left: 2px solid rgba(255, 87, 34, 0.2);
-            margin-bottom: 2rem;
-        }
-
-        .ai-content ul li {
-            position: relative;
-            padding: 12px 0 12px 20px;
-            margin-bottom: 8px;
-            background: linear-gradient(90deg, rgba(255, 255, 255, 0.02), transparent);
-            border-radius: 8px;
-        }
-
-        .ai-content ul li::before {
-            content: '';
-            position: absolute;
-            left: -29px;
-            top: 22px;
-            width: 10px;
-            height: 10px;
-            background: var(--p);
-            border-radius: 50%;
-            box-shadow: 0 0 12px var(--p);
-        }
-
-        /* Premium Table Design */
-        .ai-content table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            margin: 2rem 0;
-            background: rgba(0, 0, 0, 0.4);
-            border-radius: 16px;
-            overflow: hidden;
-            border: 1px solid var(--border);
-        }
-
-        .ai-content th {
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--s);
-            padding: 18px;
-            text-align: left;
             font-size: 0.95rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border-bottom: 1px solid var(--border);
         }
 
-        .ai-content td {
-            padding: 18px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+        .ai-result th {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px 8px;
+            text-align: left;
+            color: var(--primary);
+            border-bottom: 2px solid #334155;
         }
 
-        .ai-content tr:last-child td {
-            border-bottom: none;
+        .ai-result td {
+            padding: 12px 8px;
+            border-bottom: 1px solid #334155;
+            color: #cbd5e1;
         }
 
-        .ai-content tr:hover td {
-            background: rgba(0, 229, 255, 0.05);
+        .ai-result ul {
+            padding-left: 20px;
+            color: #cbd5e1;
+            font-size: 0.95rem;
+            line-height: 1.6;
         }
 
-        /* Input Dock (Floating Bottom) */
-        .dock {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 1.5rem 2rem 2.5rem 2rem;
-            background: linear-gradient(to top, var(--bg) 70%, transparent);
-            z-index: 100;
+        .ai-result li {
+            margin-bottom: 6px;
         }
 
-        .input-bar {
-            max-width: 800px;
-            margin: 0 auto;
-            position: relative;
-            background: rgba(20, 25, 40, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 24px;
-            padding: 8px;
-            display: flex;
-            align-items: center;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            transition: all 0.3s ease;
+        .ai-result strong {
+            color: white;
         }
 
-        .input-bar:focus-within {
-            border-color: var(--p);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 20px var(--p-glow);
-        }
-
-        #user-input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: #fff;
-            padding: 16px 20px;
-            font-size: 1.1rem;
-            outline: none;
-        }
-
-        #user-input::placeholder {
-            color: #64748B;
-        }
-
-        .btn-send {
-            background: var(--p);
-            color: #fff;
-            border: none;
-            border-radius: 18px;
-            padding: 0 28px;
-            height: 52px;
-            font-weight: 800;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-send:hover {
-            background: #FF7043;
-            transform: scale(1.03);
-            box-shadow: 0 5px 15px var(--p-glow);
-        }
-
-        .btn-send:active {
-            transform: scale(0.97);
-        }
-
-        /* Loading Skeleton Animation */
-        .loading-view {
+        .loader {
             display: none;
-            flex-direction: column;
-            gap: 1.5rem;
+            text-align: center;
             padding: 2rem;
+            color: var(--primary);
+            font-weight: 700;
+            letter-spacing: 1px;
         }
 
-        .skeleton {
-            height: 20px;
-            background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.05) 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-            border-radius: 8px;
+        .question-bar {
+            margin-top: 1rem;
+            display: flex;
+            gap: 10px;
         }
 
-        .skeleton.title {
-            width: 50%;
-            height: 35px;
-            margin-bottom: 2rem;
-        }
-
-        .skeleton.text {
-            width: 100%;
-        }
-
-        .skeleton.text.short {
-            width: 70%;
-        }
-
-        .skeleton.box {
-            width: 100%;
-            height: 150px;
-            margin-top: 2rem;
-            border-radius: 16px;
-        }
-
-        @keyframes loading {
-            0% {
-                background-position: 200% 0;
-            }
-
-            100% {
-                background-position: -200% 0;
-            }
-        }
-
-        @keyframes sweep {
-            0% {
-                opacity: 0;
-                transform: translateY(20px) scale(0.98);
-            }
-
-            100% {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        @keyframes fadeUp {
-            0% {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Responsive */
-        @media (max-width: 600px) {
-            .hero-title {
-                font-size: 2rem;
-            }
-
-            .grid-actions {
-                grid-template-columns: 1fr;
-            }
-
-            nav {
-                padding: 0 1rem;
-            }
-
-            main {
-                padding: 90px 1rem 120px 1rem;
-            }
-
-            .dock {
-                padding: 1rem;
-            }
-
-            .btn-send {
-                padding: 0 20px;
-            }
-
-            .ai-content {
-                padding: 1.5rem;
-            }
-
-            .ai-content table {
-                display: block;
-                overflow-x: auto;
-                white-space: nowrap;
-            }
-
-            .ai-content table th,
-            .ai-content table td {
-                padding: 12px;
-            }
+        .question-bar input {
+            flex: 1;
         }
     </style>
 </head>
 
 <body>
 
-    <nav>
-        <div class="logo">ROAD<span>MASTER</span></div>
-        <div class="status-chip">衛星連線就緒</div>
-    </nav>
+    <div class="container">
+        <header>
+            <h1>ROAD MASTER</h1>
+            <p>10秒鐘，產出最精練的單車行程</p>
+        </header>
 
-    <main>
-        <!-- Home / Welcome State -->
-        <div id="welcome-view">
-            <h1 class="hero-title">準備好探索台灣了嗎？</h1>
-            <p style="color: var(--text-muted); font-size: 1.1rem; line-height: 1.6;">
-                告別密密麻麻的文字。告訴我您的起訖點、天數或單車疑難雜症，我將為您算繪專屬的智慧規劃報表。</p>
+        <div class="card" id="form-card">
+            <div class="form-group">
+                <label>📍 起點</label>
+                <input type="text" id="start" class="form-control" placeholder="例：台北火車站">
+                <div class="tags">
+                    <span class="tag" onclick="setVal('start', '台北')">台北</span>
+                    <span class="tag" onclick="setVal('start', '新竹')">新竹</span>
+                    <span class="tag" onclick="setVal('start', '台中')">台中</span>
+                    <span class="tag" onclick="setVal('start', '高雄')">高雄</span>
+                </div>
+            </div>
 
-            <div class="grid-actions">
-                <div class="action-card" onclick="submitQuery('幫我規劃台北出發，逆時針環島 9 天的行程表')">
-                    <span class="action-icon">🗺️</span>
-                    <div class="action-title">經典環島規劃</div>
-                    <div class="action-desc">一鍵產出 9 天逆時針路線、海拔分析與補給站。</div>
+            <div class="form-group">
+                <label>🏁 終點</label>
+                <input type="text" id="end" class="form-control" placeholder="例：墾丁大街">
+                <div class="tags">
+                    <span class="tag" onclick="setVal('end', '花蓮')">花蓮</span>
+                    <span class="tag" onclick="setVal('end', '台東')">台東</span>
+                    <span class="tag" onclick="setVal('end', '武嶺')">武嶺</span>
+                    <span class="tag" onclick="setVal('end', '環島一圈')">環島一圈</span>
                 </div>
-                <div class="action-card" onclick="submitQuery('第一次騎長途，裝備清單該怎麼準備？')">
-                    <span class="action-icon">🎒</span>
-                    <div class="action-title">裝備急救箱</div>
-                    <div class="action-desc">精準檢視您的必備物品清單與雷區裝備。</div>
+            </div>
+
+            <div class="form-group">
+                <label>⏱️ 天數</label>
+                <input type="text" id="days" class="form-control" placeholder="例：3天">
+                <div class="tags">
+                    <span class="tag" onclick="setVal('days', '1天')">1天</span>
+                    <span class="tag" onclick="setVal('days', '3天')">3天</span>
+                    <span class="tag" onclick="setVal('days', '5天')">5天</span>
+                    <span class="tag" onclick="setVal('days', '9天')">9天</span>
                 </div>
-                <div class="action-card" onclick="submitQuery('遇到連續爬坡騎不動，變速跟呼吸該怎麼調整？')">
-                    <span class="action-icon">⚙️</span>
-                    <div class="action-title">騎乘技巧指導</div>
-                    <div class="action-desc">解決上坡無力、膝蓋痛等常見生理痛點。</div>
-                </div>
-                <div class="action-card" onclick="submitQuery('單車上火車的規定是什麼？')">
-                    <span class="action-icon">🚆</span>
-                    <div class="action-title">兩鐵通勤指南</div>
-                    <div class="action-desc">解析台鐵/高鐵攜帶單車最新規定與班次。</div>
+            </div>
+
+            <button class="btn" onclick="generate()">⚡ 產出精簡行程</button>
+
+            <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #334155;">
+                <label
+                    style="display:block; font-weight:700; margin-bottom:0.8rem; color:#e2e8f0; font-size:0.95rem;">💡
+                    或直接問問題</label>
+                <div class="question-bar">
+                    <input type="text" id="q" class="form-control" placeholder="例如：新手環島要帶什麼？"
+                        onkeypress="if(event.key==='Enter')ask()">
+                    <button class="btn" style="width: auto; margin-top: 0; padding: 0 20px;" onclick="ask()">問</button>
                 </div>
             </div>
         </div>
 
-        <!-- Loading State -->
-        <div id="loading-view" class="loading-view">
-            <div class="skeleton title"></div>
-            <div class="skeleton text"></div>
-            <div class="skeleton text"></div>
-            <div class="skeleton text short"></div>
-            <div class="skeleton box"></div>
-        </div>
+        <div class="loader" id="loader">⚡ 引擎運算中...</div>
 
-        <!-- Result / Dashboard State -->
-        <div id="result-view">
-            <div class="result-header">
-                <div>
-                    <div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:4px">您提問：</div>
-                    <div class="result-query" id="display-query"></div>
-                </div>
-                <button class="btn-clear" onclick="resetView()">← 返回首頁</button>
-            </div>
-
-            <div class="ai-content" id="ai-response-content">
-                <!-- Markdown Content rendered here -->
-            </div>
-        </div>
-    </main>
-
-    <div class="dock">
-        <div class="input-bar">
-            <!-- Icon -->
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2"
-                style="margin-left: 10px;">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-            <input type="text" id="user-input" placeholder="問問題，例如：蘇花段現在好騎嗎..."
-                onkeypress="if(event.key==='Enter') submitQuery()">
-            <button class="btn-send" onclick="submitQuery()">
-                戰術分析
-            </button>
+        <div class="result-container" id="result-container">
+            <button class="btn" style="background:#334155; margin-bottom:1rem; padding: 10px; font-size:0.9rem;"
+                onclick="reset()">← 重新規劃</button>
+            <div class="ai-result" id="ai-result"></div>
         </div>
     </div>
 
     <script>
         const CF_GATEWAY = "https://hidden-surf-0579.love7053150.workers.dev/";
-        const SYSTEM_PROMPT = `你是台灣單車環島的頂尖 AI 教練 'Road Master'。
-你的任務是提供極度專業、視覺化、高資訊密度的單車相關解答。
 
-【核心規則】：
-1. 嚴格拒絕非單車/旅遊相關話題。
-2. 廢話少說。不要在一開始說「好的，我來幫您規劃...」，直接開門見山給出重點。
-3. 高度使用 Markdown 結構：
-   - 使用 ### 作為大標題。
-   - 使用 Markdown 表格呈現行程、比較。
-   - 使用 Markdown 清單條列重點。
-   - 重點詞語使用 **粗體** 標示。
-4. 專業、熱血、可靠的教練語氣。`;
+        // 強制 AI 閉嘴、只出重點的 Prompt
+        const SYSTEM_PROMPT = `你是單車環島教練。使用者只想要「最乾的乾貨」。
+【絕對規則 - 違反即失敗】：
+1. 嚴禁廢話、自我介紹、問候語。字數越少越好！
+2. 行程規劃直接輸出表格 (欄位：天數 | 路線 | 公里 | 10字短評)。
+3. 其他注意事項或解答，直接條列式回答（最多 3 點，每點不超過 15 個字）。
+4. 總輸出字數必須嚴格控制在 250 字以內，不要寫長篇大論！
+5. 不相關的問題請用10個字拒絕。`;
 
-        const viewWelcome = document.getElementById('welcome-view');
-        const viewLoading = document.getElementById('loading-view');
-        const viewResult = document.getElementById('result-view');
-        const userInput = document.getElementById('user-input');
-        const aiResponseContent = document.getElementById('ai-response-content');
-        const displayQuery = document.getElementById('display-query');
+        function setVal(id, val) { document.getElementById(id).value = val; }
 
-        function resetView() {
-            viewResult.style.display = 'none';
-            viewLoading.style.display = 'none';
-            viewWelcome.style.display = 'block';
-            userInput.value = '';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+        function reset() {
+            document.getElementById('form-card').style.display = 'block';
+            document.getElementById('result-container').style.display = 'none';
+            window.scrollTo(0, 0);
         }
 
-        async function submitQuery(queryText = null) {
-            const text = queryText || userInput.value.trim();
-            if (!text) return;
+        async function generate() {
+            const s = document.getElementById('start').value.trim();
+            const e = document.getElementById('end').value.trim();
+            const d = document.getElementById('days').value.trim();
+            if (!s || !e || !d) return alert("請填寫起點、終點與天數！");
 
-            // UI Transitions
-            userInput.value = '';
-            userInput.blur();
-            viewWelcome.style.display = 'none';
-            viewResult.style.display = 'none';
-            viewLoading.style.display = 'flex';
-            displayQuery.textContent = text;
+            await callAPI(`幫我規劃單車行程。起點：${s}，終點：${e}，天數：${d}。直接給表格跟3個核心注意事項。`);
+        }
 
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+        async function ask() {
+            const q = document.getElementById('q').value.trim();
+            if (!q) return;
+            document.getElementById('q').value = '';
+            await callAPI(q);
+        }
+
+        async function callAPI(text) {
+            document.getElementById('form-card').style.display = 'none';
+            document.getElementById('result-container').style.display = 'none';
+            document.getElementById('loader').style.display = 'block';
 
             try {
-                // Formatting specifically for the CF Gateway expecting gemini payload
-                const payload = {
-                    contents: [{
-                        parts: [{
-                            text: SYSTEM_PROMPT + "\\n\\n目前使用者的問題或需求：" + text
-                        }]
-                    }]
-                };
-
-                const response = await fetch(CF_GATEWAY, {
+                const res = await fetch(CF_GATEWAY, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: SYSTEM_PROMPT + "\n\n使用者需求：" + text }] }]
+                    })
                 });
 
-                if (!response.ok) throw new Error("閘道器無回應");
+                if (!res.ok) throw new Error("連線失敗");
+                const data = await res.json();
 
-                const data = await response.json();
+                let md = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (!md) throw new Error("無效內容");
 
-                if (data.candidates && data.candidates[0].content.parts[0].text) {
-                    const mdText = data.candidates[0].content.parts[0].text;
-                    aiResponseContent.innerHTML = marked.parse(mdText);
-
-                    // Show result
-                    viewLoading.style.display = 'none';
-                    viewResult.style.display = 'block';
-                } else {
-                    throw new Error("模型未吐出正確內容");
-                }
-
-            } catch (error) {
-                console.error(error);
-                aiResponseContent.innerHTML = '<h3 style="color: #EF4444; margin-top: 0;">⚠️ 系統連線異常</h3><p>連線被意外中斷，可能是網路不穩或雲端大腦正在維護中。</p><p style="color: var(--text-muted); font-size: 0.9rem;">詳細錯誤：' + error.message + '</p>';
-                viewLoading.style.display = 'none';
-                viewResult.style.display = 'block';
+                document.getElementById('ai-result').innerHTML = marked.parse(md);
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('result-container').style.display = 'block';
+            } catch (e) {
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('result-container').style.display = 'block';
+                document.getElementById('ai-result').innerHTML = "<p style='color:#ef4444'>連線異常，請稍後再試。</p>";
             }
         }
     </script>
