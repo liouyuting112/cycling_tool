@@ -671,10 +671,16 @@
 [注意] 龍潭大坡：這段長達2公里的緩上坡，冬天逆風會讓你體力歸零。
 
 ### 🎒 戰術裝備建議
-清單格式：- **裝備名稱**說明具體用途。
+請將裝備「歸類彙整」後產出，每類 2-3 項，格式：- [分類] **裝備名**：用途。
+例如：
+- [核心] **公路車**：維持高效能輸出。
+- [後勤] **車拖包**：收納換洗衣物。
 
 ### ⚠️ 實戰風險提示
-清單格式：- **風險主題**說明具體情境與應對方案。`;
+請將風險「歸類彙整」後產出，格式：- [分類] **風險名**：應對。
+例如：
+- [環境] **高溫中暑**：補充電解質與水分。
+- [交通] **砂石車**：保持安全車距。`;
 
         function iv(id, v) { document.getElementById(id).value = v; }
 
@@ -728,7 +734,7 @@
                 <div class="day-stats"><span>📏 距離/爬升：${cols[2]}</span></div>
                 <div class="day-body">
                     
-                    <details class="info-accordion" open>
+                    <details class="info-accordion">
                         <summary class="info-summary">
                             <span class="info-label">📍 風景、美食與活動探勘</span>
                             <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
@@ -736,7 +742,7 @@
                         <div class="info-content">${prettifyContent(cols[3])}</div>
                     </details>
                     
-                    <details class="info-accordion challenge" open>
+                    <details class="info-accordion challenge">
                         <summary class="info-summary">
                             <span class="info-label">⚡ 路線挑戰與技術風險</span>
                             <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
@@ -775,11 +781,12 @@
                 if (title.match(/裝備|清單|提示|提醒|守則|風險/)) layoutClass = 'grid-layout';
 
                 let parsedBody = marked.parse(body);
-                // 終極淨化：徹底干掉 AI 愛亂加的換行、冒號、全形冒號與不必要的段落標籤
+                // 終極淨化 + 標籤轉換：處理分類式清單 [分類] 為美觀標籤
                 if (layoutClass === 'grid-layout') {
                     parsedBody = parsedBody
-                        .replace(/<\/strong>[\s:：<br>]*\n*/gi, '</strong>') // 移除 strong 後面的冒號與空白換行
-                        .replace(/<\/strong>\s*<p>/gi, '</strong>') // 移除 strong 後被錯誤切割的 p 標籤
+                        .replace(/\[(.*?)\]/g, '<span class="highlight-tag" style="margin-bottom:5px; display:inline-block;">$1</span>')
+                        .replace(/<\/strong>[\s:：<br>]*\n*/gi, '</strong>')
+                        .replace(/<\/strong>\s*<p>/gi, '</strong>')
                         .replace(/<\/strong><\/p>\s*<ul>/gi, '</strong><ul>')
                         .replace(/<li><p>/gi, '<li>')
                         .replace(/<\/p><\/li>/gi, '</li>');
