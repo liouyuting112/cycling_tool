@@ -7,4 +7,4 @@ compatibility_date = "2024-01-01"
 
 [[kv_namespaces]]
 binding = "CYCLING_KV"
-id = "CYCLING_KV_ID_PLACEHOLDER" # 用戶需要替換為實際 ID
+id = "8c712903814048378aae498b28499718"
