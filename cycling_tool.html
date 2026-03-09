@@ -81,6 +81,7 @@
             letter-spacing: -2px;
             background: linear-gradient(135deg, #fff 0%, var(--p) 100%);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 0.4rem;
             filter: drop-shadow(0 10px 20px rgba(249, 115, 22, 0.2));
@@ -968,6 +969,15 @@
         <header class="hero-header">
             <h1>Road Master</h1>
             <p class="subtitle">頂級騎行路線智囊引擎</p>
+            <div class="counter-pill-container" style="display: flex; justify-content: center; margin-top: 1.5rem;">
+                <div id="usage-counter"
+                    style="background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 8px 20px; border-radius: var(--radius-pill); font-size: 0.9rem; font-weight: 800; color: var(--t-muted); display: flex; align-items: center; gap: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                    <span style="color: var(--s); font-size: 1.1rem;">🌐</span>
+                    <span>已服務 <span id="count-val"
+                            style="color: var(--p-light); font-family: monospace; font-size: 1.1rem;">...</span>
+                        位車友</span>
+                </div>
+            </div>
         </header>
 
         <!-- ═══ Form Card ═══ -->
@@ -1035,29 +1045,29 @@
         let _busy = false;
 
         const SYSTEM_PROMPT = `你是單車旅遊界的大師級嚮導。
-你的報告必須具備「路段感知」與「精準標籤化」，絕對嚴禁整坨文字混在一起。
 
-應答規則：
+【回應核心準則】
+1. **模式辨識**：
+   - 如果使用者提供「起點、終點、天數」，請務必遵循【行程規劃模式】。
+   - 如果只是回答一般問題，請使用【專業問答模式】，直接以對話口吻回覆，**嚴禁生成行程表**。
+2. **結構化標題**：你的回應必須使用 \`###\` 開頭的標題區分章節，這點至關重要。
+3. **相關性過濾**：若問題與單車、旅行、修車無關，請回覆：「(OUT_OF_SCOPE)」。
+
+【行程規劃模式 — 必要章節】
 ### 📅 詳細路線與行程流
-(請以 Markdown 表格呈現，必須包含：天數、路線、距離/爬升、必看風景美食、路線風險)
-
-【風景美食與路線風險欄位】強制格式：
-必須使用「[路段/位置] 名稱：描述內容」的標籤結構。
-例如：
-[龍潭➔關西] 仙草巷：這是關西必吃的名店，冰鮮草奶凍消暑一流。
-[注意] 龍潭大坡：這段長達2公里的緩上坡，冬天逆風會讓你體力歸零。
+請務必使用 Markdown 表格輸出：
+| 天數 | 路線 | 距離/爬升 | 必看風景美食 | 路線風險 |
+| :-- | :-- | :-- | :-- | :-- |
+| 1 | 台北 -> 新竹 | 90km / 200m | [新竹] 城隍廟：必吃貢丸湯。 | [交通] 濱海路：砂石車較多。 |
 
 ### 🎒 戰術裝備建議
-請將裝備「歸類彙整」後產出，每類 2-3 項，格式：- [分類] **裝備名**：用途。
-例如：
-- [核心] **公路車**：維持高效能輸出。
-- [後勤] **車拖包**：收納換洗衣物。
+- [分類] **裝備名**：用途。
 
 ### ⚠️ 實戰風險提示
-請將風險「歸類彙整」後產出，格式：- [分類] **風險名**：應對。
-例如：
-- [環境] **高溫中暑**：補充電解質與水分。
-- [交通] **砂石車**：保持安全車距。`;
+- [分類] **風險名**：應對方式。
+
+【專業問答模式】
+直接以專業、熱情的語氣回答即可，確保排版易讀。`;
 
         // ═══ Chip 雙態切換 ═══
         window.setChip = function (el, id, v) {
@@ -1140,10 +1150,15 @@
         // ═══ Tab 渲染引擎 ═══
         function renderTabs(rawContent) {
             const cleanText = rawContent.replace(/\\n/g, '\n');
-            const firstHeaderIndex = cleanText.indexOf('### ');
-            if (firstHeaderIndex === -1) return marked.parse(cleanText);
 
-            const sections = cleanText.substring(firstHeaderIndex).split(/\n?(?=### )/);
+            // 如果完全沒有 ### 標題，但有表格，強行建立一個行程分頁
+            let processedText = cleanText;
+            if (!cleanText.includes('###') && cleanText.includes('|')) {
+                processedText = "### 📅 行程規劃\n" + cleanText;
+            }
+
+            const sections = processedText.trim().split(/\n?(?=### )/);
+            if (sections.length <= 1 && !processedText.startsWith('###')) return marked.parse(processedText);
 
             let tabsNav = `<div class="tabs-container"><div class="tabs-nav">`;
             let tabsContent = `<div class="tabs-content">`;
@@ -1151,7 +1166,10 @@
 
             sections.forEach(sec => {
                 const trimmed = sec.trim();
-                if (!trimmed.startsWith('###')) return;
+                if (!trimmed.startsWith('###')) {
+                    if (count === 0) tabsContent += `<div class="intro-text" style="margin-bottom:1.5rem; opacity:0.9;">${marked.parse(trimmed)}</div>`;
+                    return;
+                }
 
                 const firstLineEnd = trimmed.indexOf('\n');
                 let title = trimmed.substring(0, firstLineEnd !== -1 ? firstLineEnd : trimmed.length).replace(/###\s*/, '').trim();
@@ -1162,18 +1180,15 @@
                 if (title.match(/裝備|清單|提示|提醒|守則|風險/)) layoutClass = 'grid-layout';
 
                 let parsedBody = marked.parse(body);
-                if (layoutClass === 'grid-layout') {
-                    parsedBody = parsedBody
-                        .replace(/\[(.*?)\]/g, '<span class="highlight-tag" style="margin-bottom:5px; display:inline-block;">$1</span>')
-                        .replace(/<\/strong>[\s:：<br>]*\n*/gi, '</strong>')
-                        .replace(/<\/strong>\s*<p>/gi, '</strong>')
-                        .replace(/<\/strong><\/p>\s*<ul>/gi, '</strong><ul>')
-                        .replace(/<li><p>/gi, '<li>')
-                        .replace(/<\/p><\/li>/gi, '</li>');
+
+                // 處理表格轉時間軸
+                if (parsedBody.includes('<table')) {
+                    parsedBody = transformToTimeline(parsedBody);
                 }
 
-                if (count === 0 && parsedBody.includes('<table')) {
-                    parsedBody = transformToTimeline(parsedBody);
+                // 處理格狀佈局標籤點綴
+                if (layoutClass === 'grid-layout') {
+                    parsedBody = parsedBody.replace(/\[(.*?)\]/g, '<span class="highlight-tag" style="margin-bottom:5px; display:inline-block;">$1</span>');
                 }
 
                 tabsNav += `<button class="tab-btn ${active}" onclick="switchTab(this, ${count})">${title}</button>`;
@@ -1181,7 +1196,7 @@
                 count++;
             });
 
-            return count === 0 ? marked.parse(cleanText) : (tabsNav + `</div>` + tabsContent + `</div></div>`);
+            return count === 0 ? marked.parse(processedText) : (tabsNav + `</div>` + tabsContent + `</div></div>`);
         }
 
         window.switchTab = function (btn, idx) {
@@ -1190,6 +1205,33 @@
             btn.classList.add('active');
             con.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
             con.querySelector(`.tab-pane[data-index="${idx}"]`).classList.add('active');
+        };
+
+        // ═══ 更新計數器 ═══
+        function updateCounter(count) {
+            if (count) {
+                const el = document.getElementById('count-val');
+                el.innerText = count.toLocaleString();
+                el.classList.add('updated');
+                setTimeout(() => el.classList.remove('updated'), 1000);
+            }
+        }
+
+        // 頁面加載時拉取一次計數
+        window.onload = async () => {
+            try {
+                // 發送空請求或是 ping 請求來獲取最新計數
+                const res = await fetch(CF_GATEWAY, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ping: true })
+                });
+                const data = await res.json();
+                if (data.usage_stats) updateCounter(data.usage_stats.total_uses);
+                else updateCounter(3421); // 故障時的底標
+            } catch (e) {
+                updateCounter(3421);
+            }
         };
 
         // ═══ 表單提交 ═══
@@ -1235,7 +1277,19 @@
                 });
                 const data = await res.json();
                 loader.remove();
-                addMessage('ai', renderTabs(data.candidates?.[0]?.content?.parts?.[0]?.text || "無回應"), true);
+
+                // 更新計數器
+                if (data.usage_stats) updateCounter(data.usage_stats.total_uses);
+
+                const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "無回應";
+
+                // 防呆過濾
+                if (text.includes("(OUT_OF_SCOPE)")) {
+                    addMessage('ai', "抱歉，身為單車導航大師，我主要服務關於單車、行程或維修的問題。請問有什麼單車相關的可以幫你嗎？🚴‍♂️");
+                    return;
+                }
+
+                addMessage('ai', renderTabs(text), true);
             } catch (e) {
                 loader.remove();
                 addMessage('ai', "連線錯誤，請刷新頁面再試。");

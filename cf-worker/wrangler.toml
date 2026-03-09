@@ -1,0 +1,10 @@
+name = "cycling-proxy"
+main = "src/index.js"
+compatibility_date = "2024-01-01"
+
+[vars]
+# API_KEY 會在部署後用 wrangler secret 設定，不會寫在這裡
+
+[[kv_namespaces]]
+binding = "CYCLING_KV"
+id = "CYCLING_KV_ID_PLACEHOLDER" # 用戶需要替換為實際 ID
