@@ -13,29 +13,29 @@ export default {
         const isAllowed = allowedOrigins.some(o => origin.startsWith(o));
         const corsOrigin = isAllowed ? origin : allowedOrigins[0];
 
+        const commonHeaders = {
+            "Access-Control-Allow-Origin": corsOrigin,
+            "Access-Control-Allow-Methods": "POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Max-Age": "86400",
+        };
+
         // CORS 預檢
         if (request.method === "OPTIONS") {
-            return new Response(null, {
-                headers: {
-                    "Access-Control-Allow-Origin": corsOrigin,
-                    "Access-Control-Allow-Methods": "POST, OPTIONS",
-                    "Access-Control-Allow-Headers": "Content-Type",
-                    "Access-Control-Max-Age": "86400",
-                },
-            });
+            return new Response(null, { headers: commonHeaders });
         }
 
         // 只接受 POST
         if (request.method !== "POST") {
-            return new Response("Method Not Allowed", { status: 405 });
+            return new Response("Method Not Allowed", { status: 405, headers: commonHeaders });
         }
 
-        // 從環境變數取得 API Key（不在前端）
+        // 從環境變數取得 API Key
         const apiKey = env.API_KEY;
         if (!apiKey) {
             return new Response(JSON.stringify({ error: "API_KEY not configured" }), {
                 status: 500,
-                headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": corsOrigin },
+                headers: { ...commonHeaders, "Content-Type": "application/json" },
             });
         }
 
@@ -48,14 +48,19 @@ export default {
             let usageCount = 0;
             if (env.CYCLING_KV) {
                 const countStr = await env.CYCLING_KV.get("usage_count") || "0";
-                usageCount = parseInt(countStr) + 1;
-                await env.CYCLING_KV.put("usage_count", usageCount.toString());
+                usageCount = parseInt(countStr);
+
+                // 只有非 Ping 請求（即實際 AI 調用）才增加計數
+                if (!body.ping) {
+                    usageCount += 1;
+                    await env.CYCLING_KV.put("usage_count", usageCount.toString());
+                }
             }
 
             // 如果只是 Ping (初始化計數器用)，直接回傳
             if (body.ping) {
                 return new Response(JSON.stringify({ usage_stats: { total_uses: usageCount } }), {
-                    headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": corsOrigin }
+                    headers: { ...commonHeaders, "Content-Type": "application/json" }
                 });
             }
 
@@ -82,22 +87,19 @@ export default {
 
             const responseData = await response.json();
 
-            // 將計數器注入回傳結果（或放在 Header）
-            if (responseData.candidates) {
+            // 將計數器注入回傳結果
+            if (responseData.candidates || responseData.error) {
                 responseData.usage_stats = { total_uses: usageCount };
             }
 
             return new Response(JSON.stringify(responseData), {
                 status: response.status,
-                headers: {
-                    "Content-Type": "application/json",
-                    "Access-Control-Allow-Origin": corsOrigin,
-                },
+                headers: { ...commonHeaders, "Content-Type": "application/json" },
             });
         } catch (e) {
             return new Response(JSON.stringify({ error: "Proxy error: " + e.message }), {
                 status: 500,
-                headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": corsOrigin },
+                headers: { ...commonHeaders, "Content-Type": "application/json" },
             });
         }
     },

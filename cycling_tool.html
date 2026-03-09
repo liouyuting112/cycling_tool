@@ -1228,9 +1228,9 @@
                 });
                 const data = await res.json();
                 if (data.usage_stats) updateCounter(data.usage_stats.total_uses);
-                else updateCounter(3421); // 故障時的底標
+                else updateCounter(0); // 故障時預設為 0
             } catch (e) {
-                updateCounter(3421);
+                updateCounter(0);
             }
         };
 
