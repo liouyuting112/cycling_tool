@@ -1188,6 +1188,10 @@
 
                 // 處理格狀佈局標籤點綴
                 if (layoutClass === 'grid-layout') {
+                    // 清理孤立冒號：移除 </strong> 後方或段落開頭的多餘冒號
+                    parsedBody = parsedBody.replace(/<\/strong>\s*(?:<br\s*\/?>)?\s*[：:]/g, '</strong>');
+                    parsedBody = parsedBody.replace(/<\/p>\s*<p>\s*[：:]\s*/g, '</p><p>');
+                    parsedBody = parsedBody.replace(/>\s*[：:]\s+/g, '> ');
                     parsedBody = parsedBody.replace(/\[(.*?)\]/g, '<span class="highlight-tag" style="margin-bottom:5px; display:inline-block;">$1</span>');
                 }
 
