@@ -1200,7 +1200,11 @@
                 count++;
             });
 
-            return count <= 1 ? marked.parse(processedText) : (tabsNav + `</div>` + tabsContent + `</div></div>`);
+            let finalHtml = count <= 1 ? marked.parse(processedText) : (tabsNav + `</div>` + tabsContent + `</div></div>`);
+
+            // 全域清理孤立冒號：標籤後或段落首位的冒號通常是多餘的
+            finalHtml = finalHtml.replace(/>\s*[：:]\s*/g, '> ');
+            return finalHtml;
         }
 
         window.switchTab = function (btn, idx) {
