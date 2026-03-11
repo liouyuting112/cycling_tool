@@ -295,7 +295,7 @@
         .msg.ai .bubble {
             background: var(--surface);
             border: 1px solid var(--border);
-            padding: 2rem;
+            padding: 1.5rem;
             border-radius: var(--radius-xl);
             color: var(--t);
             backdrop-filter: blur(24px);
@@ -696,9 +696,9 @@
 
         .tab-pane.grid-layout li strong {
             color: #fff;
-            display: block;
+            display: inline-block;
             border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
-            padding-bottom: 8px;
+            padding-bottom: 4px;
             margin-bottom: 4px;
             font-size: 1.05rem;
         }
@@ -948,7 +948,7 @@
             }
 
             .msg.ai .bubble {
-                padding: 1.25rem;
+                padding: 1rem;
             }
 
             .result-card {
@@ -1196,7 +1196,7 @@
                 count++;
             });
 
-            return count === 0 ? marked.parse(processedText) : (tabsNav + `</div>` + tabsContent + `</div></div>`);
+            return count <= 1 ? marked.parse(processedText) : (tabsNav + `</div>` + tabsContent + `</div></div>`);
         }
 
         window.switchTab = function (btn, idx) {
