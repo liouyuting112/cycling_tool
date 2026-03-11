@@ -1,9 +1,9 @@
-name = "cycling-proxy"
+name = "hidden-surf-0579"
 main = "src/index.js"
-compatibility_date = "2024-01-01"
+compatibility_date = "2024-03-10"
 
 [vars]
-# API_KEY 會在部署後用 wrangler secret 設定，不會寫在這裡
+# API_KEY 應使用 Cloudflare Secret 管理，請勿在此填入明文
 
 [[kv_namespaces]]
 binding = "CYCLING_KV"
