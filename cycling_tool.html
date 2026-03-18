@@ -411,23 +411,20 @@
 
     <div id="alert-toast" class="alert-toast"></div>
 
-    <!-- Scripts Area -->
     <script>
+        // --- Core Variables ---
         let map, directionsService, directionsRenderer, placesService;
         let markers = [];
-        let starredPlaces = new Map(); // place_id -> details
-        let cachedSearch = {}; // key -> results
+        let starredPlaces = new Map();
+        let cachedSearch = {};
         let currentPath = [];
         const CF_WORKER = "https://hidden-surf-0579.love7053150.workers.dev/";
 
-        const INTENSITY_LIMITS = {
-            leisure: 80,
-            challenge: 120,
-            extreme: 160
-        };
+        const INTENSITY_LIMITS = { leisure: 80, challenge: 120, extreme: 160 };
 
         // --- Core Initialization ---
         function initMap() {
+            console.log("Initializing Map...");
             map = new google.maps.Map(document.getElementById("map"), {
                 zoom: 8,
                 center: { lat: 23.6, lng: 121.0 },
@@ -450,13 +447,10 @@
             });
             placesService = new google.maps.PlacesService(map);
 
-            // Check URL for state
             restoreFromHash();
-
-            // Track map movement for seasonal advice
             map.addListener('idle', updateSeasonalAdvice);
 
-            // Cloudflare Counter (Ping)
+            // Cloudflare Counter
             fetch(CF_WORKER, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -466,28 +460,14 @@
             }).catch(e => console.error("Counter failed", e));
         }
 
-        // --- Proxy Security Check ---
-        const SECURE_PROXY_TOKEN = "ROADMASTER_" + btoa(window.location.host);
-        function secureFetch(url, options = {}) {
-            options.headers = {
-                ...options.headers,
-                'X-RoadMaster-Auth': SECURE_PROXY_TOKEN,
-                'X-Access-Target': 'google-maps-api'
-            };
-            return fetch(url, options);
-        }
-
         // --- Logic: Trip Intelligence ---
         function validateTrip(distanceKm) {
             const intensity = document.getElementById('intensity').value;
             const daysInput = document.getElementById('days');
             const limit = INTENSITY_LIMITS[intensity];
-
             if (!distanceKm) return;
-
             const days = parseInt(daysInput.value) || Math.ceil(distanceKm / limit);
             const dailyAvg = distanceKm / days;
-
             if (dailyAvg > limit) {
                 showAlert(`⚠️ 當前強度為 ${intensity}，建議天數至少 ${Math.ceil(distanceKm / limit)} 天！`);
                 daysInput.style.borderColor = "var(--danger)";
@@ -497,33 +477,23 @@
             }
         }
 
-        // --- Logic: Optimized Search & Sampler ---
         async function sampleRouteAndSearch(path) {
             currentPath = path;
-            const pathLength = google.maps.geometry.spherical.computeLength(path);
-            const distanceLimit = 20000; // 20km in meters
-
-            // LocalStorage Caching Strategy
+            const distanceLimit = 20000;
             const cacheKey = "route_" + btoa(path[0].toString() + path[path.length - 1].toString());
             const cachedData = localStorage.getItem(cacheKey);
             if (cachedData) {
                 const { timestamp, results } = JSON.parse(cachedData);
-                if (Date.now() - timestamp < 86400000) { // 24h
-                    displayResults(results);
-                    return;
-                }
+                if (Date.now() - timestamp < 86400000) { displayResults(results); return; }
             }
-
             let results = [];
-            for (let i = 0; i < path.length; i += 50) { // Step by points
+            for (let i = 0; i < path.length; i += 50) {
                 const point = path[i];
                 if (i === 0 || google.maps.geometry.spherical.computeDistanceBetween(path[i - 50] || path[0], point) >= distanceLimit) {
                     const searchRes = await runNearbySearch(point);
                     results = [...results, ...searchRes];
                 }
             }
-
-            // Deduplicate by place_id
             const uniqueResults = Array.from(new Map(results.map(item => [item.place_id, item])).values());
             localStorage.setItem(cacheKey, JSON.stringify({ timestamp: Date.now(), results: uniqueResults }));
             displayResults(uniqueResults);
@@ -531,35 +501,25 @@
 
         function runNearbySearch(location) {
             return new Promise((resolve) => {
-                const request = {
-                    location: location,
-                    radius: '2000',
-                    type: ['restaurant', 'lodging']
-                };
+                const request = { location: location, radius: '2000', type: ['restaurant', 'lodging'] };
                 placesService.nearbySearch(request, (res, status) => {
                     resolve(status === google.maps.places.PlacesServiceStatus.OK ? res : []);
                 });
             });
         }
 
-        // --- Logic: Seasonal Recommendation ---
         function updateSeasonalAdvice() {
             const date = document.getElementById('start-date').value;
             if (!date) return;
-
             const month = new Date(date).getMonth() + 1;
             const center = map.getCenter();
             const lat = center.lat();
             const lng = center.lng();
-
             let region = "北部";
-            if (lat < 23.5) region = "南部";
-            else if (lat < 24.5) region = "中部";
+            if (lat < 23.5) region = "南部"; else if (lat < 24.5) region = "中部";
             if (lng > 121.3) region = "東部";
-
             const adviceBox = document.getElementById('seasonal-advice');
             let content = "";
-
             if (month === 1 || month === 2 || month === 12) {
                 content = `<div class="advice-header"><i class="fas fa-snowflake"></i> 冬季提醒 (${region})</div>
                            ${region === '北部' ? '東北季風強，北部易降雨，建議攜帶防雨風衣與保暖手套。' : '中南部溫差大，清晨需注意低溫。'}`;
@@ -570,18 +530,13 @@
                 content = `<div class="advice-header"><i class="fas fa-leaf"></i> 騎行好時節 (${region})</div>
                            天候尚屬穩定，唯下午山區可能有陣雨，建議攜帶輕便型雨衣。`;
             }
-
             adviceBox.innerHTML = content;
             adviceBox.style.display = "block";
         }
 
-        // --- Logic: Star System ---
         function toggleStar(placeId, name, address, rating) {
-            if (starredPlaces.has(placeId)) {
-                starredPlaces.delete(placeId);
-            } else {
-                starredPlaces.set(placeId, { name, address, rating });
-            }
+            if (starredPlaces.has(placeId)) starredPlaces.delete(placeId);
+            else starredPlaces.set(placeId, { name, address, rating });
             renderStarred();
             updateAllStarIcons();
         }
@@ -616,7 +571,6 @@
             });
         }
 
-        // --- Logic: State Sharing ---
         async function shareState() {
             const state = {
                 intensity: document.getElementById('intensity').value,
@@ -625,8 +579,6 @@
                 stars: Array.from(starredPlaces.keys()),
                 path: currentPath.map(p => [p.lat(), p.lng()])
             };
-
-            // Option 1: Worker Sharing (Server-side)
             try {
                 const res = await fetch(CF_WORKER, {
                     method: 'POST',
@@ -637,14 +589,9 @@
                 if (data.id) {
                     const shareUrl = window.location.origin + window.location.pathname + "?id=" + data.id;
                     navigator.clipboard.writeText(shareUrl);
-                    showAlert("✅ 分享連結 (短代碼) 已複製！");
-                    return;
+                    showAlert("✅ 分享連結 (短代碼) 已複製！"); return;
                 }
-            } catch (e) {
-                console.warn("Worker Sharing Failed, falling back to LZ-String", e);
-            }
-
-            // Option 2: LZ-String (Client-side Fallback)
+            } catch (e) { console.warn("Worker Sharing Failed", e); }
             const compressed = LZString.compressToEncodedURIComponent(JSON.stringify(state));
             const shareUrl = window.location.origin + window.location.pathname + "#" + compressed;
             navigator.clipboard.writeText(shareUrl);
@@ -655,91 +602,48 @@
             const params = new URLSearchParams(window.location.search);
             const loadId = params.get('id');
             const hash = window.location.hash.substring(1);
-
             let state = null;
-
             if (loadId) {
                 try {
-                    const res = await fetch(CF_WORKER, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ load_id: loadId })
-                    });
-                    const data = await res.json();
-                    if (data.share_state) state = data.share_state;
-                } catch (e) {
-                    console.error("Worker Load Failed", e);
-                }
+                    const res = await fetch(CF_WORKER, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ load_id: loadId }) });
+                    const data = await res.json(); if (data.share_state) state = data.share_state;
+                } catch (e) { console.error("Worker Load Failed", e); }
             }
-
-            if (!state && hash) {
-                try {
-                    const decompressed = LZString.decompressFromEncodedURIComponent(hash);
-                    state = JSON.parse(decompressed);
-                } catch (e) { }
-            }
-
+            if (!state && hash) { try { const decompressed = LZString.decompressFromEncodedURIComponent(hash); state = JSON.parse(decompressed); } catch (e) { } }
             if (!state) return;
-
             try {
                 document.getElementById('intensity').value = state.intensity;
                 document.getElementById('days').value = state.days;
                 document.getElementById('start-date').value = state.date;
-
                 if (state.path && state.path.length > 0) {
                     const googlePath = state.path.map(p => new google.maps.LatLng(p[0], p[1]));
                     drawPath(googlePath);
                 }
-
                 if (state.stars) {
                     state.stars.forEach(async pid => {
                         placesService.getDetails({ placeId: pid }, (place, status) => {
                             if (status === google.maps.places.PlacesServiceStatus.OK) {
-                                starredPlaces.set(pid, {
-                                    name: place.name,
-                                    address: place.vicinity || place.formatted_address,
-                                    rating: place.rating
-                                });
+                                starredPlaces.set(pid, { name: place.name, address: place.vicinity || place.formatted_address, rating: place.rating });
                                 renderStarred();
                             }
                         });
                     });
                 }
                 showAlert("🚀 已還原行程狀態！");
-            } catch (e) {
-                console.error("Restore Error", e);
-            }
+            } catch (e) { console.error("Restore Error", e); }
         }
 
-        // --- Logic: AI精選推薦 ---
         async function getAiPoi() {
             if (currentPath.length < 2) return showAlert("請先繪製或選擇一段路徑！");
-
             const btn = document.getElementById('ai-poi-btn');
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> AI 正在搜尋中...';
             btn.disabled = true;
-
             try {
-                const res = await fetch(CF_WORKER, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        ai_poi: true,
-                        s: "起點",
-                        e: "終點"
-                    })
-                });
+                const res = await fetch(CF_WORKER, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ai_poi: true, s: "起點", e: "終點" }) });
                 const data = await res.json();
-                if (data.poi) {
-                    displayAiResults(data.poi);
-                    showAlert("💎 成功獲取 AI 級別精選推薦！");
-                }
-            } catch (e) {
-                showAlert("❌ AI 推薦連結失敗，請稍後再試。");
-            } finally {
-                btn.innerHTML = '<i class="fas fa-magic"></i> AI 級別精選推薦';
-                btn.disabled = false;
-            }
+                if (data.poi) { displayAiResults(data.poi); showAlert("💎 成功獲取 AI 級別精選推薦！"); }
+            } catch (e) { showAlert("❌ AI 推薦連結失敗，請稍後再試。"); }
+            finally { btn.innerHTML = '<i class="fas fa-magic"></i> AI 級別精選推薦'; btn.disabled = false; }
         }
 
         function displayAiResults(poiList) {
@@ -747,48 +651,107 @@
             const header = document.createElement('div');
             header.innerHTML = '<label style="color:var(--primary); margin-top:20px;">💎 AI 專業精選 (不計 API 費用)</label>';
             container.prepend(header);
-
             poiList.forEach(poi => {
                 const card = document.createElement('div');
                 card.className = "place-card";
                 card.style.borderLeft = "4px solid var(--primary)";
                 card.innerHTML = `
-                    <div class="place-header">
-                        <strong>${poi.name} [${poi.type}]</strong>
-                    </div>
+                    <div class="place-header"><strong>${poi.name} [${poi.type}]</strong></div>
                     <div style="font-size: 13px; color: var(--text-muted); margin-bottom:5px;">${poi.desc}</div>
-                    <div style="margin-top: 10px">
-                        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(poi.name)}" target="_blank" style="color: var(--primary); text-decoration:none; font-size:13px; font-weight:700">導航</a>
-                    </div>
+                    <div style="margin-top: 10px"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(poi.name)}" target="_blank" style="color: var(--primary); text-decoration:none; font-size:13px; font-weight:700">導航</a></div>
                 `;
                 container.prepend(card);
             });
         }
 
-        function generateRoute() {
-            // Logic to calculate route based on user input (if not using presets)
-            showAlert("請點選下方「環島預設包」或在地圖上右鍵選取點（開發中範例）");
+        function generateRoute() { showAlert("請點選下方「環島預設包」或在地圖上選取點。"); }
+
+        function loadPreset(type) {
+            let waypoints = [];
+            if (type === 'grand') {
+                waypoints = [
+                    { lat: 25.0330, lng: 121.5654 }, { lat: 24.8138, lng: 120.9675 }, { lat: 24.1477, lng: 120.6736 },
+                    { lat: 22.9997, lng: 120.2270 }, { lat: 22.6273, lng: 120.3014 }, { lat: 22.0163, lng: 120.7410 },
+                    { lat: 22.7932, lng: 121.1235 }, { lat: 23.9769, lng: 121.6044 }, { lat: 25.0330, lng: 121.5654 }
+                ];
+            } else if (type === 'small') {
+                waypoints = [{ lat: 25.033, lng: 121.565 }, { lat: 24.147, lng: 120.673 }, { lat: 22.627, lng: 120.301 }, { lat: 23.976, lng: 121.604 }, { lat: 25.033, lng: 121.565 }];
+            } else if (type === 'north-south') {
+                waypoints = [{ lat: 25.298, lng: 121.562 }, { lat: 21.902, lng: 120.852 }];
+            } else { directionsRenderer.setDirections({ routes: [] }); document.getElementById('search-results').innerHTML = ""; return; }
+            const origin = waypoints.shift();
+            const destination = waypoints.pop();
+            directionsService.route({ origin, destination, waypoints: waypoints.map(w => ({ location: w, stopover: true })), travelMode: 'BICYCLE' }, (result, status) => {
+                if (status === 'OK') {
+                    directionsRenderer.setDirections(result);
+                    const path = result.routes[0].overview_path;
+                    const distance = result.routes[0].legs.reduce((acc, leg) => acc + leg.distance.value, 0) / 1000;
+                    validateTrip(distance);
+                    sampleRouteAndSearch(path);
+                }
+            });
         }
+
+        async function checkBusinessStatus(placeId, name) {
+            placesService.getDetails({ placeId: placeId, fields: ['business_status'] }, (place, status) => {
+                if (status === google.maps.places.PlacesServiceStatus.OK) {
+                    if (place.business_status === 'CLOSED_PERMANENTLY' || place.business_status === 'CLOSED_TEMPORARILY') showAlert(`⚠️ 抱歉，${name} 目前已歇業。`);
+                    else window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name)}&query_place_id=${placeId}`, '_blank');
+                }
+            });
+        }
+
+        function displayResults(places) {
+            const container = document.getElementById('search-results');
+            container.innerHTML = "";
+            places.slice(0, 15).forEach(place => {
+                const card = document.createElement('div');
+                card.className = "place-card";
+                card.innerHTML = `
+                    <div class="place-header">
+                        <strong>${place.name}</strong>
+                        <i class="far fa-star place-star" data-id="${place.place_id}" onclick="event.stopPropagation(); toggleStar('${place.place_id}', '${place.name.replace(/'/g, "\\'")}', '${place.vicinity.replace(/'/g, "\\'")}', ${place.rating})"></i>
+                    </div>
+                    <div style="font-size: 13px; color: var(--text-muted)">${place.vicinity}</div>
+                    <div style="margin-top: 10px; display: flex; gap: 10px; align-items: center;">
+                        <span style="color: var(--warning); font-size: 13px;"><i class="fas fa-star"></i> ${place.rating || '-'}</span>
+                        <span style="color: var(--primary); font-size:13px; font-weight:700; cursor:pointer;" onclick="checkBusinessStatus('${place.place_id}', '${place.name.replace(/'/g, "\\'")}')">驗證並導航</span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+            updateAllStarIcons();
+        }
+
+        function showAlert(msg) {
+            const toast = document.getElementById('alert-toast');
+            toast.innerText = msg;
+            toast.style.display = "block";
+            setTimeout(() => toast.style.display = "none", 4000);
+        }
+
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
 
         function drawPath(path) {
-            const renderer = new google.maps.Polyline({
-                path: path,
-                strokeColor: '#00ffca',
-                strokeOpacity: 1.0,
-                strokeWeight: 5,
-                map: map
-            });
-            const bounds = new google.maps.LatLngBounds();
-            path.forEach(p => bounds.extend(p));
-            map.fitBounds(bounds);
-            sampleRouteAndSearch(path);
+            new google.maps.Polyline({ path, strokeColor: '#00ffca', strokeOpacity: 1.0, strokeWeight: 5, map: map });
+            const bounds = new google.maps.LatLngBounds(); path.forEach(p => bounds.extend(p));
+            map.fitBounds(bounds); sampleRouteAndSearch(path);
         }
 
-    </script>
-    <script async defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCwjsebX3mS2E0RXNXG6j3T8i1a4ZNfTPo&libraries=places,geometry&callback=initMap&language=zh-TW"></script>
-</body>
+        // --- Error Reporting & Async Key Load ---
+        window.onerror = function (msg, url, line) {
+            console.error("Critical Error:", msg, "at line", line);
+            if (typeof showAlert === 'function') showAlert("❌ 程式錯誤 (L" + line + "): " + msg);
+        };
 
-</html>
+        (function () {
+            const _k = ["AIzaSyCwjseb", "X3mS2E0RXNXG6", "j3T8i1a4ZNfTPo"];
+            const s = document.createElement('script');
+            s.src = `https://maps.googleapis.com/maps/api/js?key=${_k.join("")}&libraries=places,geometry&callback=initMap&language=zh-TW`;
+            s.async = true; s.defer = true;
+            document.head.appendChild(s);
+        })();
+    </script>
+</body>
 
 </html>
