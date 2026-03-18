@@ -356,6 +356,37 @@
 
         <div class="sidebar-content">
             <div class="control-group">
+                <label>起點城市</label>
+                <select id="origin-city">
+                    <option value="25.0330,121.5654">台北市</option>
+                    <option value="25.0173,121.4627">新北市 (板橋)</option>
+                    <option value="24.9936,121.3010">桃園市</option>
+                    <option value="24.8138,120.9675">新竹市</option>
+                    <option value="24.1477,120.6736">台中市</option>
+                    <option value="23.4800,120.4490">嘉義市</option>
+                    <option value="22.9997,120.2270">台南市</option>
+                    <option value="22.6273,120.3014">高雄市</option>
+                    <option value="22.3373,120.5864">屏東市</option>
+                    <option value="22.7932,121.1235">台東市</option>
+                    <option value="23.9769,121.6044">花蓮市</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>終點城市</label>
+                <select id="dest-city">
+                    <option value="25.0330,121.5654">台北市 (回到起點)</option>
+                    <option value="22.6273,120.3014">高雄市</option>
+                    <option value="22.9997,120.2270">台南市</option>
+                    <option value="24.1477,120.6736">台中市</option>
+                    <option value="23.9769,121.6044">花蓮市</option>
+                    <option value="22.7932,121.1235">台東市</option>
+                    <option value="24.8138,120.9675">新竹市</option>
+                    <option value="24.9936,121.3010">桃園市</option>
+                </select>
+            </div>
+
+            <div class="control-group">
                 <label>騎行強度</label>
                 <select id="intensity" onchange="validateTrip()">
                     <option value="leisure">休閒 (80km/天)</option>
@@ -379,7 +410,7 @@
                 <i class="fas fa-magic"></i> AI 級別精選推薦
             </button>
 
-            <label>環島預設包</label>
+            <label>環島預設包 (快速套用)</label>
             <div class="preset-grid">
                 <div class="chip" onclick="loadPreset('grand')">🚴 大環島 1200km</div>
                 <div class="chip" onclick="loadPreset('small')">🚲 小環島 900km</div>
@@ -387,8 +418,8 @@
                 <div class="chip" onclick="loadPreset('clear')">🧹 清除路徑</div>
             </div>
 
-            <button class="btn btn-primary" onclick="generateRoute()">
-                <i class="fas fa-route"></i> 開始規劃
+            <button class="btn btn-primary" onclick="generateCustomRoute()">
+                <i class="fas fa-route"></i> 自訂起訖點規劃
             </button>
 
             <button class="btn btn-outline" onclick="shareState()">
@@ -446,6 +477,10 @@
                 polylineOptions: { strokeColor: "#00ffca", strokeWeight: 5 }
             });
             placesService = new google.maps.PlacesService(map);
+
+            // Set today's date as default
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('start-date').value = today;
 
             restoreFromHash();
             map.addListener('idle', updateSeasonalAdvice);
@@ -664,9 +699,30 @@
             });
         }
 
-        function generateRoute() { showAlert("請點選下方「環島預設包」或在地圖上選取點。"); }
+        function generateRoute() { showAlert("請點選下方「環島預設包」或使用「自訂起訖點規劃」。"); }
+
+        function generateCustomRoute() {
+            if (!directionsService) return showAlert('❌ 地圖尚未載入，請稍候再試！');
+            const originVal = document.getElementById('origin-city').value.split(',');
+            const destVal = document.getElementById('dest-city').value.split(',');
+            const origin = { lat: parseFloat(originVal[0]), lng: parseFloat(originVal[1]) };
+            const destination = { lat: parseFloat(destVal[0]), lng: parseFloat(destVal[1]) };
+            showAlert('🗺️ 正在計算路線，請稍候...');
+            directionsService.route({ origin, destination, travelMode: 'BICYCLING' }, (result, status) => {
+                if (status === 'OK') {
+                    directionsRenderer.setDirections(result);
+                    const path = result.routes[0].overview_path;
+                    const distance = result.routes[0].legs.reduce((acc, leg) => acc + leg.distance.value, 0) / 1000;
+                    validateTrip(distance);
+                    sampleRouteAndSearch(path);
+                } else {
+                    showAlert('⚠️ 路線規劃失敗，請嘗試更換起訖點。錯誤：' + status);
+                }
+            });
+        }
 
         function loadPreset(type) {
+            if (!directionsService) return showAlert('❌ 地圖尚未載入，請稍候再試！');
             let waypoints = [];
             if (type === 'grand') {
                 waypoints = [
@@ -678,16 +734,25 @@
                 waypoints = [{ lat: 25.033, lng: 121.565 }, { lat: 24.147, lng: 120.673 }, { lat: 22.627, lng: 120.301 }, { lat: 23.976, lng: 121.604 }, { lat: 25.033, lng: 121.565 }];
             } else if (type === 'north-south') {
                 waypoints = [{ lat: 25.298, lng: 121.562 }, { lat: 21.902, lng: 120.852 }];
-            } else { directionsRenderer.setDirections({ routes: [] }); document.getElementById('search-results').innerHTML = ""; return; }
+            } else {
+                directionsRenderer.setDirections({ routes: [] });
+                document.getElementById('search-results').innerHTML = '';
+                currentPath = [];
+                return;
+            }
             const origin = waypoints.shift();
             const destination = waypoints.pop();
-            directionsService.route({ origin, destination, waypoints: waypoints.map(w => ({ location: w, stopover: true })), travelMode: 'BICYCLE' }, (result, status) => {
+            showAlert('🗺️ 載入預設路線中，請稍候...');
+            directionsService.route({ origin, destination, waypoints: waypoints.map(w => ({ location: w, stopover: true })), travelMode: 'BICYCLING' }, (result, status) => {
                 if (status === 'OK') {
                     directionsRenderer.setDirections(result);
                     const path = result.routes[0].overview_path;
                     const distance = result.routes[0].legs.reduce((acc, leg) => acc + leg.distance.value, 0) / 1000;
                     validateTrip(distance);
                     sampleRouteAndSearch(path);
+                    showAlert('✅ 路線載入完成！');
+                } else {
+                    showAlert('⚠️ 路線規劃失敗：' + status);
                 }
             });
         }
