@@ -943,12 +943,21 @@
                 ],
                 disableDefaultUI: true, zoomControl: true
             });
-            dirSvc = new google.maps.DirectionsService();
-            dirRend = new google.maps.DirectionsRenderer({ map, polylineOptions: { strokeColor: '#00ffca', strokeWeight: 5 } });
-            placesSvc = new google.maps.PlacesService(map);
-            elevSvc = new google.maps.ElevationService();
-            updateApiStatus('elev', 'INIT');
-            updateApiStatus('places', 'INIT');
+            try {
+                dirSvc = new google.maps.DirectionsService();
+                dirRend = new google.maps.DirectionsRenderer({ map, polylineOptions: { strokeColor: '#00ffca', strokeWeight: 5 } });
+                debug('Core services initialized');
+            } catch (e) { debug('Core services fail: ' + e.message); }
+
+            try {
+                placesSvc = new google.maps.places.PlacesService(map);
+                updateApiStatus('places', 'INIT');
+            } catch (e) { debug('Places init fail: ' + e.message); updateApiStatus('places', 'FAIL_INIT'); }
+
+            try {
+                elevSvc = new google.maps.ElevationService();
+                updateApiStatus('elev', 'INIT');
+            } catch (e) { debug('Elev init fail: ' + e.message); updateApiStatus('elev', 'FAIL_INIT'); }
 
             // Set today's date
             document.getElementById('start-date').value = new Date().toISOString().split('T')[0];
@@ -1526,7 +1535,7 @@
         (function () {
             const _k = ["AIzaSyAFoZlbO", "mnvd_8dIbVfOzB", "jkQOgUwwwWpg"];
             const s = document.createElement('script');
-            s.src = `https://maps.googleapis.com/maps/api/js?key=${_k.join("")}&libraries=places,geometry,elevation&callback=initMap&language=zh-TW`;
+            s.src = `https://maps.googleapis.com/maps/api/js?key=${_k.join("")}&libraries=places,geometry&callback=initMap&language=zh-TW`;
             s.async = true; s.defer = true;
             document.head.appendChild(s);
         })();
