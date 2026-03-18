@@ -5,28 +5,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Road Master Pro | 終極單車環島規劃</title>
-    <!-- LZ-String for URL Compression -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
-    <!-- Google Fonts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+TC:wght@300;400;700&display=swap"
         rel="stylesheet">
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
     <style>
         :root {
             --primary: #00ffca;
             --primary-dark: #05c4a1;
-            --bg-dark: #0f172a;
+            --bg: #0f172a;
             --surface: #1e293b;
-            --surface-light: #334155;
+            --surface2: #334155;
             --text: #f8fafc;
-            --text-muted: #94a3b8;
+            --muted: #94a3b8;
             --danger: #f43f5e;
-            --warning: #fbbf24;
-            --glass: rgba(30, 41, 59, 0.7);
-            --sidebar-width: 380px;
+            --warn: #fbbf24;
+            --info: #38bdf8;
+            --glass: rgba(30, 41, 59, 0.8);
+            --sw: 380px;
         }
 
         * {
@@ -38,174 +36,418 @@
 
         body {
             font-family: 'Outfit', 'Noto Sans TC', sans-serif;
-            background-color: var(--bg-dark);
+            background: var(--bg);
             color: var(--text);
             height: 100vh;
             overflow: hidden;
             display: flex;
         }
 
-        /* Sidebar Styling */
+        /* ─── Sidebar ─── */
         #sidebar {
-            width: var(--sidebar-width);
+            width: var(--sw);
             background: var(--surface);
             height: 100%;
             overflow-y: auto;
             position: relative;
             z-index: 100;
-            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 4px 0 20px rgba(0, 0, 0, .4);
+            transition: transform .3s;
             display: flex;
             flex-direction: column;
         }
 
-        .sidebar-header {
-            padding: 24px;
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            border-bottom: 1px solid var(--surface-light);
+        .s-header {
+            padding: 20px 24px;
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border-bottom: 1px solid var(--surface2);
+            flex-shrink: 0;
         }
 
         .logo {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 800;
             color: var(--primary);
-            letter-spacing: 1px;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
-        .sidebar-content {
-            padding: 20px;
-            flex-grow: 1;
+        .logo small {
+            font-size: 11px;
+            color: var(--muted);
+            font-weight: 400;
+            letter-spacing: 1px;
         }
 
-        /* Global Control Groups */
-        .control-group {
-            margin-bottom: 24px;
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--surface2);
+            flex-shrink: 0;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px 4px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--muted);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all .2s;
+            letter-spacing: .5px;
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .tab-panel {
+            display: none;
+            padding: 16px;
+            flex: 1;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        /* Form Controls */
+        .cg {
+            margin-bottom: 16px;
         }
 
         label {
             display: block;
-            font-size: 14px;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-            font-weight: 600;
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 6px;
+            font-weight: 700;
             text-transform: uppercase;
+            letter-spacing: .5px;
         }
 
         select,
-        input {
+        input[type=number],
+        input[type=date],
+        input[type=text] {
             width: 100%;
-            padding: 14px;
-            background: var(--surface-light);
+            padding: 12px;
+            background: var(--surface2);
             border: 1px solid transparent;
-            border-radius: 12px;
+            border-radius: 10px;
             color: var(--text);
-            font-size: 16px;
-            transition: all 0.2s;
+            font-size: 15px;
             outline: none;
+            transition: border-color .2s;
         }
 
         select:focus,
         input:focus {
             border-color: var(--primary);
-            background: var(--bg-dark);
         }
 
-        /* Large Action Buttons (Glove Friendly) */
+        /* Buttons */
         .btn {
             width: 100%;
-            padding: 18px;
+            padding: 16px;
             border: none;
-            border-radius: 16px;
-            font-size: 18px;
+            border-radius: 14px;
+            font-size: 16px;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all .25s;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            margin-bottom: 12px;
+            gap: 8px;
+            margin-bottom: 10px;
         }
 
         .btn-primary {
             background: var(--primary);
-            color: var(--bg-dark);
+            color: var(--bg);
         }
 
         .btn-primary:active {
-            transform: scale(0.96);
+            transform: scale(.96);
             background: var(--primary-dark);
         }
 
         .btn-outline {
             background: transparent;
-            border: 2px solid var(--surface-light);
+            border: 2px solid var(--surface2);
             color: var(--text);
         }
 
-        /* Preset Chips */
+        .btn-outline:active {
+            border-color: var(--primary);
+        }
+
+        .btn-sm {
+            padding: 8px 14px;
+            font-size: 13px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: #fff;
+        }
+
+        /* Preset chips */
         .preset-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 8px;
+            margin-bottom: 14px;
         }
 
         .chip {
-            padding: 12px;
-            background: var(--surface-light);
+            padding: 11px 8px;
+            background: var(--surface2);
             border-radius: 10px;
             text-align: center;
-            font-size: 14px;
+            font-size: 13px;
             cursor: pointer;
             border: 1px solid transparent;
+            transition: all .2s;
         }
 
         .chip:hover {
             border-color: var(--primary);
-        }
-
-        /* Results / Starred List */
-        #results-container {
-            margin-top: 20px;
-        }
-
-        .place-card {
-            background: var(--surface-light);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 12px;
-            position: relative;
-            animation: slideIn 0.3s ease-out;
-        }
-
-        .place-card.starred {
-            border-left: 4px solid var(--primary);
-        }
-
-        .place-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 8px;
-        }
-
-        .place-star {
-            color: var(--text-muted);
-            font-size: 20px;
-            cursor: pointer;
-        }
-
-        .place-star.active {
             color: var(--primary);
         }
 
-        /* Map Area */
+        /* Place cards */
+        .place-card {
+            background: var(--surface2);
+            border-radius: 10px;
+            padding: 13px;
+            margin-bottom: 10px;
+            animation: slideIn .3s ease-out;
+            position: relative;
+        }
+
+        .place-card.starred {
+            border-left: 3px solid var(--primary);
+        }
+
+        .ph {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 6px;
+        }
+
+        .ph strong {
+            font-size: 14px;
+            line-height: 1.3;
+            flex: 1;
+            margin-right: 8px;
+        }
+
+        .star-btn {
+            color: var(--muted);
+            font-size: 18px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .star-btn.active {
+            color: var(--primary);
+        }
+
+        .place-meta {
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        .place-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .tag-food {
+            background: rgba(249, 115, 22, .2);
+            color: #f97316;
+        }
+
+        .tag-hotel {
+            background: rgba(99, 102, 241, .2);
+            color: #818cf8;
+        }
+
+        .tag-emergency {
+            background: rgba(244, 63, 94, .2);
+            color: var(--danger);
+        }
+
+        .tag-bike {
+            background: rgba(0, 255, 202, .15);
+            color: var(--primary);
+        }
+
+        .tag-supply {
+            background: rgba(251, 191, 36, .2);
+            color: var(--warn);
+        }
+
+        .nav-link {
+            color: var(--primary);
+            font-size: 12px;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Elevation chart */
+        #elevation-container {
+            background: var(--surface2);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 14px;
+            display: none;
+        }
+
+        #elevation-container h4 {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 10px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        #elevation-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .stat-box {
+            background: var(--surface);
+            border-radius: 8px;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .stat-box .val {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .stat-box .lbl {
+            font-size: 10px;
+            color: var(--muted);
+        }
+
+        /* Day planner */
+        .day-card {
+            background: var(--surface2);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+
+        .day-header {
+            padding: 12px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .day-header h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .day-header .day-meta {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .day-body {
+            padding: 0 14px 12px;
+            display: none;
+        }
+
+        .day-body.open {
+            display: block;
+        }
+
+        .day-body .warn {
+            color: var(--warn);
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        /* Checklist */
+        .checklist-section {
+            margin-bottom: 16px;
+        }
+
+        .checklist-section h4 {
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .check-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, .05);
+            cursor: pointer;
+        }
+
+        .check-item input[type=checkbox] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .check-item label {
+            font-size: 14px;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .check-item.checked label {
+            text-decoration: line-through;
+            color: var(--muted);
+        }
+
+        /* Map */
         #map-container {
-            flex-grow: 1;
+            flex: 1;
             position: relative;
         }
 
@@ -214,34 +456,17 @@
             width: 100%;
         }
 
-        /* Overlays & Alerts */
-        .alert-toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--danger);
-            color: white;
-            padding: 16px 32px;
-            border-radius: 50px;
-            font-weight: 700;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-            z-index: 1000;
-            display: none;
-            animation: popUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        /* Seasonal Reminder Overlay */
+        /* Seasonal overlay */
         #seasonal-advice {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            max-width: 300px;
+            top: 16px;
+            right: 16px;
+            max-width: 280px;
             background: var(--glass);
-            backdrop-filter: blur(10px);
-            padding: 20px;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            padding: 16px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, .1);
             z-index: 50;
             display: none;
         }
@@ -249,49 +474,85 @@
         .advice-header {
             color: var(--primary);
             font-weight: 800;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
+            font-size: 14px;
         }
 
-        /* Mobile Adjustments */
-        .mobile-toggle {
+        #seasonal-advice p {
+            font-size: 13px;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 28px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--surface);
+            color: var(--text);
+            padding: 13px 28px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 14px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, .4);
+            z-index: 2000;
+            display: none;
+            border: 1px solid var(--surface2);
+            max-width: 90vw;
+            text-align: center;
+        }
+
+        .toast.warn {
+            border-color: var(--warn);
+        }
+
+        .toast.ok {
+            border-color: var(--primary);
+        }
+
+        /* Mobile */
+        .mob-toggle {
             display: none;
             position: fixed;
-            top: 15px;
-            left: 15px;
-            z-index: 200;
+            top: 12px;
+            left: 12px;
+            z-index: 300;
             background: var(--primary);
-            color: var(--bg-dark);
-            width: 50px;
-            height: 50px;
+            color: var(--bg);
+            width: 46px;
+            height: 46px;
             border-radius: 12px;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            font-size: 18px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, .3);
+            cursor: pointer;
         }
 
         @media (max-width: 768px) {
             #sidebar {
                 position: fixed;
                 transform: translateX(-100%);
-                width: 85%;
+                width: 88%;
             }
 
             #sidebar.open {
                 transform: translateX(0);
             }
 
-            .mobile-toggle {
+            .mob-toggle {
                 display: flex;
             }
 
             #seasonal-advice {
-                top: 80px;
-                right: 15px;
-                left: 15px;
+                top: 70px;
+                right: 12px;
+                left: 12px;
                 max-width: none;
             }
 
@@ -300,10 +561,17 @@
             }
         }
 
+        /* Section divider */
+        .sec-divider {
+            border: none;
+            border-top: 1px solid var(--surface2);
+            margin: 14px 0;
+        }
+
         @keyframes slideIn {
             from {
                 opacity: 0;
-                transform: translateY(10px);
+                transform: translateY(8px);
             }
 
             to {
@@ -312,50 +580,44 @@
             }
         }
 
-        @keyframes popUp {
-            from {
-                opacity: 0;
-                transform: translate(-50%, 50px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translate(-50%, 0);
-            }
-        }
-
-        /* Custom Scrollbar */
         ::-webkit-scrollbar {
-            width: 6px;
+            width: 5px;
         }
 
         ::-webkit-scrollbar-track {
-            background: var(--bg-dark);
+            background: var(--bg);
         }
 
         ::-webkit-scrollbar-thumb {
-            background: var(--surface-light);
-            border-radius: 10px;
+            background: var(--surface2);
+            border-radius: 8px;
         }
     </style>
 </head>
 
 <body>
 
-    <div class="mobile-toggle" onclick="toggleSidebar()">
-        <i class="fas fa-bars"></i>
-    </div>
+    <div class="mob-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></div>
 
     <aside id="sidebar">
-        <div class="sidebar-header">
+        <div class="s-header">
             <div class="logo">
                 <i class="fas fa-biking"></i>
-                <span>ROAD MASTER PRO</span>
+                <div>
+                    <div>ROAD MASTER PRO</div><small>終極單車環島規劃系統</small>
+                </div>
             </div>
         </div>
 
-        <div class="sidebar-content">
-            <div class="control-group">
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('plan')">🗺️ 路線規劃</div>
+            <div class="tab" onclick="switchTab('days')">📅 每日行程</div>
+            <div class="tab" onclick="switchTab('gear')">🎒 裝備清單</div>
+        </div>
+
+        <!-- Tab 1: Route Planning -->
+        <div class="tab-panel active" id="tab-plan">
+            <div class="cg">
                 <label>起點城市</label>
                 <select id="origin-city">
                     <option value="25.0330,121.5654">台北市</option>
@@ -371,43 +633,39 @@
                     <option value="23.9769,121.6044">花蓮市</option>
                 </select>
             </div>
-
-            <div class="control-group">
+            <div class="cg">
                 <label>終點城市</label>
                 <select id="dest-city">
-                    <option value="25.0330,121.5654">台北市 (回到起點)</option>
+                    <option value="25.0330,121.5654">台北市 (回到起點/環島)</option>
                     <option value="22.6273,120.3014">高雄市</option>
                     <option value="22.9997,120.2270">台南市</option>
                     <option value="24.1477,120.6736">台中市</option>
                     <option value="23.9769,121.6044">花蓮市</option>
                     <option value="22.7932,121.1235">台東市</option>
                     <option value="24.8138,120.9675">新竹市</option>
-                    <option value="24.9936,121.3010">桃園市</option>
                 </select>
             </div>
-
-            <div class="control-group">
-                <label>騎行強度</label>
-                <select id="intensity" onchange="validateTrip()">
-                    <option value="leisure">休閒 (80km/天)</option>
-                    <option value="challenge" selected>挑戰 (120km/天)</option>
-                    <option value="extreme">極限 (160km/天)</option>
-                </select>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                <div class="cg">
+                    <label>騎行強度</label>
+                    <select id="intensity">
+                        <option value="leisure">休閒 80km/天</option>
+                        <option value="challenge" selected>挑戰 120km/天</option>
+                        <option value="extreme">極限 160km/天</option>
+                    </select>
+                </div>
+                <div class="cg">
+                    <label>天數 (可留空)</label>
+                    <input type="number" id="days" placeholder="自動計算">
+                </div>
             </div>
-
-            <div class="control-group">
-                <label>計畫天數 (留空自動推薦)</label>
-                <input type="number" id="days" placeholder="例: 9" onchange="validateTrip()">
-            </div>
-
-            <div class="control-group">
+            <div class="cg">
                 <label>出發日期</label>
-                <input type="date" id="start-date" onchange="updateSeasonalAdvice()">
+                <input type="date" id="start-date">
             </div>
 
-            <button id="ai-poi-btn" class="btn btn-outline" style="border-color: var(--primary); color: var(--primary);"
-                onclick="getAiPoi()">
-                <i class="fas fa-magic"></i> AI 級別精選推薦
+            <button class="btn btn-primary" onclick="generateCustomRoute()">
+                <i class="fas fa-route"></i> 自訂規劃路線
             </button>
 
             <label>環島預設包 (快速套用)</label>
@@ -415,23 +673,136 @@
                 <div class="chip" onclick="loadPreset('grand')">🚴 大環島 1200km</div>
                 <div class="chip" onclick="loadPreset('small')">🚲 小環島 900km</div>
                 <div class="chip" onclick="loadPreset('north-south')">🏁 北高挑戰</div>
-                <div class="chip" onclick="loadPreset('clear')">🧹 清除路徑</div>
+                <div class="chip" onclick="loadPreset('clear')">🧹 清除全部</div>
             </div>
 
-            <button class="btn btn-primary" onclick="generateCustomRoute()">
-                <i class="fas fa-route"></i> 自訂起訖點規劃
+            <button id="ai-poi-btn" class="btn btn-outline" style="border-color:var(--primary);color:var(--primary);"
+                onclick="getAiPoi()">
+                <i class="fas fa-magic"></i> AI 精選景點推薦
             </button>
 
-            <button class="btn btn-outline" onclick="shareState()">
-                <i class="fas fa-share-alt"></i> 產生分享連結
-            </button>
-
-            <div id="results-container">
-                <label id="results-label">星星標記 & 沿途推薦</label>
-                <div id="starred-list"></div>
-                <hr style="border: none; border-top: 1px solid var(--surface-light); margin: 15px 0;">
-                <div id="search-results"></div>
+            <!-- Elevation -->
+            <div id="elevation-container">
+                <h4><i class="fas fa-mountain" style="color:var(--warn)"></i> 坡度剖面圖</h4>
+                <div id="elevation-stats">
+                    <div class="stat-box">
+                        <div class="val" id="stat-dist">-</div>
+                        <div class="lbl">總里程 km</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="val" id="stat-elev">-</div>
+                        <div class="lbl">總爬升 m</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="val" id="stat-equiv">-</div>
+                        <div class="lbl">等效里程 km</div>
+                    </div>
+                </div>
+                <canvas id="elevation-chart" height="100"></canvas>
             </div>
+
+            <hr class="sec-divider">
+
+            <!-- Search Results -->
+            <div id="categories-bar" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;display:none;">
+                <span class="tag tag-food" style="cursor:pointer;padding:5px 10px;" onclick="filterResults('food')">🍜
+                    美食</span>
+                <span class="tag tag-hotel" style="cursor:pointer;padding:5px 10px;" onclick="filterResults('hotel')">🏨
+                    旅館</span>
+                <span class="tag tag-emergency" style="cursor:pointer;padding:5px 10px;"
+                    onclick="filterResults('emergency')">🚨 補給</span>
+                <span class="tag tag-bike" style="cursor:pointer;padding:5px 10px;" onclick="filterResults('bike')">🚲
+                    單車</span>
+                <span class="tag" style="cursor:pointer;padding:5px 10px;background:var(--surface2);"
+                    onclick="filterResults('all')">全部</span>
+            </div>
+
+            <label>星標店家</label>
+            <div id="starred-list"></div>
+            <hr class="sec-divider">
+            <label id="results-label">沿途推薦</label>
+            <div id="search-results"></div>
+        </div>
+
+        <!-- Tab 2: Day Planner -->
+        <div class="tab-panel" id="tab-days">
+            <div id="day-plans-container">
+                <p style="color:var(--muted);font-size:13px;text-align:center;padding:40px 0;">
+                    <i class="fas fa-route" style="font-size:30px;display:block;margin-bottom:12px;opacity:.3"></i>
+                    請先在「路線規劃」中選擇並載入路線，<br>每日行程將自動生成。
+                </p>
+            </div>
+            <hr class="sec-divider">
+            <button class="btn btn-outline" style="border-color:var(--primary);color:var(--primary);"
+                onclick="shareState()">
+                <i class="fas fa-link"></i> 產生完整分享連結
+            </button>
+        </div>
+
+        <!-- Tab 3: Gear Checklist -->
+        <div class="tab-panel" id="tab-gear">
+            <div class="checklist-section">
+                <h4><i class="fas fa-tshirt" style="color:var(--info)"></i> 服裝與裝備</h4>
+                <div class="check-item" data-id="c1"><input type="checkbox" id="c1"><label for="c1">騎行上衣（排汗）× 4套</label>
+                </div>
+                <div class="check-item" data-id="c2"><input type="checkbox" id="c2"><label for="c2">騎行褲（有護墊）× 4條</label>
+                </div>
+                <div class="check-item" data-id="c3"><input type="checkbox" id="c3"><label for="c3">安全帽（附尾燈）</label>
+                </div>
+                <div class="check-item" data-id="c4"><input type="checkbox" id="c4"><label for="c4">騎行手套 × 2雙</label>
+                </div>
+                <div class="check-item" data-id="c5"><input type="checkbox" id="c5"><label for="c5">雨衣（輕便摺疊型）</label>
+                </div>
+                <div class="check-item" data-id="c6"><input type="checkbox" id="c6"><label for="c6">防曬袖套</label></div>
+                <div class="check-item" data-id="c7"><input type="checkbox" id="c7"><label for="c7">騎行鞋</label></div>
+            </div>
+            <div class="checklist-section">
+                <h4><i class="fas fa-wrench" style="color:var(--warn)"></i> 維修工具</h4>
+                <div class="check-item" data-id="t1"><input type="checkbox" id="t1"><label for="t1">備胎（內胎）× 2</label>
+                </div>
+                <div class="check-item" data-id="t2"><input type="checkbox" id="t2"><label for="t2">補胎膠水 + 銼刀</label>
+                </div>
+                <div class="check-item" data-id="t3"><input type="checkbox" id="t3"><label for="t3">打氣筒（攜帶式）</label>
+                </div>
+                <div class="check-item" data-id="t4"><input type="checkbox" id="t4"><label for="t4">六角扳手組</label></div>
+                <div class="check-item" data-id="t5"><input type="checkbox" id="t5"><label for="t5">鏈條油 + 清潔劑</label>
+                </div>
+                <div class="check-item" data-id="t6"><input type="checkbox" id="t6"><label for="t6">尼龍線束帶 × 10</label>
+                </div>
+            </div>
+            <div class="checklist-section">
+                <h4><i class="fas fa-apple-alt" style="color:var(--danger)"></i> 補給品</h4>
+                <div class="check-item" data-id="s1"><input type="checkbox" id="s1"><label for="s1">水壺 × 2（至少
+                        1.5L）</label></div>
+                <div class="check-item" data-id="s2"><input type="checkbox" id="s2"><label for="s2">能量棒 / 補給點心</label>
+                </div>
+                <div class="check-item" data-id="s3"><input type="checkbox" id="s3"><label for="s3">電解質粉 / 鹽錠</label>
+                </div>
+                <div class="check-item" data-id="s4"><input type="checkbox" id="s4"><label for="s4">防曬乳 SPF50+</label>
+                </div>
+                <div class="check-item" data-id="s5"><input type="checkbox" id="s5"><label for="s5">急救藥品（OK繃、肌樂）</label>
+                </div>
+            </div>
+            <div class="checklist-section">
+                <h4><i class="fas fa-mobile-alt" style="color:var(--primary)"></i> 通訊與安全</h4>
+                <div class="check-item" data-id="e1"><input type="checkbox" id="e1"><label for="e1">手機充電線 + 行動電源</label>
+                </div>
+                <div class="check-item" data-id="e2"><input type="checkbox" id="e2"><label for="e2">車燈（前燈 + 尾燈）</label>
+                </div>
+                <div class="check-item" data-id="e3"><input type="checkbox" id="e3"><label for="e3">手機架（固定在車把上）</label>
+                </div>
+                <div class="check-item" data-id="e4"><input type="checkbox" id="e4"><label for="e4">緊急連絡卡（放在袋上）</label>
+                </div>
+                <div class="check-item" data-id="e5"><input type="checkbox" id="e5"><label for="e5">現金（部分鄉村不刷卡）</label>
+                </div>
+                <div class="check-item" data-id="e6"><input type="checkbox" id="e6"><label for="e6">身份證 / 健保卡</label>
+                </div>
+            </div>
+            <button class="btn btn-outline" onclick="resetChecklist()"><i class="fas fa-undo"></i> 重置清單</button>
+            <button class="btn btn-outline" style="border-color:var(--primary);color:var(--primary);"
+                onclick="shareState()">
+                <i class="fas fa-link"></i> 產生含清單的分享連結
+            </button>
         </div>
     </aside>
 
@@ -440,393 +811,570 @@
         <div id="seasonal-advice"></div>
     </main>
 
-    <div id="alert-toast" class="alert-toast"></div>
+    <div id="toast" class="toast"></div>
 
     <script>
-        // --- Core Variables ---
-        let map, directionsService, directionsRenderer, placesService;
-        let markers = [];
-        let starredPlaces = new Map();
-        let cachedSearch = {};
-        let currentPath = [];
-        const CF_WORKER = "https://hidden-surf-0579.love7053150.workers.dev/";
+        // ─── State ───
+        let map, dirSvc, dirRend, placesSvc, elevSvc, elevChart;
+        let currentPath = [], currentPreset = null;
+        let starredPlaces = new Map(); // id -> {name, address, rating, type, placeId}
+        let allResults = []; // full results array
+        let currentFilter = 'all';
+        const CF = "https://hidden-surf-0579.love7053150.workers.dev/";
+        const LIMITS = { leisure: 80, challenge: 120, extreme: 160 };
 
-        const INTENSITY_LIMITS = { leisure: 80, challenge: 120, extreme: 160 };
+        // ─── Tab System ───
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach((t, i) => {
+                t.classList.toggle('active', ['plan', 'days', 'gear'][i] === tab);
+            });
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('tab-' + tab).classList.add('active');
+        }
 
-        // --- Core Initialization ---
+        // ─── Toast ───
+        let toastTimer;
+        function showAlert(msg, type = '') {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = 'toast ' + type;
+            t.style.display = 'block';
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => t.style.display = 'none', 5000);
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+        // ─── initMap ───
         function initMap() {
-            console.log("Initializing Map...");
-            map = new google.maps.Map(document.getElementById("map"), {
+            map = new google.maps.Map(document.getElementById('map'), {
                 zoom: 8,
                 center: { lat: 23.6, lng: 121.0 },
                 styles: [
-                    { "elementType": "geometry", "stylers": [{ "color": "#242f3e" }] },
-                    { "elementType": "labels.text.stroke", "stylers": [{ "color": "#242f3e" }] },
-                    { "elementType": "labels.text.fill", "stylers": [{ "color": "#746855" }] },
-                    { "featureType": "road", "elementType": "geometry", "stylers": [{ "color": "#38414e" }] },
-                    { "featureType": "road", "elementType": "geometry.stroke", "stylers": [{ "color": "#212a37" }] },
-                    { "featureType": "water", "elementType": "geometry", "stylers": [{ "color": "#17263c" }] }
+                    { elementType: 'geometry', stylers: [{ color: '#242f3e' }] },
+                    { elementType: 'labels.text.stroke', stylers: [{ color: '#242f3e' }] },
+                    { elementType: 'labels.text.fill', stylers: [{ color: '#746855' }] },
+                    { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#38414e' }] },
+                    { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#17263c' }] }
                 ],
-                disableDefaultUI: true,
-                zoomControl: true
+                disableDefaultUI: true, zoomControl: true
             });
+            dirSvc = new google.maps.DirectionsService();
+            dirRend = new google.maps.DirectionsRenderer({ map, polylineOptions: { strokeColor: '#00ffca', strokeWeight: 5 } });
+            placesSvc = new google.maps.PlacesService(map);
+            elevSvc = new google.maps.ElevationService();
 
-            directionsService = new google.maps.DirectionsService();
-            directionsRenderer = new google.maps.DirectionsRenderer({
-                map: map,
-                polylineOptions: { strokeColor: "#00ffca", strokeWeight: 5 }
-            });
-            placesService = new google.maps.PlacesService(map);
+            // Set today's date
+            document.getElementById('start-date').value = new Date().toISOString().split('T')[0];
 
-            // Set today's date as default
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('start-date').value = today;
+            // Init checklist
+            initChecklist();
 
-            restoreFromHash();
+            // Restore shared state
+            restoreState();
+
+            // Seasonal advice on map movement
             map.addListener('idle', updateSeasonalAdvice);
 
-            // Cloudflare Counter
-            fetch(CF_WORKER, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ping: true })
-            }).then(r => r.json()).then(data => {
-                console.log("Usage Counter:", data.usage_stats.total_uses);
-            }).catch(e => console.error("Counter failed", e));
+            // Cloudflare counter
+            fetch(CF, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ping: true }) })
+                .then(r => r.json()).then(d => console.log('Visits:', d.usage_stats?.total_uses)).catch(() => { });
         }
 
-        // --- Logic: Trip Intelligence ---
-        function validateTrip(distanceKm) {
-            const intensity = document.getElementById('intensity').value;
-            const daysInput = document.getElementById('days');
-            const limit = INTENSITY_LIMITS[intensity];
-            if (!distanceKm) return;
-            const days = parseInt(daysInput.value) || Math.ceil(distanceKm / limit);
-            const dailyAvg = distanceKm / days;
-            if (dailyAvg > limit) {
-                showAlert(`⚠️ 當前強度為 ${intensity}，建議天數至少 ${Math.ceil(distanceKm / limit)} 天！`);
-                daysInput.style.borderColor = "var(--danger)";
-            } else {
-                daysInput.style.borderColor = "transparent";
-                if (!daysInput.value) daysInput.placeholder = `建議 ${days} 天`;
-            }
-        }
-
-        async function sampleRouteAndSearch(path) {
-            currentPath = path;
-            const distanceLimit = 20000;
-            const cacheKey = "route_" + btoa(path[0].toString() + path[path.length - 1].toString());
-            const cachedData = localStorage.getItem(cacheKey);
-            if (cachedData) {
-                const { timestamp, results } = JSON.parse(cachedData);
-                if (Date.now() - timestamp < 86400000) { displayResults(results); return; }
-            }
-            let results = [];
-            for (let i = 0; i < path.length; i += 50) {
-                const point = path[i];
-                if (i === 0 || google.maps.geometry.spherical.computeDistanceBetween(path[i - 50] || path[0], point) >= distanceLimit) {
-                    const searchRes = await runNearbySearch(point);
-                    results = [...results, ...searchRes];
-                }
-            }
-            const uniqueResults = Array.from(new Map(results.map(item => [item.place_id, item])).values());
-            localStorage.setItem(cacheKey, JSON.stringify({ timestamp: Date.now(), results: uniqueResults }));
-            displayResults(uniqueResults);
-        }
-
-        function runNearbySearch(location) {
-            return new Promise((resolve) => {
-                const request = { location: location, radius: '2000', type: ['restaurant', 'lodging'] };
-                placesService.nearbySearch(request, (res, status) => {
-                    resolve(status === google.maps.places.PlacesServiceStatus.OK ? res : []);
-                });
-            });
-        }
-
-        function updateSeasonalAdvice() {
-            const date = document.getElementById('start-date').value;
-            if (!date) return;
-            const month = new Date(date).getMonth() + 1;
-            const center = map.getCenter();
-            const lat = center.lat();
-            const lng = center.lng();
-            let region = "北部";
-            if (lat < 23.5) region = "南部"; else if (lat < 24.5) region = "中部";
-            if (lng > 121.3) region = "東部";
-            const adviceBox = document.getElementById('seasonal-advice');
-            let content = "";
-            if (month === 1 || month === 2 || month === 12) {
-                content = `<div class="advice-header"><i class="fas fa-snowflake"></i> 冬季提醒 (${region})</div>
-                           ${region === '北部' ? '東北季風強，北部易降雨，建議攜帶防雨風衣與保暖手套。' : '中南部溫差大，清晨需注意低溫。'}`;
-            } else if (month >= 6 && month <= 9) {
-                content = `<div class="advice-header"><i class="fas fa-sun"></i> 夏季提醒 (${region})</div>
-                           南部紫外線極強，強烈建議每 20km 補水一次，注意防曬以免熱衰竭。`;
-            } else {
-                content = `<div class="advice-header"><i class="fas fa-leaf"></i> 騎行好時節 (${region})</div>
-                           天候尚屬穩定，唯下午山區可能有陣雨，建議攜帶輕便型雨衣。`;
-            }
-            adviceBox.innerHTML = content;
-            adviceBox.style.display = "block";
-        }
-
-        function toggleStar(placeId, name, address, rating) {
-            if (starredPlaces.has(placeId)) starredPlaces.delete(placeId);
-            else starredPlaces.set(placeId, { name, address, rating });
-            renderStarred();
-            updateAllStarIcons();
-        }
-
-        function renderStarred() {
-            const container = document.getElementById('starred-list');
-            container.innerHTML = "";
-            starredPlaces.forEach((data, id) => {
-                const card = document.createElement('div');
-                card.className = "place-card starred";
-                card.innerHTML = `
-                    <div class="place-header">
-                        <strong>${data.name}</strong>
-                        <i class="fas fa-star place-star active" onclick="toggleStar('${id}')"></i>
-                    </div>
-                    <div style="font-size: 13px; color: var(--text-muted)">${data.address}</div>
-                    <div style="margin-top: 10px">
-                        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(data.name)}&query_place_id=${id}" target="_blank" style="color: var(--primary); text-decoration:none; font-weight:700">
-                             在 Google Maps 開啟 <i class="fas fa-external-link-alt"></i>
-                        </a>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        function updateAllStarIcons() {
-            document.querySelectorAll('.place-star').forEach(icon => {
-                const pid = icon.getAttribute('data-id');
-                if (starredPlaces.has(pid)) icon.classList.add('active');
-                else icon.classList.remove('active');
-            });
-        }
-
-        async function shareState() {
-            const state = {
-                intensity: document.getElementById('intensity').value,
-                days: document.getElementById('days').value,
-                date: document.getElementById('start-date').value,
-                stars: Array.from(starredPlaces.keys()),
-                path: currentPath.map(p => [p.lat(), p.lng()])
-            };
-            try {
-                const res = await fetch(CF_WORKER, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ share_state: state })
-                });
-                const data = await res.json();
-                if (data.id) {
-                    const shareUrl = window.location.origin + window.location.pathname + "?id=" + data.id;
-                    navigator.clipboard.writeText(shareUrl);
-                    showAlert("✅ 分享連結 (短代碼) 已複製！"); return;
-                }
-            } catch (e) { console.warn("Worker Sharing Failed", e); }
-            const compressed = LZString.compressToEncodedURIComponent(JSON.stringify(state));
-            const shareUrl = window.location.origin + window.location.pathname + "#" + compressed;
-            navigator.clipboard.writeText(shareUrl);
-            showAlert("✅ 分享連結 (長連結) 已複製！");
-        }
-
-        async function restoreFromHash() {
-            const params = new URLSearchParams(window.location.search);
-            const loadId = params.get('id');
-            const hash = window.location.hash.substring(1);
-            let state = null;
-            if (loadId) {
-                try {
-                    const res = await fetch(CF_WORKER, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ load_id: loadId }) });
-                    const data = await res.json(); if (data.share_state) state = data.share_state;
-                } catch (e) { console.error("Worker Load Failed", e); }
-            }
-            if (!state && hash) { try { const decompressed = LZString.decompressFromEncodedURIComponent(hash); state = JSON.parse(decompressed); } catch (e) { } }
-            if (!state) return;
-            try {
-                document.getElementById('intensity').value = state.intensity;
-                document.getElementById('days').value = state.days;
-                document.getElementById('start-date').value = state.date;
-                if (state.path && state.path.length > 0) {
-                    const googlePath = state.path.map(p => new google.maps.LatLng(p[0], p[1]));
-                    drawPath(googlePath);
-                }
-                if (state.stars) {
-                    state.stars.forEach(async pid => {
-                        placesService.getDetails({ placeId: pid }, (place, status) => {
-                            if (status === google.maps.places.PlacesServiceStatus.OK) {
-                                starredPlaces.set(pid, { name: place.name, address: place.vicinity || place.formatted_address, rating: place.rating });
-                                renderStarred();
-                            }
-                        });
-                    });
-                }
-                showAlert("🚀 已還原行程狀態！");
-            } catch (e) { console.error("Restore Error", e); }
-        }
-
-        async function getAiPoi() {
-            if (currentPath.length < 2) return showAlert("請先繪製或選擇一段路徑！");
-            const btn = document.getElementById('ai-poi-btn');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> AI 正在搜尋中...';
-            btn.disabled = true;
-            try {
-                const res = await fetch(CF_WORKER, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ai_poi: true, s: "起點", e: "終點" }) });
-                const data = await res.json();
-                if (data.poi) { displayAiResults(data.poi); showAlert("💎 成功獲取 AI 級別精選推薦！"); }
-            } catch (e) { showAlert("❌ AI 推薦連結失敗，請稍後再試。"); }
-            finally { btn.innerHTML = '<i class="fas fa-magic"></i> AI 級別精選推薦'; btn.disabled = false; }
-        }
-
-        function displayAiResults(poiList) {
-            const container = document.getElementById('search-results');
-            const header = document.createElement('div');
-            header.innerHTML = '<label style="color:var(--primary); margin-top:20px;">💎 AI 專業精選 (不計 API 費用)</label>';
-            container.prepend(header);
-            poiList.forEach(poi => {
-                const card = document.createElement('div');
-                card.className = "place-card";
-                card.style.borderLeft = "4px solid var(--primary)";
-                card.innerHTML = `
-                    <div class="place-header"><strong>${poi.name} [${poi.type}]</strong></div>
-                    <div style="font-size: 13px; color: var(--text-muted); margin-bottom:5px;">${poi.desc}</div>
-                    <div style="margin-top: 10px"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(poi.name)}" target="_blank" style="color: var(--primary); text-decoration:none; font-size:13px; font-weight:700">導航</a></div>
-                `;
-                container.prepend(card);
-            });
-        }
-
-        function generateRoute() { showAlert("請點選下方「環島預設包」或使用「自訂起訖點規劃」。"); }
-
+        // ─── Route Logic ───
         function generateCustomRoute() {
-            if (!directionsService) return showAlert('❌ 地圖尚未載入，請稍候再試！');
-            const originVal = document.getElementById('origin-city').value.split(',');
-            const destVal = document.getElementById('dest-city').value.split(',');
-            const origin = { lat: parseFloat(originVal[0]), lng: parseFloat(originVal[1]) };
-            const destination = { lat: parseFloat(destVal[0]), lng: parseFloat(destVal[1]) };
-            showAlert('🗺️ 正在計算路線，請稍候...');
-            directionsService.route({ origin, destination, travelMode: 'BICYCLING' }, (result, status) => {
-                if (status === 'OK') {
-                    directionsRenderer.setDirections(result);
-                    const path = result.routes[0].overview_path;
-                    const distance = result.routes[0].legs.reduce((acc, leg) => acc + leg.distance.value, 0) / 1000;
-                    validateTrip(distance);
-                    sampleRouteAndSearch(path);
-                } else {
-                    showAlert('⚠️ 路線規劃失敗，請嘗試更換起訖點。錯誤：' + status);
-                }
-            });
+            if (!dirSvc) return showAlert('❌ 地圖尚未就緒，請稍候');
+            const ov = document.getElementById('origin-city').value.split(',');
+            const dv = document.getElementById('dest-city').value.split(',');
+            const origin = { lat: +ov[0], lng: +ov[1] };
+            const destination = { lat: +dv[0], lng: +dv[1] };
+            showAlert('🗺️ 計算路線中...');
+            currentPreset = null;
+            dirSvc.route({ origin, destination, travelMode: 'BICYCLING' }, handleRouteResult);
         }
 
         function loadPreset(type) {
-            if (!directionsService) return showAlert('❌ 地圖尚未載入，請稍候再試！');
-            let waypoints = [];
-            if (type === 'grand') {
-                waypoints = [
-                    { lat: 25.0330, lng: 121.5654 }, { lat: 24.8138, lng: 120.9675 }, { lat: 24.1477, lng: 120.6736 },
-                    { lat: 22.9997, lng: 120.2270 }, { lat: 22.6273, lng: 120.3014 }, { lat: 22.0163, lng: 120.7410 },
-                    { lat: 22.7932, lng: 121.1235 }, { lat: 23.9769, lng: 121.6044 }, { lat: 25.0330, lng: 121.5654 }
-                ];
-            } else if (type === 'small') {
-                waypoints = [{ lat: 25.033, lng: 121.565 }, { lat: 24.147, lng: 120.673 }, { lat: 22.627, lng: 120.301 }, { lat: 23.976, lng: 121.604 }, { lat: 25.033, lng: 121.565 }];
-            } else if (type === 'north-south') {
-                waypoints = [{ lat: 25.298, lng: 121.562 }, { lat: 21.902, lng: 120.852 }];
-            } else {
-                directionsRenderer.setDirections({ routes: [] });
+            if (!dirSvc) return showAlert('❌ 地圖尚未就緒，請稍候');
+            if (type === 'clear') {
+                dirRend.setDirections({ routes: [] });
                 document.getElementById('search-results').innerHTML = '';
-                currentPath = [];
+                document.getElementById('elevation-container').style.display = 'none';
+                document.getElementById('categories-bar').style.display = 'none';
+                document.getElementById('day-plans-container').innerHTML = '<p style="color:var(--muted);font-size:13px;text-align:center;padding:40px 0;"><i class="fas fa-route" style="font-size:30px;display:block;margin-bottom:12px;opacity:.3"></i>請先在「路線規劃」中選擇並載入路線。</p>';
+                currentPath = []; currentPreset = null; allResults = [];
                 return;
             }
-            const origin = waypoints.shift();
-            const destination = waypoints.pop();
-            showAlert('🗺️ 載入預設路線中，請稍候...');
-            directionsService.route({ origin, destination, waypoints: waypoints.map(w => ({ location: w, stopover: true })), travelMode: 'BICYCLING' }, (result, status) => {
-                if (status === 'OK') {
-                    directionsRenderer.setDirections(result);
-                    const path = result.routes[0].overview_path;
-                    const distance = result.routes[0].legs.reduce((acc, leg) => acc + leg.distance.value, 0) / 1000;
-                    validateTrip(distance);
-                    sampleRouteAndSearch(path);
-                    showAlert('✅ 路線載入完成！');
-                } else {
-                    showAlert('⚠️ 路線規劃失敗：' + status);
+            const presets = {
+                grand: [{ lat: 25.033, lng: 121.565 }, { lat: 24.814, lng: 120.967 }, { lat: 24.148, lng: 120.674 }, { lat: 22.999, lng: 120.227 }, { lat: 22.627, lng: 120.301 }, { lat: 22.016, lng: 120.741 }, { lat: 22.793, lng: 121.123 }, { lat: 23.977, lng: 121.604 }, { lat: 25.033, lng: 121.565 }],
+                small: [{ lat: 25.033, lng: 121.565 }, { lat: 24.148, lng: 120.674 }, { lat: 22.627, lng: 120.301 }, { lat: 23.977, lng: 121.604 }, { lat: 25.033, lng: 121.565 }],
+                'north-south': [{ lat: 25.298, lng: 121.562 }, { lat: 21.902, lng: 120.852 }]
+            };
+            const wps = [...presets[type]];
+            const origin = wps.shift();
+            const destination = wps.pop();
+            currentPreset = type;
+            showAlert('🗺️ 載入預設路線中...');
+            dirSvc.route({
+                origin, destination,
+                waypoints: wps.map(w => ({ location: w, stopover: true })),
+                travelMode: 'BICYCLING'
+            }, handleRouteResult);
+        }
+
+        function handleRouteResult(result, status) {
+            if (status !== 'OK') return showAlert('⚠️ 路線規劃失敗：' + status);
+            dirRend.setDirections(result);
+            const route = result.routes[0];
+            currentPath = route.overview_path;
+            const totalDist = route.legs.reduce((a, l) => a + l.distance.value, 0) / 1000;
+
+            // Day plan & validate
+            const intensity = document.getElementById('intensity').value;
+            const limit = LIMITS[intensity];
+            const days = parseInt(document.getElementById('days').value) || Math.ceil(totalDist / limit);
+
+            // Elevation
+            fetchElevation(currentPath, totalDist, days);
+
+            // Search nearby
+            searchAlongRoute(currentPath);
+            showAlert('✅ 路線載入完成！正在搜尋沿途店家...');
+        }
+
+        // ─── Elevation ───
+        function fetchElevation(path, totalDistKm, days) {
+            const samples = 60;
+            const step = Math.max(1, Math.floor(path.length / samples));
+            const sampled = [];
+            for (let i = 0; i < path.length; i += step) sampled.push(path[i]);
+            if (sampled[sampled.length - 1] !== path[path.length - 1]) sampled.push(path[path.length - 1]);
+
+            elevSvc.getElevationAlongPath({ path: sampled, samples: Math.min(sampled.length, 256) }, (results, status) => {
+                if (status !== 'OK') return;
+
+                const elevs = results.map(r => Math.round(r.elevation));
+                let totalGain = 0;
+                for (let i = 1; i < elevs.length; i++) {
+                    const diff = elevs[i] - elevs[i - 1];
+                    if (diff > 0) totalGain += diff;
+                }
+                const equivDist = Math.round(totalDistKm + totalGain / 10);
+
+                document.getElementById('stat-dist').textContent = Math.round(totalDistKm);
+                document.getElementById('stat-elev').textContent = Math.round(totalGain);
+                document.getElementById('stat-equiv').textContent = equivDist;
+                document.getElementById('elevation-container').style.display = 'block';
+
+                if (elevChart) elevChart.destroy();
+                const ctx = document.getElementById('elevation-chart').getContext('2d');
+                const labels = elevs.map((_, i) => Math.round(i * totalDistKm / elevs.length) + 'km');
+
+                // Detect steep sections (gradient > 5%)
+                const segLen = (totalDistKm * 1000) / elevs.length;
+                const colors = elevs.map((e, i) => {
+                    if (i === 0) return 'rgba(0,255,202,0.6)';
+                    const grad = ((elevs[i] - elevs[i - 1]) / segLen) * 100;
+                    return grad > 5 ? 'rgba(244,63,94,0.8)' : grad > 2 ? 'rgba(251,191,36,0.7)' : 'rgba(0,255,202,0.5)';
+                });
+
+                elevChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels,
+                        datasets: [{
+                            label: '海拔 (m)',
+                            data: elevs,
+                            backgroundColor: colors,
+                            borderWidth: 0,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: ctx => `海拔 ${ctx.parsed.y}m`,
+                                    afterLabel: ctx => {
+                                        if (ctx.dataIndex === 0) return '';
+                                        const grad = ((elevs[ctx.dataIndex] - elevs[ctx.dataIndex - 1]) / segLen) * 100;
+                                        if (grad > 5) return '⚠️ 陡坡警告！';
+                                        return '';
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: { display: false },
+                            y: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } }
+                        }
+                    }
+                });
+
+                // Build day plans
+                buildDayPlans(totalDistKm, totalGain, equivDist, days);
+
+                // Check overload
+                const intensity = document.getElementById('intensity').value;
+                const limit = LIMITS[intensity];
+                if (equivDist / days > limit) {
+                    showAlert(`⚠️ 等效里程超標！建議至少 ${Math.ceil(equivDist / limit)} 天`, 'warn');
                 }
             });
         }
 
-        async function checkBusinessStatus(placeId, name) {
-            placesService.getDetails({ placeId: placeId, fields: ['business_status'] }, (place, status) => {
-                if (status === google.maps.places.PlacesServiceStatus.OK) {
-                    if (place.business_status === 'CLOSED_PERMANENTLY' || place.business_status === 'CLOSED_TEMPORARILY') showAlert(`⚠️ 抱歉，${name} 目前已歇業。`);
-                    else window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name)}&query_place_id=${placeId}`, '_blank');
-                }
+        // ─── Day Plans ───
+        function buildDayPlans(totalKm, totalGain, equivKm, days) {
+            const intensity = document.getElementById('intensity').value;
+            const limit = LIMITS[intensity];
+            const finalDays = parseInt(document.getElementById('days').value) || days;
+            const kmPerDay = totalKm / finalDays;
+            const gainPerDay = totalGain / finalDays;
+            const equivPerDay = equivKm / finalDays;
+            const startDate = document.getElementById('start-date').value;
+
+            let html = `<p style="font-size:13px;color:var(--muted);margin-bottom:14px;">共 <strong style="color:var(--primary)">${finalDays} 天</strong>，總里程 <strong style="color:var(--primary)">${Math.round(totalKm)}km</strong>，總爬升 <strong style="color:var(--warn)">${Math.round(totalGain)}m</strong></p>`;
+
+            for (let d = 0; d < finalDays; d++) {
+                const dateStr = startDate ? new Date(new Date(startDate).getTime() + d * 86400000).toLocaleDateString('zh-TW', { month: 'long', day: 'numeric', weekday: 'short' }) : `第 ${d + 1} 天`;
+                const progressStart = Math.round(d * totalKm / finalDays);
+                const progressEnd = Math.round((d + 1) * totalKm / finalDays);
+                const overload = equivPerDay > limit;
+                const speedKmh = intensity === 'leisure' ? 15 : intensity === 'challenge' ? 20 : 25;
+                const hrs = Math.round(equivPerDay / speedKmh * 10) / 10;
+
+                html += `
+            <div class="day-card">
+                <div class="day-header" onclick="toggleDay(this)">
+                    <h4>${dateStr}</h4>
+                    <div class="day-meta">${Math.round(kmPerDay)}km｜⬆️${Math.round(gainPerDay)}m｜⏱️~${hrs}h</div>
+                </div>
+                <div class="day-body" id="day-body-${d}">
+                    ${overload ? `<div class="warn">⚠️ 等效里程 ${Math.round(equivPerDay)}km 超過強度上限 ${limit}km，建議增加天數！</div>` : ''}
+                    <p style="font-size:12px;color:var(--muted);margin-bottom:8px;">里程區間：<strong style="color:var(--text)">${progressStart} – ${progressEnd} km</strong></p>
+                    <p style="font-size:12px;color:var(--muted);margin-bottom:8px;">建議配速：<strong style="color:var(--primary)">${speedKmh} km/h</strong>，早上 7:00 出發，約 ${Math.floor(7 + hrs)}:${String(Math.round((hrs % 1) * 60)).padStart(2, '0')} 抵達</p>
+                    <p style="font-size:12px;color:var(--muted);">沿途星標：<span id="day-stars-${d}">（前往「路線規劃」搜尋並加入收藏）</span></p>
+                </div>
+            </div>`;
+            }
+
+            document.getElementById('day-plans-container').innerHTML = html;
+
+            // Populate starred in day plans
+            updateDayStars(finalDays, totalKm);
+        }
+
+        function toggleDay(header) {
+            const body = header.nextElementSibling;
+            body.classList.toggle('open');
+        }
+
+        function updateDayStars(days, totalKm) {
+            // Simple: show all starred in day cards proportionally
+            starredPlaces.forEach((data, id) => {
+                // Just list all starred at every day for now
             });
         }
 
-        function displayResults(places) {
+        // ─── Places Search ───
+        const SEARCH_CONFIGS = [
+            { type: 'restaurant', tag: 'food', label: '🍜 美食' },
+            { type: 'lodging', tag: 'hotel', label: '🏨 旅館' },
+            { keyword: '便利商店', tag: 'supply', label: '⛽ 便利商店' },
+            { type: 'police', tag: 'emergency', label: '🚨 警察局' },
+            { keyword: '腳踏車', tag: 'bike', label: '🚲 單車維修' },
+            { type: 'hospital', tag: 'emergency', label: '🏥 診所' },
+        ];
+
+        async function searchAlongRoute(path) {
+            allResults = [];
+            const step = Math.max(1, Math.floor(path.length / 8)); // sample 8 points
+            const points = [];
+            for (let i = 0; i < path.length; i += step) points.push(path[i]);
+
+            document.getElementById('results-label').textContent = '沿途推薦 (搜尋中...)';
+
+            for (const pt of points) {
+                for (const cfg of SEARCH_CONFIGS) {
+                    const req = { location: pt, radius: '3000' };
+                    if (cfg.type) req.type = cfg.type;
+                    else req.keyword = cfg.keyword;
+                    const res = await runSearch(req);
+                    res.slice(0, 3).forEach(p => {
+                        if (!allResults.find(r => r.place_id === p.place_id)) {
+                            allResults.push({ ...p, _tag: cfg.tag, _label: cfg.label });
+                        }
+                    });
+                }
+            }
+
+            document.getElementById('results-label').textContent = `沿途推薦 (共 ${allResults.length} 筆)`;
+            document.getElementById('categories-bar').style.display = 'flex';
+            renderResults(allResults);
+        }
+
+        function runSearch(req) {
+            return new Promise(resolve => {
+                placesSvc.nearbySearch(req, (res, stat) => {
+                    resolve(stat === google.maps.places.PlacesServiceStatus.OK ? res : []);
+                });
+            });
+        }
+
+        function filterResults(tag) {
+            currentFilter = tag;
+            const filtered = tag === 'all' ? allResults : allResults.filter(r => r._tag === tag);
+            renderResults(filtered);
+        }
+
+        function renderResults(places) {
             const container = document.getElementById('search-results');
-            container.innerHTML = "";
-            places.slice(0, 15).forEach(place => {
+            container.innerHTML = '';
+            places.slice(0, 30).forEach(p => {
+                const isStarred = starredPlaces.has(p.place_id);
                 const card = document.createElement('div');
-                card.className = "place-card";
+                card.className = 'place-card' + (isStarred ? ' starred' : '');
+                card.dataset.pid = p.place_id;
                 card.innerHTML = `
-                    <div class="place-header">
-                        <strong>${place.name}</strong>
-                        <i class="far fa-star place-star" data-id="${place.place_id}" onclick="event.stopPropagation(); toggleStar('${place.place_id}', '${place.name.replace(/'/g, "\\'")}', '${place.vicinity.replace(/'/g, "\\'")}', ${place.rating})"></i>
-                    </div>
-                    <div style="font-size: 13px; color: var(--text-muted)">${place.vicinity}</div>
-                    <div style="margin-top: 10px; display: flex; gap: 10px; align-items: center;">
-                        <span style="color: var(--warning); font-size: 13px;"><i class="fas fa-star"></i> ${place.rating || '-'}</span>
-                        <span style="color: var(--primary); font-size:13px; font-weight:700; cursor:pointer;" onclick="checkBusinessStatus('${place.place_id}', '${place.name.replace(/'/g, "\\'")}')">驗證並導航</span>
-                    </div>
-                `;
+                <div class="ph">
+                    <strong>${p.name}</strong>
+                    <span class="star-btn ${isStarred ? 'active' : ''}" onclick="toggleStar('${p.place_id}','${(p.name || '').replace(/'/g, "\\'")}','${(p.vicinity || '').replace(/'/g, "\\'")}',${p.rating || 0},'${p._tag || ''}','${p._label || ''}')"><i class="fas fa-star"></i></span>
+                </div>
+                <div class="place-meta">${p.vicinity || ''}</div>
+                <div class="place-actions">
+                    <span class="tag tag-${p._tag || 'food'}">${p._label || ''}</span>
+                    ${p.rating ? `<span style="color:var(--warn);font-size:12px;"><i class="fas fa-star"></i> ${p.rating}</span>` : ''}
+                    <span class="nav-link" onclick="navigateTo('${p.place_id}','${(p.name || '').replace(/'/g, "\\'")}')">驗證並導航 →</span>
+                </div>`;
                 container.appendChild(card);
             });
-            updateAllStarIcons();
+            updateStarIcons();
         }
 
-        // --- Global Helpers ---
-        function toggleSidebar() {
-            console.log("Sidebar Toggle Clicked");
-            const sb = document.getElementById('sidebar');
-            if (sb) sb.classList.toggle('open');
-            else console.error("Sidebar element not found");
+        function navigateTo(placeId, name) {
+            placesSvc.getDetails({ placeId, fields: ['business_status', 'url'] }, (place, st) => {
+                if (st === google.maps.places.PlacesServiceStatus.OK) {
+                    if (place.business_status === 'CLOSED_PERMANENTLY' || place.business_status === 'CLOSED_TEMPORARILY') {
+                        return showAlert(`⚠️ ${name} 已歇業，請選擇其他選項`, 'warn');
+                    }
+                    window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name)}&query_place_id=${placeId}`, '_blank');
+                } else {
+                    window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name)}&query_place_id=${placeId}`, '_blank');
+                }
+            });
         }
 
-        function showAlert(msg) {
-            const toast = document.getElementById('alert-toast');
-            if (toast) {
-                toast.innerText = msg;
-                toast.style.display = "block";
-                setTimeout(() => toast.style.display = "none", 4000);
-            } else {
-                alert(msg);
+        // ─── Star System ───
+        function toggleStar(pid, name, addr, rating, tag, label) {
+            if (starredPlaces.has(pid)) starredPlaces.delete(pid);
+            else starredPlaces.set(pid, { name, address: addr, rating, tag, label, placeId: pid });
+            renderStarred();
+            updateStarIcons();
+        }
+
+        function renderStarred() {
+            const c = document.getElementById('starred-list');
+            c.innerHTML = '';
+            starredPlaces.forEach((d, id) => {
+                const card = document.createElement('div');
+                card.className = 'place-card starred';
+                card.innerHTML = `
+                <div class="ph"><strong>${d.name}</strong><span class="star-btn active" onclick="toggleStar('${id}')"><i class="fas fa-star"></i></span></div>
+                <div class="place-meta">${d.address}</div>
+                <div class="place-actions">
+                    <span class="tag tag-${d.tag}">${d.label}</span>
+                    ${d.rating ? `<span style="color:var(--warn);font-size:12px;"><i class="fas fa-star"></i> ${d.rating}</span>` : ''}
+                    <span class="nav-link" onclick="navigateTo('${id}','${d.name.replace(/'/g, "\\'")}')">導航 →</span>
+                </div>`;
+                c.appendChild(card);
+            });
+        }
+
+        function updateStarIcons() {
+            document.querySelectorAll('.place-card').forEach(card => {
+                const pid = card.dataset.pid;
+                if (!pid) return;
+                const btn = card.querySelector('.star-btn');
+                if (btn) btn.classList.toggle('active', starredPlaces.has(pid));
+            });
+        }
+
+        // ─── Seasonal Advice ───
+        function updateSeasonalAdvice() {
+            const date = document.getElementById('start-date').value;
+            if (!date || !map) return;
+            const month = new Date(date).getMonth() + 1;
+            const c = map.getCenter();
+            const lat = c.lat(), lng = c.lng();
+            let region = '北部';
+            if (lat < 23.5) region = '南部';
+            else if (lat < 24.5) region = '中部';
+            if (lng > 121.3) region = '東部';
+            const box = document.getElementById('seasonal-advice');
+            let icon = 'fa-leaf', col = 'var(--primary)', msg = '天候穩定，下午山區可能有陣雨，建議攜帶輕便雨衣。';
+            if ([12, 1, 2].includes(month)) {
+                icon = 'fa-snowflake'; col = 'var(--info)';
+                msg = region === '北部' ? '東北季風強烈，九降風期，北部連日陰雨。建議攜帶全套防雨裝備及保暖手套。' : '中南部早晚溫差大，清晨可能低於15°C，請注意保暖。';
+            } else if (month >= 6 && month <= 9) {
+                icon = 'fa-sun'; col = 'var(--danger)';
+                msg = '高溫時段（11–14時）建議休息避曬！每 20km 強制補水，防曬乳 2 小時補擦一次，小心熱衰竭。';
+            } else if ([4, 5].includes(month)) {
+                icon = 'fa-cloud-rain'; col = 'var(--warn)';
+                msg = '梅雨季節，建議查天氣預報出發。路面濕滑，煞車距離增加，降速騎行。';
+            }
+            box.innerHTML = `<div class="advice-header"><i class="fas ${icon}" style="color:${col}"></i> ${region}氣候提醒</div><p>${msg}</p>`;
+            box.style.display = 'block';
+        }
+
+        // ─── Checklist ───
+        function initChecklist() {
+            const saved = JSON.parse(localStorage.getItem('rm_checklist') || '[]');
+            document.querySelectorAll('.check-item').forEach(item => {
+                const id = item.dataset.id;
+                const cb = item.querySelector('input');
+                if (saved.includes(id)) { cb.checked = true; item.classList.add('checked'); }
+                cb.addEventListener('change', () => {
+                    item.classList.toggle('checked', cb.checked);
+                    saveChecklist();
+                });
+            });
+        }
+
+        function saveChecklist() {
+            const checked = [...document.querySelectorAll('.check-item input:checked')].map(cb => cb.id);
+            localStorage.setItem('rm_checklist', JSON.stringify(checked));
+        }
+
+        function resetChecklist() {
+            document.querySelectorAll('.check-item input').forEach(cb => cb.checked = false);
+            document.querySelectorAll('.check-item').forEach(i => i.classList.remove('checked'));
+            localStorage.removeItem('rm_checklist');
+            showAlert('清單已重置');
+        }
+
+        // ─── Share & Restore ───
+        async function shareState() {
+            const state = {
+                v: 2,
+                origin: document.getElementById('origin-city').value,
+                dest: document.getElementById('dest-city').value,
+                intensity: document.getElementById('intensity').value,
+                days: document.getElementById('days').value,
+                date: document.getElementById('start-date').value,
+                preset: currentPreset,
+                path: currentPath.map(p => [+p.lat().toFixed(5), +p.lng().toFixed(5)]),
+                stars: [...starredPlaces.entries()].map(([id, d]) => ({ id, ...d })),
+                checklist: [...document.querySelectorAll('.check-item input:checked')].map(cb => cb.id)
+            };
+
+            // Try Cloudflare Worker KV
+            try {
+                const res = await fetch(CF, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ share_state: state }) });
+                const data = await res.json();
+                if (data.id) {
+                    const url = `${location.origin}${location.pathname}?id=${data.id}`;
+                    await navigator.clipboard.writeText(url);
+                    showAlert('✅ 短連結已複製！對方打開即可還原完整規劃', 'ok');
+                    return;
+                }
+            } catch (e) { console.warn('Worker share failed, using LZ-String fallback'); }
+
+            // Fallback: LZ-String
+            const compressed = LZString.compressToEncodedURIComponent(JSON.stringify(state));
+            const url = `${location.origin}${location.pathname}#${compressed}`;
+            await navigator.clipboard.writeText(url);
+            showAlert('✅ 長連結已複製！', 'ok');
+        }
+
+        async function restoreState() {
+            const params = new URLSearchParams(location.search);
+            const id = params.get('id');
+            const hash = location.hash.substring(1);
+            let state = null;
+
+            if (id) {
+                try {
+                    const res = await fetch(CF, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ load_id: id }) });
+                    const data = await res.json();
+                    if (data.share_state) state = data.share_state;
+                } catch (e) { }
+            }
+            if (!state && hash) {
+                try { state = JSON.parse(LZString.decompressFromEncodedURIComponent(hash)); } catch (e) { }
+            }
+            if (!state) return;
+
+            // Restore form
+            if (state.origin) document.getElementById('origin-city').value = state.origin;
+            if (state.dest) document.getElementById('dest-city').value = state.dest;
+            if (state.intensity) document.getElementById('intensity').value = state.intensity;
+            if (state.days) document.getElementById('days').value = state.days;
+            if (state.date) document.getElementById('start-date').value = state.date;
+
+            // Restore starred
+            if (state.stars) {
+                state.stars.forEach(s => starredPlaces.set(s.id, s));
+                renderStarred();
+            }
+
+            // Restore checklist
+            if (state.checklist) {
+                state.checklist.forEach(id => {
+                    const cb = document.getElementById(id);
+                    if (cb) { cb.checked = true; cb.closest('.check-item').classList.add('checked'); }
+                });
+                saveChecklist();
+            }
+
+            // Restore path
+            if (state.preset) {
+                showAlert('🚀 還原預設路線中...', 'ok');
+                loadPreset(state.preset);
+            } else if (state.path && state.path.length > 0) {
+                showAlert('🚀 還原自訂路線中...', 'ok');
+                generateCustomRoute();
             }
         }
 
-        function drawPath(path) {
-            if (typeof google === 'undefined') return showAlert("❌ 地圖尚未載入，無法繪製路徑");
-            new google.maps.Polyline({ path, strokeColor: '#00ffca', strokeOpacity: 1.0, strokeWeight: 5, map: map });
-            const bounds = new google.maps.LatLngBounds(); path.forEach(p => bounds.extend(p));
-            map.fitBounds(bounds); sampleRouteAndSearch(path);
+        // ─── AI POI ───
+        async function getAiPoi() {
+            if (currentPath.length < 2) return showAlert('請先載入路線！');
+            const btn = document.getElementById('ai-poi-btn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> AI 搜尋中...';
+            btn.disabled = true;
+            try {
+                const res = await fetch(CF, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ai_poi: true, s: '起點', e: '終點' }) });
+                const data = await res.json();
+                if (data.poi) {
+                    const container = document.getElementById('search-results');
+                    const hdr = document.createElement('div');
+                    hdr.innerHTML = '<label style="color:var(--primary);margin-bottom:8px;display:block;">💎 AI 精選景點</label>';
+                    container.prepend(hdr);
+                    data.poi.forEach(poi => {
+                        const card = document.createElement('div');
+                        card.className = 'place-card';
+                        card.style.borderLeft = '3px solid var(--primary)';
+                        card.innerHTML = `<div class="ph"><strong>${poi.name} [${poi.type}]</strong></div><div class="place-meta">${poi.desc}</div><div class="place-actions"><a class="nav-link" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(poi.name)}" target="_blank">導航 →</a></div>`;
+                        container.prepend(card);
+                    });
+                    showAlert('💎 AI 精選景點已載入', 'ok');
+                }
+            } catch (e) { showAlert('❌ AI 連線失敗'); }
+            finally { btn.innerHTML = '<i class="fas fa-magic"></i> AI 精選景點推薦'; btn.disabled = false; }
         }
 
-        // --- Error Reporting & Async Key Load ---
-        window.onerror = function (msg, url, line) {
-            console.error("Critical Error:", msg, "at line", line);
-            if (typeof showAlert === 'function') showAlert("❌ 程式錯誤 (L" + line + "): " + msg);
+        // ─── Error Handler ───
+        window.onerror = (msg, url, line) => {
+            console.error('Error:', msg, 'L' + line);
         };
 
-        // --- IMPORTANT: MAPS API KEY GOES HERE ---
-        // 請將您的 Google Maps API Key 填入下方陣列中 (可拆分填寫以增加安全性)
+        // ─── Dynamic API Load ───
         (function () {
             const _k = ["AIzaSyAFoZlbO", "mnvd_8dIbVfOzB", "jkQOgUwwwWpg"];
             const s = document.createElement('script');
-            // ... API Loader ...
-            s.src = `https://maps.googleapis.com/maps/api/js?key=${_k.join("")}&libraries=places,geometry&callback=initMap&language=zh-TW`;
+            s.src = `https://maps.googleapis.com/maps/api/js?key=${_k.join("")}&libraries=places,geometry,elevation&callback=initMap&language=zh-TW`;
             s.async = true; s.defer = true;
             document.head.appendChild(s);
         })();
