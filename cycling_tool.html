@@ -723,16 +723,27 @@
             updateAllStarIcons();
         }
 
-        function showAlert(msg) {
-            const toast = document.getElementById('alert-toast');
-            toast.innerText = msg;
-            toast.style.display = "block";
-            setTimeout(() => toast.style.display = "none", 4000);
+        // --- Global Helpers ---
+        function toggleSidebar() {
+            console.log("Sidebar Toggle Clicked");
+            const sb = document.getElementById('sidebar');
+            if (sb) sb.classList.toggle('open');
+            else console.error("Sidebar element not found");
         }
 
-        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+        function showAlert(msg) {
+            const toast = document.getElementById('alert-toast');
+            if (toast) {
+                toast.innerText = msg;
+                toast.style.display = "block";
+                setTimeout(() => toast.style.display = "none", 4000);
+            } else {
+                alert(msg);
+            }
+        }
 
         function drawPath(path) {
+            if (typeof google === 'undefined') return showAlert("❌ 地圖尚未載入，無法繪製路徑");
             new google.maps.Polyline({ path, strokeColor: '#00ffca', strokeOpacity: 1.0, strokeWeight: 5, map: map });
             const bounds = new google.maps.LatLngBounds(); path.forEach(p => bounds.extend(p));
             map.fitBounds(bounds); sampleRouteAndSearch(path);
