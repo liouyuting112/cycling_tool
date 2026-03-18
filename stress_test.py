@@ -4,12 +4,12 @@ import time
 import random
 
 # Configuration
-TARGET_URL = "http://localhost:8080/api/cycling-proxy" # Update to actual proxy endpoint
-API_KEY_HEADER = "X-RoadMaster-Auth"
+TARGET_URL = "https://hidden-surf-0579.love7053150.workers.dev/"
+API_KEY_HEADER = "X-RoadMaster-Auth" # This worker uses CORS checks, not this specific header usually, but I'll keep it for the proxy logic.
 MOCK_TOKEN = "valid-frontend-token-123"
 
 def test_request_burst(n=1000):
-    print(f"🚀 Simulating {n} rapid requests...")
+    print(f"--- Simulating {n} rapid requests ---")
     success = 0
     failure = 0
     for i in range(n):
@@ -32,10 +32,10 @@ def test_request_burst(n=1000):
         if i % 100 == 0:
             print(f"Progress: {i}/{n}")
             
-    print(f"✅ Success: {success}, ❌ Failure: {failure}")
+    print(f"Success: {success}, Failure: {failure}")
 
 def test_injection_coordinates():
-    print("🛡️ Testing Coordinate Injection...")
+    print("--- Testing Coordinate Injection ---")
     extreme_coords = [
         {"lat": 999999, "lng": 0},
         {"lat": "NaN", "lng": "DROP TABLE users"},
@@ -47,7 +47,7 @@ def test_injection_coordinates():
         print(f"Coord {coord}: Status {response.status_code}")
 
 def test_unauthorized_access():
-    print("🔒 Testing Unauthorized Access...")
+    print("--- Testing Unauthorized Access ---")
     response = requests.post(TARGET_URL, json={"lat": 23.5, "lng": 121.0})
     print(f"No Token Status: {response.status_code} (Expected 401 or 403)")
 
