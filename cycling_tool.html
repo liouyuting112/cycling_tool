@@ -658,6 +658,9 @@
                     <small>終極單車環島規劃系統</small>
                 </div>
             </div>
+            <div id="debug-log"
+                style="margin-top:10px; font-size:10px; color:var(--muted); font-family:monospace; height:40px; overflow-y:auto; background:rgba(0,0,0,0.2); padding:4px; border-radius:4px; border:1px solid rgba(255,255,255,0.05); display:none;">
+            </div>
         </div>
 
         <div class="tabs">
@@ -904,11 +907,25 @@
         }
 
         // ─── Utility ───
+        function debug(msg) {
+            const el = document.getElementById('debug-log');
+            if (!el) return;
+            el.style.display = 'block';
+            const line = document.createElement('div');
+            line.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            el.prepend(line);
+            console.log(msg);
+        }
+
         function updateApiStatus(api, status) {
             const dot = document.getElementById('status-' + api);
             if (!dot) return;
             dot.className = 'status-dot ' + (status === 'OK' ? 'ok' : (status === 'ZERO_RESULTS' ? 'warn' : 'fail'));
             dot.title = api.toUpperCase() + ' API: ' + status;
+            debug(`${api.toUpperCase()} API status: ${status}`);
+            if (status === 'REQUEST_DENIED') {
+                showAlert(`⚠️ ${api.toUpperCase()} API 被拒絕，請檢查 Google Cloud 是否已啟用該 API 與帳單。`, 'danger');
+            }
         }
 
         // ─── initMap ───
@@ -1021,20 +1038,25 @@
 
             elevSvc.getElevationAlongPath({ path: sampled, samples: Math.min(sampled.length, 256) }, (results, status) => {
                 updateApiStatus('elev', status);
-                console.log('Elevation API status:', status);
+                debug(`Elevation samples received: ${results ? results.length : 0}`);
                 let totalGain = 0;
                 let elevs = [];
-                if (status === 'OK' && results) {
+                if (status === 'OK' && results && results.length > 1) {
                     elevs = results.map(r => Math.round(r.elevation));
                     for (let i = 1; i < elevs.length; i++) {
                         const diff = elevs[i] - elevs[i - 1];
                         if (diff > 0) totalGain += diff;
                     }
-                } else {
-                    console.warn('Elevation API failed or restricted, using estimate');
-                    totalGain = Math.round(totalDistKm * 6); // 6m/km average for island
+                    debug(`Initial Total Gain: ${totalGain}m`);
+                }
+
+                // If API returns 0 or fails but it's a long route, use fallback
+                if (totalGain <= 0 && totalDistKm > 10) {
+                    debug('Elevation is 0 or failed for long route, triggering fallback estimate');
+                    totalGain = Math.round(totalDistKm * 6.5); // Average Taiwan coastal/mountain mix
                     elevs = Array.from({ length: 60 }, (_, i) => 100 + Math.sin(i / 5) * 40);
                 }
+
                 const equivDist = Math.round(totalDistKm + totalGain / 10);
 
                 // FORCE UPDATE UI
