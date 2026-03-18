@@ -1,0 +1,212 @@
+﻿commit bec3602ef76cbad7b3d7d741bbefc35f26bd8819
+Author: liouyuting112 <love7053150@gmail.com>
+Date:   Mon Mar 9 20:27:16 2026 +0800
+
+    Remove fake counter fallback value (3421 -> 0)
+
+diff --git a/cycling_tool.html b/cycling_tool.html
+index 55ef2ed..2c66051 100644
+--- a/cycling_tool.html
++++ b/cycling_tool.html
+@@ -1228,9 +1228,9 @@
+                 });
+                 const data = await res.json();
+                 if (data.usage_stats) updateCounter(data.usage_stats.total_uses);
+-                else updateCounter(3421); // ????摨?
++                else updateCounter(0); // ????閮剔 0
+             } catch (e) {
+-                updateCounter(3421);
++                updateCounter(0);
+             }
+         };
+ 
+
+commit 6b0ea319f3da70e13ca770fafae632cf194b75ec
+Author: liouyuting112 <love7053150@gmail.com>
+Date:   Mon Mar 9 20:12:56 2026 +0800
+
+    Fix CF_GATEWAY URL to match deployed worker
+
+diff --git a/cycling_tool.html b/cycling_tool.html
+index 3c16329..55ef2ed 100644
+--- a/cycling_tool.html
++++ b/cycling_tool.html
+@@ -1039,7 +1039,7 @@
+     </div>
+ 
+     <script>
+-        const CF_GATEWAY = "https://hidden-surf-0579.love7053150.workers.dev/";
++        const CF_GATEWAY = "https://cycling-proxy.love7053150.workers.dev/";
+         const thread = document.getElementById('chat-thread');
+         const input = document.getElementById('chat-input');
+         let _busy = false;
+
+commit 3a80e7a176cd6a164c846b9e88020c34f876e7ae
+Author: liouyuting112 <love7053150@gmail.com>
+Date:   Mon Mar 9 15:08:29 2026 +0800
+
+    Fix itinerary formatting, counter UI, and anti-spam logic
+
+diff --git a/cycling_tool.html b/cycling_tool.html
+index bbf711f..3c16329 100644
+--- a/cycling_tool.html
++++ b/cycling_tool.html
+@@ -81,6 +81,7 @@
+             letter-spacing: -2px;
+             background: linear-gradient(135deg, #fff 0%, var(--p) 100%);
+             -webkit-background-clip: text;
++            background-clip: text;
+             -webkit-text-fill-color: transparent;
+             margin-bottom: 0.4rem;
+             filter: drop-shadow(0 10px 20px rgba(249, 115, 22, 0.2));
+@@ -968,6 +969,15 @@
+         <header class="hero-header">
+             <h1>Road Master</h1>
+             <p class="subtitle">??擉?頝舐??箏?撘?</p>
++            <div class="counter-pill-container" style="display: flex; justify-content: center; margin-top: 1.5rem;">
++                <div id="usage-counter"
++                    style="background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 8px 20px; border-radius: var(--radius-pill); font-size: 0.9rem; font-weight: 800; color: var(--t-muted); display: flex; align-items: center; gap: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
++                    <span style="color: var(--s); font-size: 1.1rem;">??</span>
++                    <span>撌脫???<span id="count-val"
++                            style="color: var(--p-light); font-family: monospace; font-size: 1.1rem;">...</span>
++                        雿???/span>
++                </div>
++            </div>
+         </header>
+ 
+         <!-- ????Form Card ????-->
+@@ -1035,29 +1045,29 @@
+         let _busy = false;
+ 
+         const SYSTEM_PROMPT = `雿?株?????憭批葦蝝撠?-雿??勗?敹??瑕??楝畾菜??乓??移皞?蝐文???蝯??渡??游??瘛瑕銝韏瑯? 
+-??閬?嚗?-### ?? 閰喟敦頝舐???蝔?
+-(隢誑 Markdown 銵冽?嚗????恬?憭拇?楝蝺????砍????◢?舐?憌楝蝺◢??
++???敹???+1. **璅∪?颲刻?**嚗?+   - 憒?雿輻??靘絲暺?暺予?詻?隢?敹敺芥?蝔??芋撘?+   - 憒??芣??銝?砍?憿?隢蝙?具?璆剖?蝑芋撘??湔隞亙?閰勗?餃?閬?**?渡???銵?銵?*??+2. **蝯???憿?*嚗??????蝙??\`###\` ???憿???蝭嚗??喲?????+3. **?賊??折?瞈?*嚗???頠?銵耨頠??隢?閬???OUT_OF_SCOPE)?? 
+-?◢?舐?憌?頝舐?憸券甈??撥?嗆撘?
+-敹?雿輻?頝舀挾/雿蔭] ?迂嚗?餈啣摰嫘?璅惜蝯???-靘?嚗?-[樴蔬??镼瓢 隞?撌瘀???正敹???摨??圈悅?扒????瘚?-[瘜冽?] 樴蔬憭批嚗挾?琿?2?祇??楨銝嚗憭拚◢??雿??飛?嗚?+??蝔??芋撘???敹?蝡???+### ?? 閰喟敦頝舐???蝔?
++隢?敹蝙??Markdown 銵冽頛詨嚗?+| 憭拇 | 頝舐? | 頝/?砍? | 敹?憸冽蝢? | 頝舐?憸券 |
++| :-- | :-- | :-- | :-- | :-- |
++| 1 | ?啣? -> ?啁姘 | 90km / 200m | [?啁姘] ??撱?敹?鞎Ｖ虜皝胯?| [鈭日 瞈望絲頝荔??頠?憭?|
+ 
+ ### ?? ?啗?鋆?撱箄降
+-隢?鋆??飛憿??氬??Ｗ嚗?憿?2-3 ???澆?嚗? [??] **鋆???*嚗??-靘?嚗?-- [?詨?] **?祈楝頠?*嚗雁???頛詨??-- [敺] **頠???*嚗蝝?瘣﹝?押?+- [??] **鋆???*嚗?? 
+ ### ?? 撖行憸券?內
+-隢?憸券?飛憿??氬??Ｗ嚗撘?- [??] **憸券??*嚗?撠?-靘?嚗?-- [?啣?] **擃澈銝剜?**嚗??閫?釭?偌??-- [鈭日 **?頠?*嚗????刻?頝;
++- [??] **憸券??*嚗?撠撘?+
++??璆剖?蝑芋撘?+?湔隞亙?璆准??隤除???喳嚗Ⅱ靽???霈?;
+ 
+         // ????Chip ???? ????         window.setChip = function (el, id, v) {
+@@ -1140,10 +1150,15 @@
+         // ????Tab 皜脫?撘? ????         function renderTabs(rawContent) {
+             const cleanText = rawContent.replace(/\\n/g, '\n');
+-            const firstHeaderIndex = cleanText.indexOf('### ');
+-            if (firstHeaderIndex === -1) return marked.parse(cleanText);
+ 
+-            const sections = cleanText.substring(firstHeaderIndex).split(/\n?(?=### )/);
++            // 憒?摰瘝? ### 璅?嚗??”?潘?撘瑁?撱箇?銝??蝔???+            let processedText = cleanText;
++            if (!cleanText.includes('###') && cleanText.includes('|')) {
++                processedText = "### ?? 銵?閬?\n" + cleanText;
++            }
++
++            const sections = processedText.trim().split(/\n?(?=### )/);
++            if (sections.length <= 1 && !processedText.startsWith('###')) return marked.parse(processedText);
+ 
+             let tabsNav = `<div class="tabs-container"><div class="tabs-nav">`;
+             let tabsContent = `<div class="tabs-content">`;
+@@ -1151,7 +1166,10 @@
+ 
+             sections.forEach(sec => {
+                 const trimmed = sec.trim();
+-                if (!trimmed.startsWith('###')) return;
++                if (!trimmed.startsWith('###')) {
++                    if (count === 0) tabsContent += `<div class="intro-text" style="margin-bottom:1.5rem; opacity:0.9;">${marked.parse(trimmed)}</div>`;
++                    return;
++                }
+ 
+                 const firstLineEnd = trimmed.indexOf('\n');
+                 let title = trimmed.substring(0, firstLineEnd !== -1 ? firstLineEnd : trimmed.length).replace(/###\s*/, '').trim();
+@@ -1162,26 +1180,23 @@
+                 if (title.match(/鋆?|皜|?內|??|摰?|憸券/)) layoutClass = 'grid-layout';
+ 
+                 let parsedBody = marked.parse(body);
+-                if (layoutClass === 'grid-layout') {
+-                    parsedBody = parsedBody
+-                        .replace(/\[(.*?)\]/g, '<span class="highlight-tag" style="margin-bottom:5px; display:inline-block;">$1</span>')
+-                        .replace(/<\/strong>[\s:嚗?br>]*\n*/gi, '</strong>')
+-                        .replace(/<\/strong>\s*<p>/gi, '</strong>')
+-                        .replace(/<\/strong><\/p>\s*<ul>/gi, '</strong><ul>')
+-                        .replace(/<li><p>/gi, '<li>')
+-                        .replace(/<\/p><\/li>/gi, '</li>');
+-                }
+ 
+-                if (count === 0 && parsedBody.includes('<table')) {
++                // ??銵冽頧??遘
++                if (parsedBody.includes('<table')) {
+                     parsedBody = transformToTimeline(parsedBody);
+                 }
+ 
++                // ???潛?雿?璅惜暺韌
++                if (layoutClass === 'grid-layout') {
++                    parsedBody = parsedBody.replace(/\[(.*?)\]/g, '<span class="highlight-tag" style="margin-bottom:5px; display:inline-block;">$1</span>');
++                }
++
+                 tabsNav += `<button class="tab-btn ${active}" onclick="switchTab(this, ${count})">${title}</button>`;
+                 tabsContent += `<div class="tab-pane ${active} ${layoutClass}" data-index="${count}">${parsedBody}</div>`;
+                 count++;
+             });
+ 
+-            return count === 0 ? marked.parse(cleanText) : (tabsNav + `</div>` + tabsContent + `</div></div>`);
++            return count === 0 ? marked.parse(processedText) : (tabsNav + `</div>` + tabsContent + `</div></div>`);
+         }
+ 
+         window.switchTab = function (btn, idx) {
+@@ -1192,6 +1207,33 @@
+             con.querySelector(`.tab-pane[data-index="${idx}"]`).classList.add('active');
+         };
+ 
++        // ?????湔閮??????+        function updateCounter(count) {
++            if (count) {
++                const el = document.getElementById('count-val');
++                el.innerText = count.toLocaleString();
++                el.classList.add('updated');
++                setTimeout(() => el.classList.remove('updated'), 1000);
++            }
++        }
++
++        // ???????甈∟???+        window.onload = async () => {
++            try {
++                // ?潮征隢?? ping 隢?靘???啗???+                const res = await fetch(CF_GATEWAY, {
++                    method: 'POST',
++                    headers: { 'Content-Type': 'application/json' },
++                    body: JSON.stringify({ ping: true })
++                });
++                const data = await res.json();
++                if (data.usage_stats) updateCounter(data.usage_stats.total_uses);
++                else updateCounter(3421); // ????摨?
++            } catch (e) {
++                updateCounter(3421);
++            }
++        };
++
+         // ????銵典?漱 ????         function submitForm() {
+             const s = document.getElementById('start').value;
+@@ -1235,7 +1277,19 @@
+                 });
+                 const data = await res.json();
+                 loader.remove();
+-                addMessage('ai', renderTabs(data.candidates?.[0]?.content?.parts?.[0]?.text || "?∪???), true);
++
++                // ?湔閮??+                if (data.usage_stats) updateCounter(data.usage_stats.total_uses);
++
++                const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "?∪???;
++
++                // ?脣??蕪
++                if (text.includes("(OUT_OF_SCOPE)")) {
++                    addMessage('ai', "?望?嚗澈?箏頠??芸之撣恬??蜓閬????澆頠?蝔?蝬凋耨??憿???隞暻澆頠???臭誑撟思??????儭?);
++                    return;
++                }
++
++                addMessage('ai', renderTabs(text), true);
+             } catch (e) {
+                 loader.remove();
+                 addMessage('ai', "????航炊嚗??瑟??岫??);

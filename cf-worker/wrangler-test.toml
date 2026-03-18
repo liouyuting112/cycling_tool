@@ -1,0 +1,10 @@
+name = "cycling-tool-proxy-v3"
+main = "src/index.js"
+compatibility_date = "2024-03-01"
+
+[vars]
+API_KEY = ""
+
+[[kv_namespaces]]
+binding = "CYCLING_KV"
+id = "8c712903814048378aae498b28499718"

@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Road Master Pro | 終極單車環島規劃</title>
+    <!-- LZ-String for URL Compression -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+TC:wght@300;400;700&display=swap"
+        rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #00ffca;
+            --primary-dark: #05c4a1;
+            --bg-dark: #0f172a;
+            --surface: #1e293b;
+            --surface-light: #334155;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --danger: #f43f5e;
+            --warning: #fbbf24;
+            --glass: rgba(30, 41, 59, 0.7);
+            --sidebar-width: 380px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Outfit', 'Noto Sans TC', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+        }
+
+        /* Sidebar Styling */
+        #sidebar {
+            width: var(--sidebar-width);
+            background: var(--surface);
+            height: 100%;
+            overflow-y: auto;
+            position: relative;
+            z-index: 100;
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 24px;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border-bottom: 1px solid var(--surface-light);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-content {
+            padding: 20px;
+            flex-grow: 1;
+        }
+
+        /* Global Control Groups */
+        .control-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        select,
+        input {
+            width: 100%;
+            padding: 14px;
+            background: var(--surface-light);
+            border: 1px solid transparent;
+            border-radius: 12px;
+            color: var(--text);
+            font-size: 16px;
+            transition: all 0.2s;
+            outline: none;
+        }
+
+        select:focus,
+        input:focus {
+            border-color: var(--primary);
+            background: var(--bg-dark);
+        }
+
+        /* Large Action Buttons (Glove Friendly) */
+        .btn {
+            width: 100%;
+            padding: 18px;
+            border: none;
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--bg-dark);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.96);
+            background: var(--primary-dark);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--surface-light);
+            color: var(--text);
+        }
+
+        /* Preset Chips */
+        .preset-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .chip {
+            padding: 12px;
+            background: var(--surface-light);
+            border-radius: 10px;
+            text-align: center;
+            font-size: 14px;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+
+        .chip:hover {
+            border-color: var(--primary);
+        }
+
+        /* Results / Starred List */
+        #results-container {
+            margin-top: 20px;
+        }
+
+        .place-card {
+            background: var(--surface-light);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            position: relative;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .place-card.starred {
+            border-left: 4px solid var(--primary);
+        }
+
+        .place-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .place-star {
+            color: var(--text-muted);
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .place-star.active {
+            color: var(--primary);
+        }
+
+        /* Map Area */
+        #map-container {
+            flex-grow: 1;
+            position: relative;
+        }
+
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+
+        /* Overlays & Alerts */
+        .alert-toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--danger);
+            color: white;
+            padding: 16px 32px;
+            border-radius: 50px;
+            font-weight: 700;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            display: none;
+            animation: popUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Seasonal Reminder Overlay */
+        #seasonal-advice {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            max-width: 300px;
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 50;
+            display: none;
+        }
+
+        .advice-header {
+            color: var(--primary);
+            font-weight: 800;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Mobile Adjustments */
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 200;
+            background: var(--primary);
+            color: var(--bg-dark);
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            #sidebar {
+                position: fixed;
+                transform: translateX(-100%);
+                width: 85%;
+            }
+
+            #sidebar.open {
+                transform: translateX(0);
+            }
+
+            .mobile-toggle {
+                display: flex;
+            }
+
+            #seasonal-advice {
+                top: 80px;
+                right: 15px;
+                left: 15px;
+                max-width: none;
+            }
+
+            .preset-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes popUp {
+            from {
+                opacity: 0;
+                transform: translate(-50%, 50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--surface-light);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="mobile-toggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </div>
+
+    <aside id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-biking"></i>
+                <span>ROAD MASTER PRO</span>
+            </div>
+        </div>
+
+        <div class="sidebar-content">
+            <div class="control-group">
+                <label>騎行強度</label>
+                <select id="intensity" onchange="validateTrip()">
+                    <option value="leisure">休閒 (80km/天)</option>
+                    <option value="challenge" selected>挑戰 (120km/天)</option>
+                    <option value="extreme">極限 (160km/天)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>計畫天數 (留空自動推薦)</label>
+                <input type="number" id="days" placeholder="例: 9" onchange="validateTrip()">
+            </div>
+
+            <div class="control-group">
+                <label>出發日期</label>
+                <input type="date" id="start-date" onchange="updateSeasonalAdvice()">
+            </div>
+
+            <label>環島預設包</label>
+            <div class="preset-grid">
+                <div class="chip" onclick="loadPreset('grand')">🚴 大環島 1200km</div>
+                <div class="chip" onclick="loadPreset('small')">🚲 小環島 900km</div>
+                <div class="chip" onclick="loadPreset('north-south')">🏁 北高挑戰</div>
+                <div class="chip" onclick="loadPreset('clear')">🧹 清除路徑</div>
+            </div>
+
+            <button class="btn btn-primary" onclick="generateRoute()">
+                <i class="fas fa-route"></i> 開始規劃
+            </button>
+
+            <button class="btn btn-outline" onclick="shareState()">
+                <i class="fas fa-share-alt"></i> 產生分享連結
+            </button>
+
+            <div id="results-container">
+                <label id="results-label">星星標記 & 沿途推薦</label>
+                <div id="starred-list"></div>
+                <hr style="border: none; border-top: 1px solid var(--surface-light); margin: 15px 0;">
+                <div id="search-results"></div>
+            </div>
+        </div>
+    </aside>
+
+    <main id="map-container">
+        <div id="map"></div>
+        <div id="seasonal-advice"></div>
+    </main>
+
+    <div id="alert-toast" class="alert-toast"></div>
+
+    <!-- Scripts Area -->
+    <script>
+        let map, directionsService, directionsRenderer, placesService;
+        let markers = [];
+        let starredPlaces = new Map(); // place_id -> details
+        let cachedSearch = {}; // key -> results
+        let currentPath = [];
+
+        const INTENSITY_LIMITS = {
+            leisure: 80,
+            challenge: 120,
+            extreme: 160
+        };
+
+        // --- Core Initialization ---
+        function initMap() {
+            map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 8,
+                center: { lat: 23.6, lng: 121.0 },
+                styles: [
+                    { "elementType": "geometry", "stylers": [{ "color": "#242f3e" }] },
+                    { "elementType": "labels.text.stroke", "stylers": [{ "color": "#242f3e" }] },
+                    { "elementType": "labels.text.fill", "stylers": [{ "color": "#746855" }] },
+                    { "featureType": "road", "elementType": "geometry", "stylers": [{ "color": "#38414e" }] },
+                    { "featureType": "road", "elementType": "geometry.stroke", "stylers": [{ "color": "#212a37" }] },
+                    { "featureType": "water", "elementType": "geometry", "stylers": [{ "color": "#17263c" }] }
+                ],
+                disableDefaultUI: true,
+                zoomControl: true
+            });
+
+            directionsService = new google.maps.DirectionsService();
+            directionsRenderer = new google.maps.DirectionsRenderer({
+                map: map,
+                polylineOptions: { strokeColor: "#00ffca", strokeWeight: 5 }
+            });
+            placesService = new google.maps.PlacesService(map);
+
+            // Check URL for state
+            restoreFromHash();
+
+            // Track map movement for seasonal advice
+            map.addListener('idle', updateSeasonalAdvice);
+        }
+
+        // --- Proxy Security Check ---
+        const SECURE_PROXY_TOKEN = "ROADMASTER_" + btoa(window.location.host);
+        function secureFetch(url, options = {}) {
+            options.headers = {
+                ...options.headers,
+                'X-RoadMaster-Auth': SECURE_PROXY_TOKEN,
+                'X-Access-Target': 'google-maps-api'
+            };
+            return fetch(url, options);
+        }
+
+        // --- Logic: Trip Intelligence ---
+        function validateTrip(distanceKm) {
+            const intensity = document.getElementById('intensity').value;
+            const daysInput = document.getElementById('days');
+            const limit = INTENSITY_LIMITS[intensity];
+
+            if (!distanceKm) return;
+
+            const days = parseInt(daysInput.value) || Math.ceil(distanceKm / limit);
+            const dailyAvg = distanceKm / days;
+
+            if (dailyAvg > limit) {
+                showAlert(`⚠️ 當前強度為 ${intensity}，建議天數至少 ${Math.ceil(distanceKm / limit)} 天！`);
+                daysInput.style.borderColor = "var(--danger)";
+            } else {
+                daysInput.style.borderColor = "transparent";
+                if (!daysInput.value) daysInput.placeholder = `建議 ${days} 天`;
+            }
+        }
+
+        // --- Logic: Optimized Search & Sampler ---
+        async function sampleRouteAndSearch(path) {
+            currentPath = path;
+            const pathLength = google.maps.geometry.spherical.computeLength(path);
+            const distanceLimit = 20000; // 20km in meters
+
+            // LocalStorage Caching Strategy
+            const cacheKey = "route_" + btoa(path[0].toString() + path[path.length - 1].toString());
+            const cachedData = localStorage.getItem(cacheKey);
+            if (cachedData) {
+                const { timestamp, results } = JSON.parse(cachedData);
+                if (Date.now() - timestamp < 86400000) { // 24h
+                    displayResults(results);
+                    return;
+                }
+            }
+
+            let results = [];
+            for (let i = 0; i < path.length; i += 50) { // Step by points
+                const point = path[i];
+                if (i === 0 || google.maps.geometry.spherical.computeDistanceBetween(path[i - 50] || path[0], point) >= distanceLimit) {
+                    const searchRes = await runNearbySearch(point);
+                    results = [...results, ...searchRes];
+                }
+            }
+
+            // Deduplicate by place_id
+            const uniqueResults = Array.from(new Map(results.map(item => [item.place_id, item])).values());
+            localStorage.setItem(cacheKey, JSON.stringify({ timestamp: Date.now(), results: uniqueResults }));
+            displayResults(uniqueResults);
+        }
+
+        function runNearbySearch(location) {
+            return new Promise((resolve) => {
+                const request = {
+                    location: location,
+                    radius: '2000',
+                    type: ['restaurant', 'lodging']
+                };
+                placesService.nearbySearch(request, (res, status) => {
+                    resolve(status === google.maps.places.PlacesServiceStatus.OK ? res : []);
+                });
+            });
+        }
+
+        // --- Logic: Seasonal Recommendation ---
+        function updateSeasonalAdvice() {
+            const date = document.getElementById('start-date').value;
+            if (!date) return;
+
+            const month = new Date(date).getMonth() + 1;
+            const center = map.getCenter();
+            const lat = center.lat();
+            const lng = center.lng();
+
+            let region = "北部";
+            if (lat < 23.5) region = "南部";
+            else if (lat < 24.5) region = "中部";
+            if (lng > 121.3) region = "東部";
+
+            const adviceBox = document.getElementById('seasonal-advice');
+            let content = "";
+
+            if (month === 1 || month === 2 || month === 12) {
+                content = `<div class="advice-header"><i class="fas fa-snowflake"></i> 冬季提醒 (${region})</div>
+                           ${region === '北部' ? '東北季風強，北部易降雨，建議攜帶防雨風衣與保暖手套。' : '中南部溫差大，清晨需注意低溫。'}`;
+            } else if (month >= 6 && month <= 9) {
+                content = `<div class="advice-header"><i class="fas fa-sun"></i> 夏季提醒 (${region})</div>
+                           南部紫外線極強，強烈建議每 20km 補水一次，注意防曬以免熱衰竭。`;
+            } else {
+                content = `<div class="advice-header"><i class="fas fa-leaf"></i> 騎行好時節 (${region})</div>
+                           天候尚屬穩定，唯下午山區可能有陣雨，建議攜帶輕便型雨衣。`;
+            }
+
+            adviceBox.innerHTML = content;
+            adviceBox.style.display = "block";
+        }
+
+        // --- Logic: Star System ---
+        function toggleStar(placeId, name, address, rating) {
+            if (starredPlaces.has(placeId)) {
+                starredPlaces.delete(placeId);
+            } else {
+                starredPlaces.set(placeId, { name, address, rating });
+            }
+            renderStarred();
+            updateAllStarIcons();
+        }
+
+        function renderStarred() {
+            const container = document.getElementById('starred-list');
+            container.innerHTML = "";
+            starredPlaces.forEach((data, id) => {
+                const card = document.createElement('div');
+                card.className = "place-card starred";
+                card.innerHTML = `
+                    <div class="place-header">
+                        <strong>${data.name}</strong>
+                        <i class="fas fa-star place-star active" onclick="toggleStar('${id}')"></i>
+                    </div>
+                    <div style="font-size: 13px; color: var(--text-muted)">${data.address}</div>
+                    <div style="margin-top: 10px">
+                        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(data.name)}&query_place_id=${id}" target="_blank" style="color: var(--primary); text-decoration:none; font-weight:700">
+                             在 Google Maps 開啟 <i class="fas fa-external-link-alt"></i>
+                        </a>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function updateAllStarIcons() {
+            document.querySelectorAll('.place-star').forEach(icon => {
+                const pid = icon.getAttribute('data-id');
+                if (starredPlaces.has(pid)) icon.classList.add('active');
+                else icon.classList.remove('active');
+            });
+        }
+
+        // --- Logic: State Sharing ---
+        function shareState() {
+            const state = {
+                intensity: document.getElementById('intensity').value,
+                days: document.getElementById('days').value,
+                date: document.getElementById('start-date').value,
+                stars: Array.from(starredPlaces.keys()),
+                path: currentPath.map(p => [p.lat(), p.lng()])
+            };
+
+            const compressed = LZString.compressToEncodedURIComponent(JSON.stringify(state));
+            const shareUrl = window.location.origin + window.location.pathname + "#" + compressed;
+
+            navigator.clipboard.writeText(shareUrl);
+            showAlert("✅ 分享連結已複製到剪貼簿！");
+        }
+
+        function restoreFromHash() {
+            const hash = window.location.hash.substring(1);
+            if (!hash) return;
+
+            try {
+                const decompressed = LZString.decompressFromEncodedURIComponent(hash);
+                const state = JSON.parse(decompressed);
+
+                document.getElementById('intensity').value = state.intensity;
+                document.getElementById('days').value = state.days;
+                document.getElementById('start-date').value = state.date;
+
+                if (state.path && state.path.length > 0) {
+                    const googlePath = state.path.map(p => new google.maps.LatLng(p[0], p[1]));
+                    drawPath(googlePath);
+                }
+
+                if (state.stars) {
+                    state.stars.forEach(async pid => {
+                        // Fetch details for stars if not available
+                        placesService.getDetails({ placeId: pid }, (place, status) => {
+                            if (status === google.maps.places.PlacesServiceStatus.OK) {
+                                starredPlaces.set(pid, {
+                                    name: place.name,
+                                    address: place.vicinity || place.formatted_address,
+                                    rating: place.rating
+                                });
+                                renderStarred();
+                            }
+                        });
+                    });
+                }
+
+                showAlert("🚀 已從連結還原行程狀態！");
+            } catch (e) {
+                console.error("Restore Error", e);
+            }
+        }
+
+        // --- Presets & UI Helpers ---
+        function loadPreset(type) {
+            let waypoints = [];
+            if (type === 'grand') {
+                waypoints = [
+                    { lat: 25.0330, lng: 121.5654 }, // Taipei
+                    { lat: 24.8138, lng: 120.9675 }, // Hsinchu
+                    { lat: 24.1477, lng: 120.6736 }, // Taichung
+                    { lat: 22.9997, lng: 120.2270 }, // Tainan
+                    { lat: 22.6273, lng: 120.3014 }, // Kaohsiung
+                    { lat: 22.0163, lng: 120.7410 }, // Kenting
+                    { lat: 22.7932, lng: 121.1235 }, // Taitung
+                    { lat: 23.9769, lng: 121.6044 }, // Hualien
+                    { lat: 25.0330, lng: 121.5654 }  // Back to Taipei
+                ];
+            } else if (type === 'small') {
+                waypoints = [
+                    { lat: 25.033, lng: 121.565 },
+                    { lat: 24.147, lng: 120.673 },
+                    { lat: 22.627, lng: 120.301 },
+                    { lat: 23.976, lng: 121.604 },
+                    { lat: 25.033, lng: 121.565 }
+                ];
+            } else if (type === 'north-south') {
+                waypoints = [
+                    { lat: 25.298, lng: 121.562 }, // Fuguei Cape
+                    { lat: 21.902, lng: 120.852 }  // Eluanbi
+                ];
+            } else {
+                directionsRenderer.setDirections({ routes: [] });
+                document.getElementById('search-results').innerHTML = "";
+                return;
+            }
+
+            const origin = waypoints.shift();
+            const destination = waypoints.pop();
+
+            const request = {
+                origin: origin,
+                destination: destination,
+                waypoints: waypoints.map(w => ({ location: w, stopover: true })),
+                travelMode: 'BICYCLE'
+            };
+
+            directionsService.route(request, (result, status) => {
+                if (status === 'OK') {
+                    directionsRenderer.setDirections(result);
+                    const path = result.routes[0].overview_path;
+                    const distance = result.routes[0].legs.reduce((acc, leg) => acc + leg.distance.value, 0) / 1000;
+                    validateTrip(distance);
+                    sampleRouteAndSearch(path);
+                }
+            });
+        }
+
+        async function checkBusinessStatus(placeId, name) {
+            placesService.getDetails({
+                placeId: placeId,
+                fields: ['business_status', 'formatted_phone_number', 'opening_hours']
+            }, (place, status) => {
+                if (status === google.maps.places.PlacesServiceStatus.OK) {
+                    if (place.business_status === 'CLOSED_PERMANENTLY' || place.business_status === 'CLOSED_TEMPORARILY') {
+                        showAlert(`⚠️ 抱歉，${name} 目前已歇業或暫停營業。`);
+                    } else {
+                        // Open in Google Maps
+                        window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name)}&query_place_id=${placeId}`, '_blank');
+                    }
+                }
+            });
+        }
+
+        function displayResults(places) {
+            const container = document.getElementById('search-results');
+            container.innerHTML = "";
+            places.slice(0, 15).forEach(place => {
+                const card = document.createElement('div');
+                card.className = "place-card";
+                card.innerHTML = `
+                    <div class="place-header">
+                        <strong>${place.name}</strong>
+                        <i class="far fa-star place-star" data-id="${place.place_id}" onclick="event.stopPropagation(); toggleStar('${place.place_id}', '${place.name.replace(/'/g, "\\'")}', '${place.vicinity.replace(/'/g, "\\'")}', ${place.rating})"></i>
+                    </div>
+                    <div style="font-size: 13px; color: var(--text-muted)">${place.vicinity}</div>
+                    <div style="margin-top: 10px; display: flex; gap: 10px; align-items: center;">
+                        <span style="color: var(--warning); font-size: 13px;"><i class="fas fa-star"></i> ${place.rating || '-'}</span>
+                        <span style="color: var(--primary); font-size:13px; font-weight:700; cursor:pointer;" onclick="checkBusinessStatus('${place.place_id}', '${place.name.replace(/'/g, "\\'")}')">驗證並導航</span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+            updateAllStarIcons();
+        }
+
+        function showAlert(msg) {
+            const toast = document.getElementById('alert-toast');
+            toast.innerText = msg;
+            toast.style.display = "block";
+            setTimeout(() => toast.style.display = "none", 4000);
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+        function drawPath(path) {
+            // Simplified path drawing for restoration
+            const renderer = new google.maps.Polyline({
+                path: path,
+                geodesic: true,
+                strokeColor: '#00ffca',
+                strokeOpacity: 1.0,
+                strokeWeight: 5,
+                map: map
+            });
+            const bounds = new google.maps.LatLngBounds();
+            path.forEach(p => bounds.extend(p));
+            map.fitBounds(bounds);
+            sampleRouteAndSearch(path);
+        }
+
+    </script>
+    <!-- Replace YOUR_API_KEY with your actual Google Maps API Key -->
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places,geometry&callback=initMap&language=zh-TW"></script>
+</body>
+
+</html>

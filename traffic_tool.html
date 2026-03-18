@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>罰單扣點「保衛戰」- 駕照守護助手</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Noto+Sans+TC:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.4);
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #10b981;
+            --bg: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text: #f8fafc;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', 'Noto Sans TC', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(239, 68, 68, 0.1) 0%, transparent 40%);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        p.subtitle {
+            color: #94a3b8;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+
+        /* Dashboard Styles */
+        .dashboard {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            position: sticky;
+            top: 1rem;
+            z-index: 100;
+        }
+
+        .stat-card {
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            color: #94a3b8;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .stat-value.points { color: var(--warning); }
+        .stat-value.days { color: var(--success); }
+        .stat-value.danger { color: var(--danger); text-shadow: 0 0 15px rgba(239, 68, 68, 0.5); }
+
+        /* List Styles */
+        .violation-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .violation-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .violation-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(99, 102, 241, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .violation-item.active {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.1);
+        }
+
+        .violation-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .violation-name {
+            font-weight: 600;
+            font-size: 1.05rem;
+        }
+
+        .violation-meta {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-top: 0.2rem;
+        }
+
+        .violation-points {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 0.4rem 0.8rem;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--warning);
+        }
+
+        .violation-item.active .violation-points {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Action Box */
+        .action-box {
+            margin-top: 2rem;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            border-radius: 20px;
+            padding: 1.5rem;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            text-align: center;
+        }
+
+        .reset-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #94a3b8;
+            padding: 0.6rem 1.2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 1rem;
+        }
+
+        .reset-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            h1 { font-size: 2rem; }
+            .dashboard { padding: 1.5rem; }
+            .stat-value { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>罰單扣點「保衛戰」</h1>
+            <p class="subtitle">守護你的駕照，從精算開始</p>
+        </header>
+
+        <div class="dashboard">
+            <div class="stat-card">
+                <div class="stat-label">當前累積點數</div>
+                <div id="totalPoints" class="stat-value points">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">狀態預警</div>
+                <div id="statusText" class="stat-value days" style="font-size: 1.2rem; padding-top: 0.8rem;">安全</div>
+            </div>
+        </div>
+
+        <div class="violation-list" id="violationList">
+            <!-- Items injected by JS -->
+        </div>
+
+        <div class="action-box">
+            <div id="adviceText" style="font-size: 0.95rem; color: #cbd5e1; line-height: 1.6;">
+                點擊方的違規項目即可加入計算。一年內達 12 點將吊扣駕照 2 個月。
+            </div>
+            <button class="reset-btn" onclick="resetAll()">全部清除</button>
+        </div>
+    </div>
+
+    <script>
+        const violations = [
+            { id: 1, name: "闖紅燈", points: 3, meta: "含紅燈右轉" },
+            { id: 2, name: "嚴重超速", points: 3, meta: "超過最高限速 40km/h 以上" },
+            { id: 3, name: "行駛中滑手機", points: 1, meta: "手持使用行動電話/電腦" },
+            { id: 4, name: "不禮讓行人", points: 3, meta: "交叉路口未依規定禮讓行人" },
+            { id: 5, name: "蛇行/危險駕駛", points: 3, meta: "任意變換車道、逼車等" },
+            { id: 6, name: "未打方向燈", points: 1, meta: "轉彎或變換車道未依規定" },
+            { id: 7, name: "超速 (一般)", points: 1, meta: "未滿 40km/h 之普通超速" },
+            { id: 8, name: "逆向行駛", points: 1, meta: "不依規定車道行駛" },
+            { id: 9, name: "國道速限違規", points: 2, meta: "高速公路、快速道路違法行為" },
+            { id: 10, name: "轉彎不依規定", points: 1, meta: "包含直行車道轉彎等" },
+            { id: 11, name: "併排停車", points: 1, meta: "當場舉發之記點項目" },
+            { id: 12, name: "未依規定車線行走", points: 1, meta: "跨越雙黃線等" },
+            { id: 13, name: "不服從指揮", points: 1, meta: "不服從警察或交通人員教育" },
+            { id: 14, name: "違規超車", points: 1, meta: "於禁止超車道、彎道超車" },
+            { id: 15, name: "行至路口未減速", points: 1, meta: "行經無號誌路口未依規定" },
+            { id: 16, name: "燈光使用不當", points: 1, meta: "夜晚未開燈或亂開遠光燈" },
+            { id: 17, name: "超載 (客車)", points: 1, meta: "裝載人數超過規定" },
+            { id: 18, name: "機車未二段式左轉", points: 1, meta: "未依規定車道左轉" },
+            { id: 19, name: "國道未保車距", points: 2, meta: "高速公路未保持安全距離" },
+            { id: 20, name: "酒駕 (輕微)", points: 6, meta: "0.15mg/L 以上 (重則撤銷)" }
+        ];
+
+        let activeItems = new Set();
+
+        function init() {
+            const listEl = document.getElementById('violationList');
+            violations.forEach(v => {
+                const item = document.createElement('div');
+                item.className = 'violation-item';
+                item.innerHTML = `
+                    <div class="violation-info">
+                        <span class="violation-name">${v.name}</span>
+                        <span class="violation-meta">${v.meta}</span>
+                    </div>
+                    <div class="violation-points">+${v.points} 點</div>
+                `;
+                item.onclick = () => toggleViolation(v.id, item);
+                listEl.appendChild(item);
+            });
+            updateDisplay();
+        }
+
+        function toggleViolation(id, element) {
+            if (activeItems.has(id)) {
+                activeItems.delete(id);
+                element.classList.remove('active');
+            } else {
+                activeItems.add(id);
+                element.classList.add('active');
+            }
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            let total = 0;
+            activeItems.forEach(id => {
+                const v = violations.find(vi => vi.id === id);
+                if (v) total += v.points;
+            });
+
+            const totalPointsEl = document.getElementById('totalPoints');
+            const statusTextEl = document.getElementById('statusText');
+            const adviceTextEl = document.getElementById('adviceText');
+
+            totalPointsEl.innerText = total;
+
+            if (total === 0) {
+                statusTextEl.innerText = "安全";
+                statusTextEl.className = "stat-value days";
+                adviceTextEl.innerHTML = "點擊下方的違規項目即可加入計算。<br>一年內達 12 點將吊扣駕照 2 個月。";
+            } else if (total < 6) {
+                statusTextEl.innerText = "需留意";
+                statusTextEl.className = "stat-value points";
+                adviceTextEl.innerHTML = `目前累積 ${total} 點。建議保持優良駕駛，<br>滿一年後點數會自動歸零。`;
+            } else if (total < 12) {
+                statusTextEl.innerText = "危急！";
+                statusTextEl.className = "stat-value danger";
+                adviceTextEl.innerHTML = `<b>警告：</b>已累積至 ${total} 點！<br>若滿 6 點可向監理站申請自費講習，可扣抵 2 點。`;
+            } else {
+                statusTextEl.innerText = "吊扣預備";
+                statusTextEl.className = "stat-value danger";
+                adviceTextEl.innerHTML = `<span style="color:var(--danger)"><b>已達標：</b></span>您的點數達 ${total} 點。<br>將面臨吊扣駕照 2 個月之處分。`;
+            }
+        }
+
+        function resetAll() {
+            activeItems.clear();
+            document.querySelectorAll('.violation-item').forEach(el => el.classList.remove('active'));
+            updateDisplay();
+        }
+
+        init();
+    </script>
+</body>
+</html>

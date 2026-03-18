@@ -1,0 +1,10 @@
+name = "hidden-surf-0579"
+main = "src/index.js"
+compatibility_date = "2024-03-10"
+
+[vars]
+# API_KEY 應使用 Cloudflare Secret 管理，請勿在此填入明文
+
+[[kv_namespaces]]
+binding = "CYCLING_KV"
+id = "8c712903814048378aae498b28499718"

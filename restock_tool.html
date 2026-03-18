@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>家庭補貨「共同編輯」清單</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Noto+Sans+TC:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #fdfdfd;
+            --card: #ffffff;
+            --text: #334155;
+            --primary: #4f46e5;
+            --danger: #ef4444;
+            --success: #10b981;
+            --border: #f1f5f9;
+            --accent: #818cf8;
+        }
+
+        [data-theme="dark"] {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text: #f8fafc;
+            --primary: #6366f1;
+            --border: #334155;
+            --accent: #4ade80;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', 'Noto Sans TC', sans-serif;
+            transition: all 0.2s ease;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            padding: 1.5rem 1rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+        }
+
+        header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .theme-toggle {
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: 0.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+
+        /* Add Item Section */
+        .add-item-box {
+            background: var(--card);
+            padding: 1.25rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05);
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+        }
+
+        .input-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--text);
+            font-size: 0.95rem;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+        }
+
+        .add-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        /* List Styling */
+        .list-card {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 1.25rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            border: 1px solid var(--border);
+        }
+
+        .item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background: var(--bg);
+            border-radius: 16px;
+            margin-bottom: 0.75rem;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .item.urgent {
+            border: 2px solid var(--danger);
+        }
+
+        .item-main {
+            flex: 1;
+        }
+
+        .item-name {
+            font-weight: 700;
+            font-size: 1.05rem;
+            display: block;
+        }
+
+        .item-meta {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 2px;
+        }
+
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .urgent .status-badge {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        .normal .status-badge {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .action-area {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+        }
+
+        .qty-label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .item-delete {
+            color: var(--danger);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 5px;
+            opacity: 0.5;
+        }
+
+        .item-delete:hover {
+            opacity: 1;
+        }
+
+        /* Footer Actions */
+        .footer-btns {
+            margin-top: 1.5rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 1rem;
+            border-radius: 12px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--card);
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        /* Modal / Share overlay */
+        .share-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            z-index: 100;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background: var(--card);
+            padding: 2rem;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        #shareUrl {
+            width: 100%;
+            margin: 1rem 0;
+            padding: 1rem;
+            font-size: 0.8rem;
+            background: var(--bg);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            word-break: break-all;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+
+<body data-theme="light">
+    <div class="container">
+        <header>
+            <h1>🛒 家庭補貨同步清單</h1>
+            <button class="theme-toggle" onclick="toggleTheme()">☀️</button>
+        </header>
+
+        <div class="add-item-box">
+            <div class="input-row">
+                <input type="text" id="newItemName" placeholder="缺什麼？(如：鮮奶)">
+                <input type="text" id="newItemQty" placeholder="數量" style="max-width: 80px;">
+            </div>
+            <div class="input-row">
+                <input type="text" id="newItemWho" placeholder="誰需要的？(如：媽媽)">
+                <button class="add-btn" onclick="addItem()">新增</button>
+            </div>
+        </div>
+
+        <div class="list-card">
+            <div id="listItems">
+                <!-- Items here -->
+            </div>
+        </div>
+
+        <div class="footer-btns">
+            <button class="btn btn-secondary" onclick="resetAll()">全部清除</button>
+            <button class="btn btn-primary" onclick="showShare()">同步家人成員</button>
+        </div>
+    </div>
+
+    <div id="shareModal" class="share-modal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <h3>🔗 分享給家人</h3>
+            <p style="font-size: 0.9rem; margin-top: 10px; opacity: 0.8;">複製下方連結，家人點開即可同步所有項目</p>
+            <div id="shareUrl"></div>
+            <button class="btn btn-primary" style="width: 100%;" onclick="copyLink()">複製連結</button>
+            <button class="btn btn-secondary" style="width: 100%; margin-top: 10px;" onclick="closeModal()">關閉</button>
+        </div>
+    </div>
+
+    <script>
+        let items = [];
+
+        function init() {
+            // Load from URL hash for better sharing
+            const hash = window.location.hash.substring(1);
+            if (hash) {
+                try {
+                    items = JSON.parse(decodeURIComponent(escape(atob(hash))));
+                    saveLocal();
+                } catch (e) {
+                    console.error("Hash load error", e);
+                    loadLocal();
+                }
+            } else {
+                loadLocal();
+            }
+
+            // Sync theme
+            if (localStorage.getItem('theme') === 'dark') toggleTheme();
+
+            render();
+        }
+
+        function loadLocal() {
+            const saved = localStorage.getItem('family_restock_list');
+            if (saved) {
+                items = JSON.parse(saved);
+            } else {
+                // Default items
+                items = [
+                    { id: 1, name: '衛生紙', who: '公用', qty: '1串', urgent: true },
+                    { id: 2, name: '鮮奶', who: '兒子', qty: '1瓶', urgent: false }
+                ];
+            }
+        }
+
+        function saveLocal() {
+            localStorage.setItem('family_restock_list', JSON.stringify(items));
+        }
+
+        function addItem() {
+            const name = document.getElementById('newItemName').value.trim();
+            const qty = document.getElementById('newItemQty').value.trim() || '1';
+            const who = document.getElementById('newItemWho').value.trim() || '全家';
+
+            if (!name) return;
+
+            items.unshift({
+                id: Date.now(),
+                name,
+                who,
+                qty,
+                urgent: true
+            });
+
+            document.getElementById('newItemName').value = '';
+            document.getElementById('newItemQty').value = '';
+            document.getElementById('newItemWho').value = '';
+
+            render();
+            saveLocal();
+        }
+
+        function toggleItem(id) {
+            const item = items.find(i => i.id === id);
+            if (item) {
+                item.urgent = !item.urgent;
+                render();
+                saveLocal();
+            }
+        }
+
+        function deleteItem(e, id) {
+            e.stopPropagation();
+            items = items.filter(i => i.id !== id);
+            render();
+            saveLocal();
+        }
+
+        function resetAll() {
+            if (confirm('確定要清除所有清單嗎？')) {
+                items = [];
+                render();
+                saveLocal();
+            }
+        }
+
+        function render() {
+            const list = document.getElementById('listItems');
+            list.innerHTML = '';
+
+            if (items.length === 0) {
+                list.innerHTML = '<div class="empty-state">清單目前是空的 ✨<br>快新增需要的物資吧！</div>';
+                return;
+            }
+
+            items.forEach(item => {
+                const div = document.createElement('div');
+                div.className = `item ${item.urgent ? 'urgent' : 'normal'}`;
+                div.onclick = () => toggleItem(item.id);
+
+                div.innerHTML = `
+                    <div class="item-main">
+                        <span class="item-name">${item.name}</span>
+                        <div class="item-meta">
+                            <span>👤 ${item.who}</span>
+                            <span class="status-badge">${item.urgent ? '缺貨中' : '已購買'}</span>
+                        </div>
+                    </div>
+                    <div class="action-area">
+                        <div class="qty-label">x ${item.qty}</div>
+                        <div class="item-delete" onclick="deleteItem(event, ${item.id})">🗑️</div>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function toggleTheme() {
+            const isDark = document.body.getAttribute('data-theme') === 'dark';
+            document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            document.querySelector('.theme-toggle').innerText = isDark ? '☀️' : '🌙';
+            localStorage.setItem('theme', isDark ? 'light' : 'dark');
+        }
+
+        function showShare() {
+            const data = btoa(unescape(encodeURIComponent(JSON.stringify(items))));
+            const url = window.location.origin + window.location.pathname + "#" + data;
+            document.getElementById('shareUrl').innerText = url;
+            document.getElementById('shareModal').style.display = 'flex';
+        }
+
+        function closeModal(e) {
+            document.getElementById('shareModal').style.display = 'none';
+        }
+
+        function copyLink() {
+            const url = document.getElementById('shareUrl').innerText;
+            navigator.clipboard.writeText(url).then(() => {
+                alert('連結已複製！傳送給家人即可同步。');
+            });
+        }
+
+        init();
+    </script>
+</body>
+
+</html>

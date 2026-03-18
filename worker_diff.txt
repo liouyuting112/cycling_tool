@@ -1,0 +1,212 @@
+﻿commit bec3602ef76cbad7b3d7d741bbefc35f26bd8819
+Author: liouyuting112 <love7053150@gmail.com>
+Date:   Mon Mar 9 20:27:16 2026 +0800
+
+    Remove fake counter fallback value (3421 -> 0)
+
+diff --git a/cf-worker/src/index.js b/cf-worker/src/index.js
+index 0113d29..87eb67a 100644
+--- a/cf-worker/src/index.js
++++ b/cf-worker/src/index.js
+@@ -13,29 +13,29 @@ export default {
+         const isAllowed = allowedOrigins.some(o => origin.startsWith(o));
+         const corsOrigin = isAllowed ? origin : allowedOrigins[0];
+ 
++        const commonHeaders = {
++            "Access-Control-Allow-Origin": corsOrigin,
++            "Access-Control-Allow-Methods": "POST, OPTIONS",
++            "Access-Control-Allow-Headers": "Content-Type",
++            "Access-Control-Max-Age": "86400",
++        };
++
+         // CORS ?炎
+         if (request.method === "OPTIONS") {
+-            return new Response(null, {
+-                headers: {
+-                    "Access-Control-Allow-Origin": corsOrigin,
+-                    "Access-Control-Allow-Methods": "POST, OPTIONS",
+-                    "Access-Control-Allow-Headers": "Content-Type",
+-                    "Access-Control-Max-Age": "86400",
+-                },
+-            });
++            return new Response(null, { headers: commonHeaders });
+         }
+ 
+         // ?芣??POST
+         if (request.method !== "POST") {
+-            return new Response("Method Not Allowed", { status: 405 });
++            return new Response("Method Not Allowed", { status: 405, headers: commonHeaders });
+         }
+ 
+-        // 敺憓??詨?敺?API Key嚗??典?蝡荔?
++        // 敺憓??詨?敺?API Key
+         const apiKey = env.API_KEY;
+         if (!apiKey) {
+             return new Response(JSON.stringify({ error: "API_KEY not configured" }), {
+                 status: 500,
+-                headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": corsOrigin },
++                headers: { ...commonHeaders, "Content-Type": "application/json" },
+             });
+         }
+ 
+@@ -48,14 +48,19 @@ export default {
+             let usageCount = 0;
+             if (env.CYCLING_KV) {
+                 const countStr = await env.CYCLING_KV.get("usage_count") || "0";
+-                usageCount = parseInt(countStr) + 1;
+-                await env.CYCLING_KV.put("usage_count", usageCount.toString());
++                usageCount = parseInt(countStr);
++
++                // ?芣???Ping 隢?嚗撖阡? AI 隤輻嚗?憓?閮
++                if (!body.ping) {
++                    usageCount += 1;
++                    await env.CYCLING_KV.put("usage_count", usageCount.toString());
++                }
+             }
+ 
+             // 憒??芣 Ping (?????詨??嚗?亙???             if (body.ping) {
+                 return new Response(JSON.stringify({ usage_stats: { total_uses: usageCount } }), {
+-                    headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": corsOrigin }
++                    headers: { ...commonHeaders, "Content-Type": "application/json" }
+                 });
+             }
+ 
+@@ -82,22 +87,19 @@ export default {
+ 
+             const responseData = await response.json();
+ 
+-            // 撠??詨瘜典?蝯?嚗??曉 Header嚗?-            if (responseData.candidates) {
++            // 撠??詨瘜典?蝯?
++            if (responseData.candidates || responseData.error) {
+                 responseData.usage_stats = { total_uses: usageCount };
+             }
+ 
+             return new Response(JSON.stringify(responseData), {
+                 status: response.status,
+-                headers: {
+-                    "Content-Type": "application/json",
+-                    "Access-Control-Allow-Origin": corsOrigin,
+-                },
++                headers: { ...commonHeaders, "Content-Type": "application/json" },
+             });
+         } catch (e) {
+             return new Response(JSON.stringify({ error: "Proxy error: " + e.message }), {
+                 status: 500,
+-                headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": corsOrigin },
++                headers: { ...commonHeaders, "Content-Type": "application/json" },
+             });
+         }
+     },
+
+commit 3a80e7a176cd6a164c846b9e88020c34f876e7ae
+Author: liouyuting112 <love7053150@gmail.com>
+Date:   Mon Mar 9 15:08:29 2026 +0800
+
+    Fix itinerary formatting, counter UI, and anti-spam logic
+
+diff --git a/cf-worker/src/index.js b/cf-worker/src/index.js
+new file mode 100644
+index 0000000..0113d29
+--- /dev/null
++++ b/cf-worker/src/index.js
+@@ -0,0 +1,104 @@
++// Cloudflare Worker Proxy for Road Master v7.0
++// API Key ?脣???Cloudflare Secrets 銝哨??垢摰????+
++export default {
++    async fetch(request, env) {
++        // 摰蝬脣??
++        const allowedOrigins = [
++            "https://liouyuting112.github.io",
++            "http://localhost",
++            "http://127.0.0.1"
++        ];
++        const origin = request.headers.get("Origin") || "";
++        const isAllowed = allowedOrigins.some(o => origin.startsWith(o));
++        const corsOrigin = isAllowed ? origin : allowedOrigins[0];
++
++        // CORS ?炎
++        if (request.method === "OPTIONS") {
++            return new Response(null, {
++                headers: {
++                    "Access-Control-Allow-Origin": corsOrigin,
++                    "Access-Control-Allow-Methods": "POST, OPTIONS",
++                    "Access-Control-Allow-Headers": "Content-Type",
++                    "Access-Control-Max-Age": "86400",
++                },
++            });
++        }
++
++        // ?芣??POST
++        if (request.method !== "POST") {
++            return new Response("Method Not Allowed", { status: 405 });
++        }
++
++        // 敺憓??詨?敺?API Key嚗??典?蝡荔?
++        const apiKey = env.API_KEY;
++        if (!apiKey) {
++            return new Response(JSON.stringify({ error: "API_KEY not configured" }), {
++                status: 500,
++                headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": corsOrigin },
++            });
++        }
++
++        try {
++            const bodyText = await request.text();
++            let body = {};
++            try { body = JSON.parse(bodyText); } catch (e) { }
++
++            // 瘚?閮??(KV)
++            let usageCount = 0;
++            if (env.CYCLING_KV) {
++                const countStr = await env.CYCLING_KV.get("usage_count") || "0";
++                usageCount = parseInt(countStr) + 1;
++                await env.CYCLING_KV.put("usage_count", usageCount.toString());
++            }
++
++            // 憒??芣 Ping (?????詨??嚗?亙???+            if (body.ping) {
++                return new Response(JSON.stringify({ usage_stats: { total_uses: usageCount } }), {
++                    headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": corsOrigin }
++                });
++            }
++
++            // ?皜砍?冽芋??+            const modelsRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
++            const modelsData = await modelsRes.json();
++
++            let modelName = "models/gemini-pro"; // ?身
++            if (modelsData.models) {
++                const found = modelsData.models.find(m =>
++                    m.supportedGenerationMethods && m.supportedGenerationMethods.includes("generateContent")
++                );
++                if (found) modelName = found.name;
++            }
++
++            // 頧隢???Google
++            const targetUrl = `https://generativelanguage.googleapis.com/v1beta/${modelName}:generateContent?key=${apiKey}`;
++
++            const response = await fetch(targetUrl, {
++                method: "POST",
++                headers: { "Content-Type": "application/json" },
++                body: bodyText,
++            });
++
++            const responseData = await response.json();
++
++            // 撠??詨瘜典?蝯?嚗??曉 Header嚗?+            if (responseData.candidates) {
++                responseData.usage_stats = { total_uses: usageCount };
++            }
++
++            return new Response(JSON.stringify(responseData), {
++                status: response.status,
++                headers: {
++                    "Content-Type": "application/json",
++                    "Access-Control-Allow-Origin": corsOrigin,
++                },
++            });
++        } catch (e) {
++            return new Response(JSON.stringify({ error: "Proxy error: " + e.message }), {
++                status: 500,
++                headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": corsOrigin },
++            });
++        }
++    },
++};

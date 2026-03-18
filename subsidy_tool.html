@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>育兒津貼「補助紅包」精算器</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Noto+Sans+TC:wght@300;400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #f43f5e;
+            --primary-glow: rgba(244, 63, 94, 0.4);
+            --secondary: #fbbf24;
+            --bg: #fffbfb;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --muted: #64748b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', 'Noto Sans TC', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            background-image:
+                radial-gradient(circle at top right, #ffe4e6 0%, transparent 50%),
+                radial-gradient(circle at bottom left, #fef3c7 0%, transparent 50%);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 550px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        p.subtitle {
+            color: var(--muted);
+            font-size: 1rem;
+        }
+
+        .calc-card {
+            background: var(--card-bg);
+            border-radius: 30px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(244, 63, 94, 0.1);
+            border: 1px solid rgba(244, 63, 94, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+            font-size: 1rem;
+            color: #334155;
+        }
+
+        .btn-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .btn-option {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            padding: 0.8rem;
+            border-radius: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .btn-option:hover {
+            border-color: #cbd5e1;
+            background: #f1f5f9;
+        }
+
+        .btn-option.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+            box-shadow: 0 8px 15px var(--primary-glow);
+        }
+
+        select {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 16px;
+            border: 2px solid #e2e8f0;
+            background: #f8fafc;
+            font-size: 1rem;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1.2rem;
+        }
+
+        .result-box {
+            background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+            border-radius: 24px;
+            padding: 2rem;
+            color: white;
+            text-align: center;
+            animation: pulse 2s infinite ease-in-out;
+            box-shadow: 0 10px 30px rgba(225, 29, 72, 0.3);
+        }
+
+        .result-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-amount {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-detail {
+            font-size: 0.9rem;
+            background: rgba(255, 255, 255, 0.2);
+            display: inline-block;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.02);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--muted);
+            margin-top: 1rem;
+            line-height: 1.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .result-amount {
+                font-size: 2.5rem;
+            }
+
+            .calc-card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>🧧 補助紅包精算器</h1>
+            <p class="subtitle">2024-2025 台灣育兒補助最新版</p>
+        </header>
+
+        <div class="calc-card">
+            <div class="form-group">
+                <label>這是第幾個寶貝？</label>
+                <div class="btn-group" id="childRank">
+                    <div class="btn-option active" data-value="1">第一胎</div>
+                    <div class="btn-option" data-value="2">第二胎</div>
+                    <div class="btn-option" data-value="3">第三胎+</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>目前照顧方式？</label>
+                <div class="btn-group" id="careType" style="grid-template-columns: 1fr;">
+                    <div class="btn-option active" data-value="home" style="text-align: left; padding: 1rem;">
+                        🏠 親自照顧 / 送托私立單位<br>
+                        <small style="font-weight: normal; opacity: 0.8;">請領「育兒津貼」</small>
+                    </div>
+                    <div class="btn-option" data-value="public" style="text-align: left; padding: 1rem;">
+                        🏫 公立托嬰中心 / 托育家園<br>
+                        <small style="font-weight: normal; opacity: 0.8;">請領「托育補助」</small>
+                    </div>
+                    <div class="btn-option" data-value="quasi" style="text-align: left; padding: 1rem;">
+                        🧸 準公共保母 / 托嬰中心<br>
+                        <small style="font-weight: normal; opacity: 0.8;">請領「托育補助」</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>設籍縣市（額外加碼）</label>
+                <select id="citySelect">
+                    <option value="none">其他縣市</option>
+                    <option value="taipei">臺北市</option>
+                    <option value="newtaipei">新北市</option>
+                    <option value="taoyuan">桃園市</option>
+                    <option value="taichung">臺中市</option>
+                    <option value="kaohsiung">高雄市</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="result-box">
+            <div class="result-label">預估每月可領取</div>
+            <div class="result-amount" id="monthlyTotal">$5,000</div>
+            <div class="result-detail" id="totalYearly">每年約 $60,000 元</div>
+        </div>
+
+        <p class="footer-note">
+            * 補助金額以中央基層為主，台北市等加碼可能依實際送托類型微調。<br>
+            * 0-5歲幼兒適用，詳細資格請洽各地方政府社會局。
+        </p>
+    </div>
+
+    <script>
+        const state = {
+            rank: 1,
+            type: 'home',
+            city: 'none'
+        };
+
+        // Data based on 2024-2025 rules
+        const baseData = {
+            home: [5000, 6000, 7000],      // 育兒津貼: 1, 2, 3+
+            public: [7000, 8000, 9000],    // 公共化托育
+            quasi: [13000, 14000, 15000]   // 準公共化
+        };
+
+        const cityBonus = {
+            taipei: { home: 0, public: 2500, quasi: 5000 },
+            newtaipei: { home: 0, public: 0, quasi: 3000 }, // 托嬰中心加碼 3000
+            taoyuan: { home: 0, public: 0, quasi: 2000 },
+            taichung: { home: 0, public: 0, quasi: 1400 },
+            kaohsiung: { home: 0, public: 500, quasi: 1500 },
+            none: { home: 0, public: 0, quasi: 0 }
+        };
+
+        function calculate() {
+            let base = baseData[state.type][state.rank - 1];
+            let bonus = cityBonus[state.city][state.type];
+
+            let total = base + bonus;
+
+            document.getElementById('monthlyTotal').innerText = `$${total.toLocaleString()}`;
+            document.getElementById('totalYearly').innerText = `每年約 $${(total * 12).toLocaleString()} 元`;
+        }
+
+        // Event Listeners
+        document.querySelectorAll('#childRank .btn-option').forEach(btn => {
+            btn.onclick = () => {
+                document.querySelectorAll('#childRank .btn-option').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                state.rank = parseInt(btn.dataset.value);
+                calculate();
+            };
+        });
+
+        document.querySelectorAll('#careType .btn-option').forEach(btn => {
+            btn.onclick = () => {
+                document.querySelectorAll('#careType .btn-option').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                state.type = btn.dataset.value;
+                calculate();
+            };
+        });
+
+        document.getElementById('citySelect').onchange = (e) => {
+            state.city = e.target.value;
+            calculate();
+        };
+
+        calculate();
+    </script>
+</body>
+
+</html>
