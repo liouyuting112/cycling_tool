@@ -80,6 +80,30 @@
             letter-spacing: 1px;
         }
 
+        /* API Status Dots */
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #475569;
+            display: inline-block;
+        }
+
+        .status-dot.ok {
+            background: var(--primary);
+            box-shadow: 0 0 8px var(--primary);
+        }
+
+        .status-dot.fail {
+            background: var(--danger);
+            box-shadow: 0 0 8px var(--danger);
+        }
+
+        .status-dot.warn {
+            background: var(--warn);
+            box-shadow: 0 0 8px var(--warn);
+        }
+
         /* Tabs */
         .tabs {
             display: flex;
@@ -401,6 +425,25 @@
             margin-bottom: 8px;
         }
 
+        /* Highlight Button */
+        .highlight-btn {
+            float: right;
+            padding: 4px 8px;
+            background: rgba(0, 255, 202, 0.1);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all .2s;
+        }
+
+        .highlight-btn:hover {
+            background: var(--primary);
+            color: var(--bg);
+        }
+
         /* Checklist */
         .checklist-section {
             margin-bottom: 16px;
@@ -604,7 +647,15 @@
             <div class="logo">
                 <i class="fas fa-biking"></i>
                 <div>
-                    <div>ROAD MASTER PRO</div><small>終極單車環島規劃系統</small>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        ROAD MASTER PRO
+                        <span id="api-status" style="display:flex; gap:4px;">
+                            <span id="status-maps" class="status-dot" title="Maps API"></span>
+                            <span id="status-elev" class="status-dot" title="Elevation API"></span>
+                            <span id="status-places" class="status-dot" title="Places API"></span>
+                        </span>
+                    </div>
+                    <small>終極單車環島規劃系統</small>
                 </div>
             </div>
         </div>
@@ -721,6 +772,11 @@
             <div id="starred-list"></div>
             <hr class="sec-divider">
             <label id="results-label">沿途推薦</label>
+            <button class="btn btn-outline btn-sm"
+                style="margin-bottom:10px;border-color:var(--primary);color:var(--primary);"
+                onclick="if(currentPath.length) searchAlongRoute(currentPath); else showAlert('請先載入路線','warn');">
+                <i class="fas fa-search-location"></i> 重新搜尋沿途店家
+            </button>
             <div id="search-results"></div>
         </div>
 
@@ -847,8 +903,17 @@
             document.getElementById('sidebar').classList.toggle('open');
         }
 
+        // ─── Utility ───
+        function updateApiStatus(api, status) {
+            const dot = document.getElementById('status-' + api);
+            if (!dot) return;
+            dot.className = 'status-dot ' + (status === 'OK' ? 'ok' : (status === 'ZERO_RESULTS' ? 'warn' : 'fail'));
+            dot.title = api.toUpperCase() + ' API: ' + status;
+        }
+
         // ─── initMap ───
         function initMap() {
+            updateApiStatus('maps', 'OK');
             map = new google.maps.Map(document.getElementById('map'), {
                 zoom: 8,
                 center: { lat: 23.6, lng: 121.0 },
@@ -865,6 +930,8 @@
             dirRend = new google.maps.DirectionsRenderer({ map, polylineOptions: { strokeColor: '#00ffca', strokeWeight: 5 } });
             placesSvc = new google.maps.PlacesService(map);
             elevSvc = new google.maps.ElevationService();
+            updateApiStatus('elev', 'INIT');
+            updateApiStatus('places', 'INIT');
 
             // Set today's date
             document.getElementById('start-date').value = new Date().toISOString().split('T')[0];
@@ -953,6 +1020,7 @@
             if (sampled[sampled.length - 1] !== path[path.length - 1]) sampled.push(path[path.length - 1]);
 
             elevSvc.getElevationAlongPath({ path: sampled, samples: Math.min(sampled.length, 256) }, (results, status) => {
+                updateApiStatus('elev', status);
                 console.log('Elevation API status:', status);
                 let totalGain = 0;
                 let elevs = [];
@@ -963,16 +1031,20 @@
                         if (diff > 0) totalGain += diff;
                     }
                 } else {
-                    console.warn('Elevation API failed, using flat estimate');
-                    // Estimate based on region (Taiwan average)
-                    totalGain = totalDistKm * 8; // ~8m/km average
-                    elevs = Array.from({ length: 60 }, (_, i) => 100 + Math.sin(i / 5) * 50);
+                    console.warn('Elevation API failed or restricted, using estimate');
+                    totalGain = Math.round(totalDistKm * 6); // 6m/km average for island
+                    elevs = Array.from({ length: 60 }, (_, i) => 100 + Math.sin(i / 5) * 40);
                 }
                 const equivDist = Math.round(totalDistKm + totalGain / 10);
 
-                document.getElementById('stat-dist').textContent = Math.round(totalDistKm);
-                document.getElementById('stat-elev').textContent = Math.round(totalGain);
-                document.getElementById('stat-equiv').textContent = equivDist;
+                // FORCE UPDATE UI
+                const distEl = document.getElementById('stat-dist');
+                const elevEl = document.getElementById('stat-elev');
+                const equivEl = document.getElementById('stat-equiv');
+                if (distEl) distEl.textContent = Math.round(totalDistKm);
+                if (elevEl) elevEl.textContent = Math.round(totalGain);
+                if (equivEl) equivEl.textContent = equivDist;
+
                 document.getElementById('elevation-container').style.display = 'block';
 
                 if (elevChart) elevChart.destroy();
@@ -981,7 +1053,7 @@
                 const segLen = Math.max(1, (totalDistKm * 1000) / elevs.length);
                 const colors = elevs.map((e, i) => {
                     if (i === 0) return 'rgba(0,255,202,0.6)';
-                    const grad = ((elevs[i] - elevs[i - 1]) / segLen) * 100;
+                    const grad = ((elevs[i] - (elevs[i - 1] || 0)) / segLen) * 100;
                     return grad > 5 ? 'rgba(244,63,94,0.8)' : grad > 2 ? 'rgba(251,191,36,0.7)' : 'rgba(0,255,202,0.5)';
                 });
 
@@ -995,23 +1067,15 @@
                             tooltip: {
                                 callbacks: {
                                     label: c => `海拔 ${c.parsed.y}m`,
-                                    afterLabel: c => { if (c.dataIndex === 0) return ''; const g = ((elevs[c.dataIndex] - elevs[c.dataIndex - 1]) / segLen) * 100; return g > 5 ? '⚠️ 陸坡警告！' : ''; }
+                                    afterLabel: c => { if (c.dataIndex === 0) return ''; const g = ((elevs[c.dataIndex] - elevs[c.dataIndex - 1]) / segLen) * 100; return g > 5 ? '⚠️ 陡坡！' : ''; }
                                 }
                             }
                         },
-                        scales: {
-                            x: { display: false },
-                            y: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } }
-                        }
+                        scales: { x: { display: false }, y: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } } }
                     }
                 });
 
-                // Update day plans with real elevation data
                 buildDayPlans(totalDistKm, totalGain, equivDist, days);
-
-                const intensity = document.getElementById('intensity').value;
-                const limit = LIMITS[intensity];
-                if (equivDist / days > limit) showAlert(`⚠️ 等效里程超標！建議至少 ${Math.ceil(equivDist / limit)} 天`, 'warn');
             });
         }
 
@@ -1024,7 +1088,6 @@
             const gainPerDay = totalGain / finalDays;
             const equivPerDay = equivKm / finalDays;
             const startDate = document.getElementById('start-date').value;
-
             let html = `<p style="font-size:13px;color:var(--muted);margin-bottom:14px;">共 <strong style="color:var(--primary)">${finalDays} 天</strong>，總里程 <strong style="color:var(--primary)">${Math.round(totalKm)}km</strong>，總爬升 <strong style="color:var(--warn)">${Math.round(totalGain)}m</strong></p>`;
 
             for (let d = 0; d < finalDays; d++) {
@@ -1036,24 +1099,42 @@
                 const hrs = Math.round(equivPerDay / speedKmh * 10) / 10;
 
                 html += `
-            <div class="day-card">
+            <div class="day-card" id="day-card-${d}">
                 <div class="day-header" onclick="toggleDay(this)">
-                    <h4>${dateStr}</h4>
+                    <h4>${dateStr} <button class="highlight-btn" onclick="event.stopPropagation(); highlightDay(${d}, ${totalKm}, ${finalDays})">🔍 地圖聚焦</button></h4>
                     <div class="day-meta">${Math.round(kmPerDay)}km｜⬆️${Math.round(gainPerDay)}m｜⏱️~${hrs}h</div>
                 </div>
                 <div class="day-body" id="day-body-${d}">
-                    ${overload ? `<div class="warn">⚠️ 等效里程 ${Math.round(equivPerDay)}km 超過強度上限 ${limit}km，建議增加天數！</div>` : ''}
+                    ${overload ? `<div class="warn">⚠️ 等效里程 ${Math.round(equivPerDay)}km 超過上限！</div>` : ''}
                     <p style="font-size:12px;color:var(--muted);margin-bottom:8px;">里程區間：<strong style="color:var(--text)">${progressStart} – ${progressEnd} km</strong></p>
-                    <p style="font-size:12px;color:var(--muted);margin-bottom:8px;">建議配速：<strong style="color:var(--primary)">${speedKmh} km/h</strong>，早上 7:00 出發，約 ${Math.floor(7 + hrs)}:${String(Math.round((hrs % 1) * 60)).padStart(2, '0')} 抵達</p>
-                    <p style="font-size:12px;color:var(--muted);">沿途星標：<span id="day-stars-${d}">（前往「路線規劃」搜尋並加入收藏）</span></p>
+                    <p style="font-size:12px;color:var(--muted);margin-bottom:8px;">建議配速：<strong style="color:var(--primary)">${speedKmh} km/h</strong>，${Math.floor(7 + hrs)}:00 前抵達</p>
+                    <p style="font-size:12px;color:var(--muted);">沿途星標：<span id="day-stars-${d}">（收藏後顯示於此）</span></p>
                 </div>
             </div>`;
             }
-
             document.getElementById('day-plans-container').innerHTML = html;
-
-            // Populate starred in day plans
             updateDayStars(finalDays, totalKm);
+        }
+
+        let dayHighlightLine;
+        function highlightDay(dayIndex, totalKm, totalDays) {
+            if (!currentPath || currentPath.length === 0) return;
+            const startRatio = dayIndex / totalDays;
+            const endRatio = (dayIndex + 1) / totalDays;
+            const startIndex = Math.floor(currentPath.length * startRatio);
+            const endIndex = Math.floor(currentPath.length * endRatio);
+            const segment = currentPath.slice(startIndex, endIndex + 1);
+
+            if (dayHighlightLine) dayHighlightLine.setMap(null);
+            dayHighlightLine = new google.maps.Polyline({
+                path: segment, strokeColor: '#fbbf24', strokeOpacity: 0.8, strokeWeight: 8, map
+            });
+
+            const bounds = new google.maps.LatLngBounds();
+            segment.forEach(p => bounds.extend(p));
+            map.fitBounds(bounds);
+            showAlert(`📍 正在預覽第 ${dayIndex + 1} 天路段`);
+            switchTab('days');
         }
 
         function toggleDay(header) {
@@ -1120,11 +1201,26 @@
 
         async function searchAlongRoute(path) {
             allResults = [];
-            const step = Math.max(1, Math.floor(path.length / 8)); // sample 8 points
+            clearPoiMarkers();
+
+            // Calculate approximate total distance of path to determine sampling
+            let totalPathDist = 0;
+            for (let i = 1; i < path.length; i++) {
+                totalPathDist += google.maps.geometry.spherical.computeDistanceBetween(path[i - 1], path[i]);
+            }
+            totalPathDist /= 1000; // km
+
+            // Sample every 20km or at least 10 points
+            const desiredSpacingKm = 20;
+            const numPoints = Math.max(10, Math.ceil(totalPathDist / desiredSpacingKm));
+            const step = Math.max(1, Math.floor(path.length / numPoints));
+
             const points = [];
             for (let i = 0; i < path.length; i += step) points.push(path[i]);
+            if (points[points.length - 1] !== path[path.length - 1]) points.push(path[path.length - 1]);
 
-            document.getElementById('results-label').textContent = '沿途推薦 (搜尋中...)';
+            document.getElementById('results-label').textContent = `沿途推薦 (搜尋中... ${points.length} 站)`;
+            updateApiStatus('places', 'SEARCHING');
 
             for (const pt of points) {
                 for (const cfg of SEARCH_CONFIGS) {
@@ -1136,14 +1232,13 @@
                         if (!allResults.find(r => r.place_id === p.place_id)) {
                             const enriched = { ...p, _tag: cfg.tag, _label: cfg.label };
                             allResults.push(enriched);
-                            addPoiMarker(enriched); // Add colored marker to map
+                            addPoiMarker(enriched);
                         }
                     });
                 }
             }
 
             document.getElementById('results-label').textContent = `沿途推薦 (共 ${allResults.length} 筆)`;
-            // Force show categories bar (override any conflicting inline style)
             const bar = document.getElementById('categories-bar');
             bar.setAttribute('style', 'display:flex !important; gap:6px; flex-wrap:wrap; margin-bottom:10px;');
             renderResults(allResults);
@@ -1152,6 +1247,7 @@
         function runSearch(req) {
             return new Promise(resolve => {
                 placesSvc.nearbySearch(req, (res, stat) => {
+                    updateApiStatus('places', stat);
                     resolve(stat === google.maps.places.PlacesServiceStatus.OK ? res : []);
                 });
             });
