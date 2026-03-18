@@ -1040,10 +1040,14 @@
 
         // ─── Elevation ───
         function fetchElevation(path, totalDistKm, days) {
+            debug(`fetchElevation started: ${path.length} path points`);
+            if (!elevSvc) return debug('Elevation service not initialized!');
+
             const step = Math.max(1, Math.floor(path.length / 60));
             const sampled = [];
             for (let i = 0; i < path.length; i += step) sampled.push(path[i]);
             if (sampled[sampled.length - 1] !== path[path.length - 1]) sampled.push(path[path.length - 1]);
+            debug(`Sampling ${sampled.length} points for elevation...`);
 
             elevSvc.getElevationAlongPath({ path: sampled, samples: Math.min(sampled.length, 256) }, (results, status) => {
                 updateApiStatus('elev', status);
@@ -1056,13 +1060,13 @@
                         const diff = elevs[i] - elevs[i - 1];
                         if (diff > 0) totalGain += diff;
                     }
-                    debug(`Initial Total Gain: ${totalGain}m`);
+                    debug(`API Gain: ${totalGain}m`);
                 }
 
                 // If API returns 0 or fails but it's a long route, use fallback
                 if (totalGain <= 0 && totalDistKm > 10) {
-                    debug('Elevation is 0 or failed for long route, triggering fallback estimate');
-                    totalGain = Math.round(totalDistKm * 6.5); // Average Taiwan coastal/mountain mix
+                    debug(`Gain is ${totalGain}m for ${totalDistKm.toFixed(0)}km route - using fallback`);
+                    totalGain = Math.round(totalDistKm * 6.5);
                     elevs = Array.from({ length: 60 }, (_, i) => 100 + Math.sin(i / 5) * 40);
                 }
 
@@ -1231,34 +1235,45 @@
         ];
 
         async function searchAlongRoute(path) {
+            debug(`Starting searchAlongRoute with ${path.length} points`);
             allResults = [];
             clearPoiMarkers();
 
-            // Calculate approximate total distance of path to determine sampling
             let totalPathDist = 0;
-            for (let i = 1; i < path.length; i++) {
-                totalPathDist += google.maps.geometry.spherical.computeDistanceBetween(path[i - 1], path[i]);
+            try {
+                if (google.maps.geometry && google.maps.geometry.spherical) {
+                    for (let i = 1; i < path.length; i++) {
+                        totalPathDist += google.maps.geometry.spherical.computeDistanceBetween(path[i - 1], path[i]);
+                    }
+                    totalPathDist /= 1000;
+                    debug(`Path distance via geometry: ${totalPathDist.toFixed(1)}km`);
+                } else {
+                    debug('Geometry library missing, using point count estimate');
+                    totalPathDist = path.length * 0.5; // very rough estimate
+                }
+            } catch (e) {
+                debug(`Distance calc error: ${e.message}`);
+                totalPathDist = 1000; // fallback high to force sampling
             }
-            totalPathDist /= 1000; // km
 
-            // Sample every 20km or at least 10 points
             const desiredSpacingKm = 20;
-            const numPoints = Math.max(10, Math.ceil(totalPathDist / desiredSpacingKm));
+            const numPoints = Math.max(8, Math.ceil(totalPathDist / desiredSpacingKm));
             const step = Math.max(1, Math.floor(path.length / numPoints));
 
             const points = [];
             for (let i = 0; i < path.length; i += step) points.push(path[i]);
-            if (points[points.length - 1] !== path[path.length - 1]) points.push(path[path.length - 1]);
+            debug(`Sampling ${points.length} points for shops...`);
 
             document.getElementById('results-label').textContent = `沿途推薦 (搜尋中... ${points.length} 站)`;
             updateApiStatus('places', 'SEARCHING');
 
-            for (const pt of points) {
+            for (let idx = 0; idx < points.length; idx++) {
+                const pt = points[idx];
                 for (const cfg of SEARCH_CONFIGS) {
                     const req = { location: pt, radius: '3000' };
-                    if (cfg.type) req.type = cfg.type;
-                    else req.keyword = cfg.keyword;
+                    if (cfg.type) req.type = cfg.type; else req.keyword = cfg.keyword;
                     const res = await runSearch(req);
+                    if (res.length > 0) debug(`Found ${res.length} ${cfg.tag} at station ${idx}`);
                     res.slice(0, 3).forEach(p => {
                         if (!allResults.find(r => r.place_id === p.place_id)) {
                             const enriched = { ...p, _tag: cfg.tag, _label: cfg.label };
@@ -1268,10 +1283,10 @@
                     });
                 }
             }
-
+            debug(`Search complete. Total stores: ${allResults.length}`);
             document.getElementById('results-label').textContent = `沿途推薦 (共 ${allResults.length} 筆)`;
             const bar = document.getElementById('categories-bar');
-            bar.setAttribute('style', 'display:flex !important; gap:6px; flex-wrap:wrap; margin-bottom:10px;');
+            if (bar) bar.setAttribute('style', 'display:flex !important; gap:6px; flex-wrap:wrap; margin-bottom:10px;');
             renderResults(allResults);
         }
 
