@@ -1,0 +1,2625 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>台灣環島旅遊規劃</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1a2e;
+  --ink2: #2d2d44;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --surface: #f9fafb;
+  --surface2: #ffffff;
+  --accent: #c0392b;
+  --accent2: #e74c3c;
+  --gold: #d4a017;
+  --teal: #0f766e;
+  --green: #059669;
+  --radius: 12px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.06);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Noto Sans TC', sans-serif;
+  background: #f0ede8;
+  background-image: 
+    radial-gradient(circle at 20% 20%, rgba(192,57,43,0.06) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(15,118,110,0.06) 0%, transparent 50%);
+  min-height: 100vh;
+  color: var(--ink);
+}
+.app-header {
+  background: var(--ink);
+  color: white;
+  padding: 20px 32px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+}
+.app-header h1 {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+.app-header .sub {
+  font-size: 12px;
+  opacity: 0.55;
+  letter-spacing: 1px;
+  margin-top: 2px;
+}
+.logo-circle {
+  width: 40px; height: 40px;
+  background: var(--accent);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.progress-bar {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-left: auto;
+}
+.prog-step {
+  display: flex; align-items: center; gap: 0;
+}
+.prog-dot {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  border: 1.5px solid rgba(255,255,255,0.3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.5);
+  transition: all 0.3s;
+  position: relative;
+}
+.prog-dot.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+.prog-dot.done {
+  background: var(--teal);
+  border-color: var(--teal);
+  color: white;
+}
+.prog-dot .dot-label {
+  position: absolute;
+  bottom: -18px;
+  font-size: 9px;
+  white-space: nowrap;
+  color: rgba(255,255,255,0.5);
+  left: 50%; transform: translateX(-50%);
+}
+.prog-dot.active .dot-label, .prog-dot.done .dot-label { color: rgba(255,255,255,0.8); }
+.prog-line {
+  width: 24px; height: 1.5px;
+  background: rgba(255,255,255,0.2);
+  transition: background 0.3s;
+}
+.prog-line.done { background: var(--teal); }
+
+.main {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 40px 20px 80px;
+}
+.step-card {
+  background: var(--surface2);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  padding: 36px;
+  animation: fadeUp 0.4s ease;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.step-title {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--ink);
+}
+.step-sub {
+  color: var(--muted);
+  font-size: 14px;
+  margin-bottom: 28px;
+  line-height: 1.6;
+}
+.form-group { margin-bottom: 24px; }
+.form-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink2);
+  margin-bottom: 10px;
+  letter-spacing: 0.5px;
+}
+.option-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px;
+}
+.option-btn {
+  padding: 14px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  cursor: pointer;
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 14px;
+  color: var(--ink2);
+  transition: all 0.2s;
+  text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+.option-btn:hover { border-color: var(--accent); background: #fff5f5; }
+.option-btn.selected {
+  border-color: var(--accent);
+  background: #fff0ee;
+  color: var(--accent);
+  font-weight: 500;
+}
+.option-btn .opt-icon { font-size: 22px; }
+.option-btn .opt-desc { font-size: 11px; color: var(--muted); }
+.option-btn.selected .opt-desc { color: #e07060; }
+
+.slider-wrap { padding: 8px 4px; }
+.day-display {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--accent);
+  text-align: center;
+  margin-bottom: 8px;
+}
+.day-display span { font-size: 16px; color: var(--muted); }
+input[type=range] {
+  width: 100%; cursor: pointer;
+  accent-color: var(--accent);
+  height: 6px;
+}
+.range-labels {
+  display: flex; justify-content: space-between;
+  font-size: 12px; color: var(--muted); margin-top: 6px;
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 16px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 1px;
+  margin-top: 8px;
+}
+.btn-primary:hover { background: var(--accent2); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(192,57,43,0.3); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+.btn-secondary {
+  padding: 10px 20px;
+  background: transparent;
+  color: var(--muted);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-secondary:hover { border-color: var(--ink2); color: var(--ink2); }
+
+.loading-wrap {
+  text-align: center;
+  padding: 48px 0;
+}
+.spinner {
+  width: 40px; height: 40px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 16px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { color: var(--muted); font-size: 14px; }
+.loading-sub { font-size: 12px; color: #aaa; margin-top: 4px; }
+
+/* Route display */
+.route-overview {
+  background: linear-gradient(135deg, var(--ink) 0%, var(--ink2) 100%);
+  border-radius: 16px;
+  padding: 14px 16px;
+  color: white;
+  margin-bottom: 28px;
+}
+.route-overview h3 {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 16px;
+  margin-bottom: 16px;
+  opacity: 0.9;
+}
+.route-cities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.city-tag {
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 13px;
+  display: flex; align-items: center; gap: 4px;
+}
+.city-tag .day-num {
+  font-size: 10px;
+  background: var(--accent);
+  border-radius: 10px;
+  padding: 1px 5px;
+  font-weight: 600;
+}
+
+/* Day selector */
+.day-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  margin-bottom: 24px;
+  scrollbar-width: none;
+}
+.day-tabs::-webkit-scrollbar { display: none; }
+.day-tab {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  background: white;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--muted);
+  transition: all 0.2s;
+  font-family: 'Noto Sans TC', sans-serif;
+}
+.day-tab:hover { border-color: var(--accent); color: var(--accent); }
+.day-tab.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+  font-weight: 500;
+}
+.day-tab.done::after { content: " ✓"; }
+
+/* Place cards */
+.place-section { margin-bottom: 28px; }
+.place-section-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.place-section-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.place-cards { display: flex; flex-direction: column; gap: 10px; }
+.place-card {
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: white;
+  display: flex; align-items: flex-start; gap: 12px;
+}
+.place-card:hover { border-color: var(--accent); box-shadow: 0 2px 8px rgba(192,57,43,0.1); }
+.place-card.selected {
+  border-color: var(--teal);
+  background: #f0fdfa;
+}
+.place-card .place-icon {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  background: var(--surface);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.place-card.selected .place-icon { background: #ccfbf1; }
+.place-info { flex: 1; min-width: 0; }
+.place-name {
+  font-weight: 500;
+  font-size: 15px;
+  margin-bottom: 3px;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.place-addr {
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 4px;
+}
+.place-meta {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px;
+}
+.rating { color: var(--gold); font-weight: 500; }
+.price-level { color: var(--teal); }
+.place-check {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+  font-size: 12px;
+}
+.place-card.selected .place-check {
+  background: var(--teal);
+  border-color: var(--teal);
+  color: white;
+}
+
+/* Itinerary summary */
+.itinerary-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.itinerary-table th {
+  background: var(--ink);
+  color: white;
+  padding: 10px 14px;
+  text-align: left;
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+.itinerary-table th:first-child { border-radius: 8px 0 0 0; }
+.itinerary-table th:last-child { border-radius: 0 8px 0 0; }
+.itinerary-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  color: var(--ink2);
+}
+.itinerary-table tr:hover td { background: var(--surface); }
+.itinerary-table tr:last-child td { border-bottom: none; }
+.day-badge {
+  background: var(--accent);
+  color: white;
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.action-row {
+  display: flex; gap: 10px; flex-wrap: wrap;
+  margin-top: 24px;
+}
+.btn-map {
+  flex: 1;
+  padding: 14px 20px;
+  background: var(--teal);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  letter-spacing: 0.5px;
+}
+.btn-map:hover { background: #0d6660; transform: translateY(-1px); }
+.btn-csv {
+  flex: 1;
+  padding: 14px 20px;
+  background: white;
+  color: var(--ink2);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.btn-csv:hover { border-color: var(--ink2); background: var(--surface); }
+.btn-restart {
+  width: 100%;
+  padding: 12px;
+  background: transparent;
+  color: var(--muted);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 8px;
+}
+.btn-restart:hover { color: var(--ink); border-color: var(--ink2); }
+
+.error-msg {
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 13px;
+  color: #b91c1c;
+  margin-top: 12px;
+}
+
+/* Map container */
+#map-container {
+  width: 100%;
+  height: 420px;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 24px;
+  border: 1px solid var(--border);
+}
+
+.nav-row {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 24px;
+}
+
+@media (max-width: 600px) {
+  .step-card { padding: 24px 20px; }
+  .app-header { padding: 16px 20px; }
+  .app-header h1 { font-size: 18px; }
+  .progress-bar { display: none; }
+  .action-row { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="logo-circle">🗺</div>
+  <div>
+    <h1>台灣環島規劃</h1>
+    <div class="sub">Taiwan Round-Island Planner</div>
+  </div>
+  <div class="progress-bar" id="progress-bar">
+    <!-- generated by JS -->
+  </div>
+</header>
+
+<div class="main">
+  <div id="app-root"></div>
+</div>
+
+<script>
+const GEMINI_KEY = 'AIzaSyC5AyU5v8vgs_-wiI6JhdCBizdumGLFYRM';
+const PLACES_KEY = 'AIzaSyAP5MQ0ECHEiGHzTDBtdeMC33zVJx1XcvM';
+const MAPS_KEY   = 'AIzaSyAP5MQ0ECHEiGHzTDBtdeMC33zVJx1XcvM';
+const STORE_KEY = 'tw_loop_html_v4';
+/** 地圖：滾輪縮放、較直覺的手勢 */
+const MAP_UI = { scrollwheel: true, gestureHandling: 'greedy', zoomControl: true, mapTypeControl: false, streetViewControl: false };
+
+const START_STATIONS = {
+  '台北車站': { city:'台北', lat:25.0478, lng:121.5170 },
+  '新北板橋車站': { city:'新北', lat:25.0143, lng:121.4628 },
+  '基隆車站': { city:'基隆', lat:25.1318, lng:121.7386 },
+  '桃園車站': { city:'桃園', lat:24.9892, lng:121.3136 },
+  '新竹車站': { city:'新竹', lat:24.8016, lng:120.9718 },
+  '苗栗車站': { city:'苗栗', lat:24.5701, lng:120.8227 },
+  '台中車站': { city:'台中', lat:24.1375, lng:120.6860 },
+  '彰化車站': { city:'彰化', lat:24.0818, lng:120.5383 },
+  '嘉義車站': { city:'嘉義', lat:23.4793, lng:120.4410 },
+  '台南車站': { city:'台南', lat:22.9969, lng:120.2129 },
+  '高雄車站': { city:'高雄', lat:22.6394, lng:120.3024 },
+  '左營車站': { city:'高雄', lat:22.6874, lng:120.3069 },
+  '屏東車站': { city:'屏東', lat:22.6691, lng:120.4864 },
+  '台東車站': { city:'台東', lat:22.7543, lng:121.1465 },
+  '花蓮車站': { city:'花蓮', lat:23.9926, lng:121.6010 },
+  '宜蘭車站': { city:'宜蘭', lat:24.7546, lng:121.7581 },
+  '新北樹林車站': { city:'新北', lat:24.9913, lng:121.4248 },
+  '新竹北新竹車站': { city:'新竹', lat:24.8132, lng:120.9830 },
+  '雲林斗六車站': { city:'雲林', lat:23.7117, lng:120.5420 },
+  '南投集集車站': { city:'南投', lat:23.8290, lng:120.7881 },
+  '基隆七堵車站': { city:'基隆', lat:25.0923, lng:121.7149 },
+};
+
+/** 環島路線版型（依交通部／車友常見分類簡化，可依天數裁切） */
+const ROUTE_PRESETS = {
+  classic_cw: { name: '經典環島（順時針）', desc: '西濱→台南→東海岸→北迴', cities: ['台北','桃園','新竹','台中','嘉義','台南','高雄','屏東','台東','花蓮','宜蘭'] },
+  classic_ccw: { name: '經典環島（逆時針）', desc: '宜蘭→花蓮→台東→墾丁→高雄…', cities: ['台北','宜蘭','花蓮','台東','屏東','高雄','台南','嘉義','台中','新竹','桃園'] },
+  west_coast: { name: '西濱／台1線為主', desc: '西岸城鎮密集', cities: ['台北','桃園','新竹','苗栗','台中','彰化','嘉義','台南','高雄','屏東','台東','花蓮','宜蘭'] },
+  east_rift: { name: '東海岸＋花東縱谷', desc: '海線與縱谷穿插', cities: ['宜蘭','花蓮','台東','高雄','屏東','台南','嘉義','台中','新竹','桃園','台北'] },
+  challenge: { name: '山線挑戰（示意）', desc: '經台三線／山區城鎮較多', cities: ['台北','桃園','新竹','苗栗','台中','南投','嘉義','台南','高雄','屏東','台東','花蓮','宜蘭'] },
+  north_to_south: { name: '北高縱貫（西部主軸）', desc: '北部至高屏，偏西岸主線', cities: ['台北','桃園','新竹','苗栗','台中','彰化','雲林','嘉義','台南','高雄','屏東'] },
+  south_to_north: { name: '南北縱貫（東返北上）', desc: '高屏出發，花東北返', cities: ['高雄','屏東','台東','花蓮','宜蘭','台北','桃園','台中'] },
+  hualien_focus: { name: '花東深度（回北）', desc: '花東停靠較密，適合東部出發', cities: ['花蓮','台東','屏東','高雄','台南','嘉義','台中','台北','宜蘭'] },
+  west_short: { name: '西部都會快線', desc: '短天數較容易完成', cities: ['台北','桃園','新竹','台中','彰化','嘉義','台南','高雄'] },
+  east_short: { name: '東部景觀快線', desc: '宜花東主線 + 南部補點', cities: ['宜蘭','花蓮','台東','屏東','高雄','台南'] },
+  central_mix: { name: '中台灣混合線', desc: '中部切換山海線', cities: ['台中','彰化','南投','嘉義','台南','高雄','台東','花蓮','宜蘭','台北'] },
+};
+const CITY_ALIAS = { '新北': '台北' };
+const CITY_COORDS = {
+  '台北': { lat:25.0330, lng:121.5654 },
+  '基隆': { lat:25.1276, lng:121.7392 },
+  '桃園': { lat:24.9936, lng:121.3010 },
+  '新竹': { lat:24.8138, lng:120.9675 },
+  '苗栗': { lat:24.5602, lng:120.8214 },
+  '台中': { lat:24.1477, lng:120.6736 },
+  '彰化': { lat:24.0757, lng:120.5440 },
+  '雲林': { lat:23.7092, lng:120.4313 },
+  '嘉義': { lat:23.4801, lng:120.4491 },
+  '台南': { lat:22.9997, lng:120.2270 },
+  '高雄': { lat:22.6273, lng:120.3014 },
+  '屏東': { lat:22.5519, lng:120.5488 },
+  '台東': { lat:22.7583, lng:121.1444 },
+  '花蓮': { lat:23.9872, lng:121.6015 },
+  '宜蘭': { lat:24.7570, lng:121.7539 },
+  '南投': { lat:23.9196, lng:120.6838 },
+  '新北': { lat:25.0170, lng:121.4628 },
+};
+
+const EQUIPMENT = ['安全帽','前後車燈','補胎工具','打氣筒','行動電源','雨衣','急救包','替換衣物'];
+
+const STEP_LABELS = ['基本設定','天數·車站','推薦路線','選旅館','路段餐飲','完整行程'];
+
+let state = {
+  step: 0,
+  /** 'level' = 低/中/高 建議總額；'custom' = 自訂總額（互斥） */
+  budgetMode: null,
+  budgetLevel: null,
+  budgetAmount: 20000,
+  days: 7,
+  startStation: '台北車站',
+  /** 環島路線版型 id，必須在步驟2前選擇 */
+  routePresetId: null,
+  tripMode: 'oneway', // oneway / roundtrip
+  foodPrefs: ['convenience','budget'], // vegetarian/convenience/budget/luxury
+  accommodation: 'hotel', // guesthouse/hotel/hostel
+  route: [], // [{day,city,lat,lng}]
+  hotelCache: {}, // city -> places
+  segmentCache: {}, // "A->B" -> {vegetarian,budget,luxury,convenience}
+  selections: {}, // dayIndex -> {hotel}
+  segmentSelections: {}, // segKey -> {restaurants:[], convenience:[]}
+  currentDay: 0,
+  currentSeg: 0,
+  equipment: {},
+  segmentLoading: {},
+  segmentError: {},
+  /** 從住家/親友出發：第一天不在「出發城市」住宿（仍會規劃該城為起點，但只選第 2 天起的旅館） */
+  skipDepartHotel: false,
+  /** 自訂裝備項目（字串陣列） */
+  customEquipment: [],
+  otherRoutesExpanded: false,
+  routeSelectionLocked: false,
+  appliedRouteKey: null,
+};
+let routeRequest = { running: false, controller: null };
+let mapsApiPromise = null;
+/** 地圖標記上的說明視窗（單例，避免重疊） */
+let activeInfoWindow = null;
+let pendingHotelPick = null;
+let pendingSegmentPick = null;
+
+function saveState() {
+  localStorage.setItem(STORE_KEY, JSON.stringify(state));
+}
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (!raw) return;
+    const parsed = JSON.parse(raw);
+    state = { ...state, ...parsed };
+    if (typeof state.skipDepartHotel !== 'boolean') state.skipDepartHotel = false;
+    if (!Array.isArray(state.customEquipment)) state.customEquipment = [];
+    if (!state.budgetMode && state.budgetLevel) state.budgetMode = 'level';
+    if (state.budgetMode === 'level' && !state.budgetLevel) state.budgetLevel = 'mid';
+    if (!state.tripMode) state.tripMode = 'oneway';
+    if (typeof state.otherRoutesExpanded !== 'boolean') state.otherRoutesExpanded = false;
+    if (typeof state.routeSelectionLocked !== 'boolean') state.routeSelectionLocked = false;
+    if (!('appliedRouteKey' in state)) state.appliedRouteKey = null;
+  } catch {}
+}
+
+function esc(s){ return String(s || '').replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
+function priceLevel(n){ return ['','$','$$','$$$','$$$$'][n] || ''; }
+function priceLevelLabel(h) {
+  if (!h) return '';
+  if (typeof h.price_level === 'number') return priceLevel(h.price_level);
+  if (typeof h.priceLevel === 'string') {
+    const m = { PRICE_LEVEL_INEXPENSIVE:1, PRICE_LEVEL_MODERATE:2, PRICE_LEVEL_EXPENSIVE:3, PRICE_LEVEL_VERY_EXPENSIVE:4 };
+    return priceLevel(m[h.priceLevel] ?? 2);
+  }
+  return '';
+}
+function hotelPriceRange(item) {
+  const mid = estimateCost(item, 'hotel');
+  const low = Math.max(300, Math.round(mid * 0.82 / 50) * 50);
+  const high = Math.round(mid * 1.22 / 50) * 50;
+  return { low, high };
+}
+function hotelPriceHint(item) {
+  const lv = priceLevelLabel(item) || 'N/A';
+  const r = hotelPriceRange(item);
+  const levelText = lv === 'N/A' ? '等級未提供' : lv;
+  return `${levelText}｜約 NT$${r.low.toLocaleString()}-${r.high.toLocaleString()}（非即時房價）`;
+}
+function budgetLabel(){ return state.budgetLevel ? ({low:'低預算',mid:'中預算',high:'高預算'}[state.budgetLevel] || '') : ''; }
+function applyBudgetLevelAmount() {
+  if (state.budgetMode !== 'level' || !state.budgetLevel) return;
+  const caps = { low: 12000, mid: 26000, high: 45000 };
+  state.budgetAmount = caps[state.budgetLevel] ?? 20000;
+}
+function accLabel(){ return {guesthouse:'民宿',hotel:'飯店',hostel:'背包客棧'}[state.accommodation] || ''; }
+
+function hashPlaceId(id) {
+  const s = String(id || '');
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
+function estimateCost(item, kind) {
+  if (!item) return 0;
+  const pl = typeof item.price_level === 'number'
+    ? item.price_level
+    : ({ PRICE_LEVEL_INEXPENSIVE:1, PRICE_LEVEL_MODERATE:2, PRICE_LEVEL_EXPENSIVE:3, PRICE_LEVEL_VERY_EXPENSIVE:4 }[item.priceLevel] ?? null);
+  const jitter = ((hashPlaceId(item.place_id) % 121) - 60);
+  if (kind === 'hotel') {
+    let level = item.priceLevel || 'PRICE_LEVEL_MODERATE';
+    if (typeof item.price_level === 'number') {
+      level = ['PRICE_LEVEL_FREE','PRICE_LEVEL_INEXPENSIVE','PRICE_LEVEL_MODERATE','PRICE_LEVEL_EXPENSIVE','PRICE_LEVEL_VERY_EXPENSIVE'][item.price_level] || 'PRICE_LEVEL_MODERATE';
+    }
+    let base = {
+      PRICE_LEVEL_FREE: 700,
+      PRICE_LEVEL_INEXPENSIVE: 1200,
+      PRICE_LEVEL_MODERATE: 2100,
+      PRICE_LEVEL_EXPENSIVE: 3200,
+      PRICE_LEVEL_VERY_EXPENSIVE: 4600
+    }[level] || 2100;
+    const plNum = typeof item.price_level === 'number' ? item.price_level : ({ PRICE_LEVEL_INEXPENSIVE:1,PRICE_LEVEL_MODERATE:2,PRICE_LEVEL_EXPENSIVE:3,PRICE_LEVEL_VERY_EXPENSIVE:4 }[level] ?? 2);
+    const rating = Number(item.rating) || 3.7;
+    const rc = Number(item.userRatingCount || 0);
+    base = Math.round(base * (0.9 + (rating - 3.4) * 0.09) * (rc > 200 ? 1.06 : 1));
+    const jitter = (hashPlaceId(item.place_id) % 901) - 450;
+    base = Math.max(450, base + jitter + (plNum - 2) * 220);
+    if (state.accommodation === 'guesthouse') base = Math.round(base * 0.82);
+    if (state.accommodation === 'hostel') base = Math.round(base * 0.52);
+    return base;
+  }
+  if (kind === 'convenience') return 150;
+  if (kind === 'budget') {
+    const base = ({ 1:260, 2:420, 3:900, 4:1600 }[pl] ?? 380);
+    return Math.max(180, base + jitter);
+  }
+  if (kind === 'luxury') {
+    const base = ({ 1:900, 2:1300, 3:1900, 4:2600 }[pl] ?? 1500);
+    return Math.max(700, base + jitter * 2);
+  }
+  if (kind === 'vegetarian') {
+    const base = ({ 1:280, 2:430, 3:900, 4:1500 }[pl] ?? 420);
+    return Math.max(220, base + jitter);
+  }
+  return 320;
+}
+
+function selectedHotel(dayIdx){
+  return state.selections[dayIdx]?.hotel || null;
+}
+
+function usedCost() {
+  let sum = 0;
+  state.route.forEach((_,i)=>{
+    if (state.skipDepartHotel && i === 0) return;
+    sum += estimateCost(selectedHotel(i), 'hotel');
+  });
+  Object.values(state.segmentSelections).forEach(seg => {
+    (seg.restaurants || []).forEach(x => sum += x.estimatedCost || 0);
+    (seg.convenience || []).forEach(x => sum += x.estimatedCost || 0);
+  });
+  return sum;
+}
+
+function toMapsSearch(p){
+  const name = p.displayName?.text || p.name || '';
+  const addr = p.formattedAddress || '';
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name + (addr?`, ${addr}`:''))}`;
+}
+
+function extractJsonArray(text) {
+  const raw = (text || '').replace(/```json|```/g, '').trim();
+  try {
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) return parsed;
+    if (Array.isArray(parsed?.route)) return parsed.route;
+    if (Array.isArray(parsed?.cities)) return parsed.cities;
+  } catch {}
+  const s = raw.indexOf('[');
+  const e = raw.lastIndexOf(']');
+  if (s >= 0 && e > s) {
+    const clipped = raw.slice(s, e + 1);
+    try { return JSON.parse(clipped); } catch {
+      try { return JSON.parse(clipped.replace(/,\s*([}\]])/g, '$1')); } catch {}
+    }
+  }
+  throw new Error('Gemini 回傳不是有效 JSON 陣列');
+}
+
+function extractCitiesFromText(text) {
+  const names = Object.keys(CITY_COORDS).sort((a,b)=>b.length-a.length);
+  const pattern = new RegExp(names.join('|'), 'g');
+  const matches = [...String(text || '').matchAll(pattern)].map(m => m[0]);
+  const out = [];
+  for (const c of matches) {
+    if (out[out.length - 1] !== c) out.push(c);
+  }
+  return out;
+}
+
+function fillRouteToDays(partialRoute, days, startStation) {
+  const clockwise = ['台北','桃園','新竹','台中','嘉義','台南','高雄','屏東','台東','花蓮','宜蘭'];
+  const counter = [...clockwise].reverse();
+  const startCity = (START_STATIONS[startStation]?.city || '台北');
+  const base = ['高雄','屏東','台東','花蓮','宜蘭'].includes(startCity) ? counter : clockwise;
+  const idx = Math.max(0, base.indexOf(startCity));
+  const ordered = [...base.slice(idx), ...base.slice(0, idx)];
+
+  const existing = partialRoute
+    .map(r => ({ city: r.city, lat: r.lat, lng: r.lng }))
+    .filter(r => r.city && Number.isFinite(r.lat) && Number.isFinite(r.lng));
+
+  const used = new Set(existing.map(x => x.city));
+  for (const city of ordered) {
+    if (existing.length >= days) break;
+    if (used.has(city)) continue;
+    const c = CITY_COORDS[city];
+    if (!c) continue;
+    existing.push({ city, lat: c.lat, lng: c.lng });
+    used.add(city);
+  }
+  return existing.slice(0, days).map((r, i) => ({ day: i + 1, city: r.city, lat: r.lat, lng: r.lng }));
+}
+function normalizedStartCity(stationName) {
+  const c = START_STATIONS[stationName]?.city || '台北';
+  return CITY_ALIAS[c] || c;
+}
+function routeIdealDays(routeId) {
+  const len = ROUTE_PRESETS[routeId]?.cities?.length || 10;
+  return { min: Math.max(3, Math.floor(len * 0.5)), max: Math.min(14, len) };
+}
+function getSuitableRouteIds(startStation) {
+  const c = normalizedStartCity(startStation);
+  return Object.keys(ROUTE_PRESETS).filter(id => (ROUTE_PRESETS[id].cities || []).includes(c));
+}
+function getRecommendedRouteIds(startStation, days, tripMode = state.tripMode) {
+  const suitable = getSuitableRouteIds(startStation);
+  const effectiveDays = tripMode === 'roundtrip' ? Math.max(2, Math.ceil(days / 2)) : days;
+  const scored = suitable.map(id => {
+    const ideal = routeIdealDays(id);
+    const target = (ideal.min + ideal.max) / 2;
+    return { id, score: Math.abs(effectiveDays - target) };
+  }).sort((a, b) => a.score - b.score);
+  const out = scored.map(x => x.id);
+  while (out.length < 3) {
+    const extra = Object.keys(ROUTE_PRESETS).find(id => !out.includes(id));
+    if (!extra) break;
+    out.push(extra);
+  }
+  return out.slice(0, 3);
+}
+
+function buildRouteFromPreset(presetId, days, startStation) {
+  const preset = ROUTE_PRESETS[presetId];
+  if (!preset) return buildLocalFallbackRoute(days, startStation);
+  const startCity = normalizedStartCity(startStation);
+  const cities = preset.cities.filter(c => CITY_COORDS[c]);
+  const idx = cities.indexOf(startCity);
+  const ordered = idx >= 0 ? [...cities.slice(idx), ...cities.slice(0, idx)] : [...cities];
+  const seq = state.tripMode === 'roundtrip'
+    ? [...ordered, ...[...ordered].reverse().slice(1)]
+    : [...ordered];
+  const partial = [];
+  for (let i = 0; i < seq.length && partial.length < days; i++) {
+    const c = seq[i];
+    const co = CITY_COORDS[c];
+    if (!co) continue;
+    partial.push({ day: partial.length + 1, city: c, lat: co.lat, lng: co.lng });
+  }
+  return fillRouteToDays(partial, days, startStation);
+}
+function routeIntensityHint(routeList) {
+  let maxKm = 0;
+  for (let i = 0; i < (routeList || []).length - 1; i++) {
+    const a = routeList[i], b = routeList[i + 1];
+    if (!a || !b) continue;
+    maxKm = Math.max(maxKm, haversineKm({ lat: a.lat, lng: a.lng }, { lat: b.lat, lng: b.lng }));
+  }
+  if (maxKm >= 170) return `⚠ 此路線有單日估算超過 ${Math.round(maxKm)} km，屬高強度，建議加天數或更換路線。`;
+  if (maxKm >= 130) return `提醒：此路線有單日約 ${Math.round(maxKm)} km，可能偏硬。`;
+  return '';
+}
+function routeApplyKey() {
+  return JSON.stringify({
+    preset: state.routePresetId || '',
+    days: Number(state.days || 0),
+    start: state.startStation || '',
+    tripMode: state.tripMode || 'oneway'
+  });
+}
+function isVegetarianPlace(p) {
+  const name = String(p?.displayName?.text || p?.name || '');
+  const types = (p?.types || []).join(' ');
+  const text = `${name} ${types}`.toLowerCase();
+  const yes = /(素食|蔬食|全素|蛋奶素|vegan|vegetarian|veg\b)/i.test(text);
+  const no = /(牛排|燒肉|海鮮|壽司|生魚片|拉麵|豬腳|雞排|烤鴨|火鍋|串燒)/i.test(text);
+  return yes && !no;
+}
+
+function ensureMapsApi() {
+  if (window.google?.maps?.places) return Promise.resolve();
+  if (mapsApiPromise) return mapsApiPromise;
+  mapsApiPromise = new Promise((resolve, reject) => {
+    const cbName = '__initPlaces_' + Date.now();
+    window[cbName] = () => {
+      delete window[cbName];
+      resolve();
+    };
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${MAPS_KEY}&libraries=places&callback=${cbName}`;
+    script.async = true;
+    script.onerror = () => reject(new Error('Google Maps JS 載入失敗'));
+    document.head.appendChild(script);
+  });
+  return mapsApiPromise;
+}
+
+async function placesSearchClient({lat, lng, type, keyword = '', max = 8, radius = 12000}) {
+  await ensureMapsApi();
+  const div = document.createElement('div');
+  const map = new google.maps.Map(div, { center: { lat, lng }, zoom: 12, ...MAP_UI });
+  const service = new google.maps.places.PlacesService(map);
+  const request = {
+    location: new google.maps.LatLng(lat, lng),
+    radius,
+    type,
+    keyword,
+  };
+  return new Promise((resolve, reject) => {
+    service.nearbySearch(request, (results, status) => {
+      if (status !== google.maps.places.PlacesServiceStatus.OK && status !== google.maps.places.PlacesServiceStatus.ZERO_RESULTS) {
+        reject(new Error(`PlacesService 失敗：${status}`));
+        return;
+      }
+      const out = (results || []).slice(0, max).map((p) => ({
+        ...p,
+        displayName: { text: p.name || '' },
+        formattedAddress: p.vicinity || '',
+        place_id: p.place_id,
+        rating: p.rating,
+        userRatingCount: p.user_ratings_total,
+        priceLevel: p.price_level ? ['','PRICE_LEVEL_INEXPENSIVE','PRICE_LEVEL_MODERATE','PRICE_LEVEL_EXPENSIVE','PRICE_LEVEL_VERY_EXPENSIVE'][p.price_level] : undefined,
+        location: { latitude: p.geometry?.location?.lat?.(), longitude: p.geometry?.location?.lng?.() }
+      }));
+      resolve(out);
+    });
+  });
+}
+
+function renderProgress() {
+  const bar = document.getElementById('progress-bar');
+  bar.innerHTML = STEP_LABELS.map((label, i) => {
+    const cls = i < state.step ? 'done' : i === state.step ? 'active' : '';
+    const line = i < STEP_LABELS.length - 1 ? `<div class="prog-line ${i < state.step ? 'done' : ''}"></div>` : '';
+    return `<div class="prog-step"><div class="prog-dot ${cls}" data-goto-step="${i}" title="點擊回到此步驟" style="cursor:pointer">${i < state.step ? '✓' : i+1}<span class="dot-label">${label}</span></div>${line}</div>`;
+  }).join('');
+}
+
+function render() {
+  renderProgress();
+  const root = document.getElementById('app-root');
+  if (state.step === 0) root.innerHTML = renderStep0();
+  if (state.step === 1) root.innerHTML = renderStep1();
+  if (state.step === 2) root.innerHTML = renderStep2();
+  if (state.step === 3) root.innerHTML = renderStep3();
+  if (state.step === 4) root.innerHTML = renderStep4();
+  if (state.step === 5) { root.innerHTML = renderStep5(); initMap(); }
+  bindEvents();
+  if (state.step === 2) drawRouteRecommendMap();
+  if (state.step === 3) drawHotelStepMap();
+  if (state.step === 4) drawSegmentStepMap();
+  saveState();
+}
+
+function renderStep0() {
+  const food = state.foodPrefs;
+  return `<div class="step-card">
+    <div class="step-title">先設定你的旅遊條件</div>
+    <div class="step-sub">預算請擇一：「等級」會給建議總額；「自訂」則由你輸入上限（兩者不並用）。飲食可複選。</div>
+    <div class="form-group">
+      <div class="form-label">💰 預算方式（二選一）</div>
+      <div class="option-grid">
+        <button type="button" class="option-btn ${state.budgetMode==='level'?'selected':''}" data-budget-mode="level"><span class="opt-icon">📊</span><span>依等級</span><span class="opt-desc">低／中／高建議總額</span></button>
+        <button type="button" class="option-btn ${state.budgetMode==='custom'?'selected':''}" data-budget-mode="custom"><span class="opt-icon">✏️</span><span>自訂總額</span><span class="opt-desc">自行輸入金額上限</span></button>
+      </div>
+      ${state.budgetMode==='level' ? `<div style="margin-top:14px">
+        <div class="form-label">預算等級</div>
+        <div class="option-grid">
+        ${[
+          {v:'low', icon:'🎒', label:'低', desc:'約 NT$12,000'},
+          {v:'mid', icon:'🚗', label:'中', desc:'約 NT$26,000'},
+          {v:'high', icon:'✨', label:'高', desc:'約 NT$45,000'}
+        ].map(o=>`<button class="option-btn ${state.budgetLevel===o.v?'selected':''}" data-budget="${o.v}">
+          <span class="opt-icon">${o.icon}</span><span>${o.label}</span><span class="opt-desc">${o.desc}</span></button>`).join('')}
+        </div>
+      </div>` : ''}
+      ${state.budgetMode==='custom' ? `<div style="margin-top:14px">
+        <label class="form-label">自訂總預算上限（NT）</label>
+        <input id="budget-amount" type="number" min="0" value="${state.budgetAmount}" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;font-size:14px;">
+      </div>` : ''}
+    </div>
+
+    <div class="form-group">
+      <div class="form-label">🍽 飲食偏好（可複選）</div>
+      <div class="option-grid">
+        ${[
+          {v:'vegetarian', icon:'🥦', label:'素食', desc:'蔬食/素食'},
+          {v:'convenience', icon:'🏪', label:'便利商店', desc:'補給點'},
+          {v:'budget', icon:'💸', label:'平價餐廳', desc:'省錢方案'},
+          {v:'luxury', icon:'🍷', label:'奢華餐廳', desc:'高價位'}
+        ].map(o=>`<button class="option-btn ${food.includes(o.v)?'selected':''}" data-food="${o.v}">
+          <span class="opt-icon">${o.icon}</span><span>${o.label}</span><span class="opt-desc">${o.desc}</span></button>`).join('')}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <div class="form-label">🏨 住宿類型</div>
+      <div class="option-grid">
+        ${[
+          {v:'guesthouse', icon:'🏡', label:'民宿', desc:'在地風格'},
+          {v:'hotel', icon:'🏨', label:'飯店', desc:'商旅/飯店'},
+          {v:'hostel', icon:'🎒', label:'背包客棧', desc:'省錢住宿'}
+        ].map(o=>`<button class="option-btn ${state.accommodation===o.v?'selected':''}" data-acc="${o.v}">
+          <span class="opt-icon">${o.icon}</span><span>${o.label}</span><span class="opt-desc">${o.desc}</span></button>`).join('')}
+      </div>
+    </div>
+    <button class="btn-primary" id="to-step1" ${!canStep0Continue() ? 'disabled':''}>下一步：天數與出發車站 →</button>
+    <button class="btn-restart" id="restart-all" style="margin-top:10px;">重新規劃</button>
+  </div>`;
+}
+
+function canStep0Continue() {
+  if (!state.foodPrefs.length) return false;
+  if (state.budgetMode === 'level') return !!state.budgetLevel;
+  if (state.budgetMode === 'custom') return state.budgetAmount > 0;
+  return false;
+}
+
+function renderStep1() {
+  return `<div class="step-card">
+    <div class="step-title">天數、出發站與環島路線</div>
+    <div class="step-sub">先選<strong>天數</strong>與<strong>出發車站</strong>，再選<strong>環島路線版型</strong>（會決定停靠城市順序）。</div>
+    <div class="day-display">${state.days} <span>天</span></div>
+    <div class="slider-wrap">
+      <input type="range" id="day-slider" min="3" max="14" value="${state.days}">
+      <div class="range-labels"><span>3 天</span><span>14 天</span></div>
+    </div>
+    <div style="margin-top:20px">
+      <div class="form-label">🚉 出發車站</div>
+      <select id="start-station" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;font-size:14px;">
+        ${Object.keys(START_STATIONS).map(s=>`<option ${state.startStation===s?'selected':''}>${s}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-group" style="margin-top:16px;">
+      <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:14px;color:var(--ink2);">
+        <input type="checkbox" id="skip-depart-hotel" ${state.skipDepartHotel?'checked':''} style="margin-top:3px;width:16px;height:16px;">
+        <span><strong>第一天不在出發城市住宿</strong><br><span style="font-size:12px;color:var(--muted);">適合從住家附近出發：略過「第 1 個停靠城市」的旅館，改從出發車站連到第 2 天住宿點規劃路段餐飲與單車路線。</span></span>
+      </label>
+    </div>
+    <div class="form-group" style="margin-top:16px;">
+      <div class="form-label">↔ 路線型態</div>
+      <div class="option-grid">
+        <button type="button" class="option-btn ${state.tripMode==='oneway'?'selected':''}" data-trip-mode="oneway">
+          <span class="opt-icon">➡</span><span>單趟 ${state.days} 天</span><span class="opt-desc">僅走環島的一部分</span>
+        </button>
+        <button type="button" class="option-btn ${state.tripMode==='roundtrip'?'selected':''}" data-trip-mode="roundtrip">
+          <span class="opt-icon">🔁</span><span>來回 ${state.days} 天</span><span class="opt-desc">以出發區域折返</span>
+        </button>
+      </div>
+    </div>
+    <div class="nav-row">
+      <button class="btn-secondary" id="back-step0">← 返回</button>
+      <button class="btn-primary" id="to-step2" style="width:auto;padding:14px 32px;">下一步：推薦路線 →</button>
+    </div>
+    <button class="btn-restart" id="restart-all" style="margin-top:10px;">重新規劃</button>
+  </div>`;
+}
+
+function renderStep2() {
+  const pr = state.routePresetId ? ROUTE_PRESETS[state.routePresetId] : null;
+  const recommended = getRecommendedRouteIds(state.startStation, state.days, state.tripMode);
+  const suitable = getSuitableRouteIds(state.startStation);
+  const others = suitable.filter(id => !recommended.includes(id));
+  const presetLen = pr ? pr.cities.length : 0;
+  const isPartial = state.tripMode === 'oneway' && presetLen > 0 && state.days < presetLen;
+  const previewRoute = state.routePresetId ? buildRouteFromPreset(state.routePresetId, state.days, state.startStation) : [];
+  const intensityHint = routeIntensityHint(previewRoute);
+  const lockOn = !!state.routeSelectionLocked && !!state.routePresetId;
+  return `<div class="step-card">
+    <div class="step-title">推薦路線</div>
+    <div class="step-sub">已根據 <strong>${state.startStation}</strong> 與 <strong>${state.days} 天</strong> 推薦路線。僅顯示會經過你出發區域的路線；先選一條，再進下一步。</div>
+    ${isPartial ? `<div class="error-msg" style="background:#fff7ed;border-color:#fdba74;color:#9a3412;">此路線以 ${state.days} 天無法完整跑完，將只規劃部分停靠段。</div>` : ''}
+    ${intensityHint ? `<div class="error-msg" style="background:#fffbeb;border-color:#fcd34d;color:#92400e;">${esc(intensityHint)}</div>` : ''}
+    <div id="route-recommend-map" style="width:100%;height:320px;border:1px solid var(--border);border-radius:12px;margin-bottom:12px;"></div>
+    <div id="route-result" style="display:block">${state.routePresetId ? `<div class="route-overview" style="padding:14px 16px;margin-bottom:14px;">
+      <h3 style="margin-bottom:8px;">目前選擇：${esc(pr.name)}</h3>
+      <div class="route-cities">${buildRouteFromPreset(state.routePresetId, state.days, state.startStation).map(r=>`<div class="city-tag"><span class="day-num">D${r.day}</span>${esc(r.city)}</div>`).join('<span style="opacity:.35">→</span>')}</div>
+    </div>` : `<div class="error-msg" style="background:#f8fafc;border-color:#cbd5e1;color:#334155;">請先選一條推薦路線。</div>`}</div>
+    ${lockOn ? `<div style="padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:#f8fafc;margin-bottom:10px;font-size:13px;color:#334155;">目前僅顯示你已套用的路線：<strong>${esc(pr?.name || '')}</strong>。<button type="button" class="btn-secondary" id="unlock-route-choice" style="margin-left:10px;padding:6px 10px;width:auto;">更換路線</button></div>` : ''}
+    ${!lockOn ? `<div class="form-group">
+      <div class="form-label">⭐ 推薦路線</div>
+      <div class="option-grid" style="grid-template-columns:1fr;">
+        ${recommended.map(id=>{
+          const p = ROUTE_PRESETS[id];
+          const ideal = routeIdealDays(id);
+          return `<button type="button" class="option-btn ${state.routePresetId===id?'selected':''}" data-route-preset="${id}" style="text-align:left;align-items:flex-start;">
+            <span class="opt-icon">🗺</span><span>${esc(p.name)}</span><span class="opt-desc">${esc(p.desc)}｜建議 ${ideal.min}-${ideal.max} 天</span>
+          </button>`;
+        }).join('')}
+      </div>
+    </div>` : ''}
+    ${(!lockOn && others.length) ? `<div class="form-group" style="margin-top:8px;">
+      <button type="button" class="btn-secondary" id="toggle-other-routes" style="width:auto;padding:8px 12px;">${state.otherRoutesExpanded ? '隱藏其他可選路線' : '展開其他可選路線'}</button>
+      ${state.otherRoutesExpanded ? `
+      <div class="option-grid" style="grid-template-columns:1fr;">
+        ${others.map(id=>{
+          const p = ROUTE_PRESETS[id];
+          const ideal = routeIdealDays(id);
+          return `<button type="button" class="option-btn ${state.routePresetId===id?'selected':''}" data-route-preset="${id}" style="text-align:left;align-items:flex-start;">
+            <span class="opt-icon">🛣</span><span>${esc(p.name)}</span><span class="opt-desc">${esc(p.desc)}｜建議 ${ideal.min}-${ideal.max} 天</span>
+          </button>`;
+        }).join('')}
+      </div>
+      ` : ''}
+    </div>` : ''}
+    <div id="route-error"></div>
+    <div class="nav-row" style="margin-top:16px;">
+      <button class="btn-secondary" id="back-step1-from2">← 返回「天數與車站」</button>
+      <button class="btn-primary" id="to-step3" style="width:auto;padding:14px 26px;" ${!state.routePresetId?'disabled':''}>套用此路線，開始選旅館 →</button>
+    </div>
+    <button class="btn-restart" id="restart-all" style="margin-top:10px;">重新規劃</button>
+  </div>`;
+}
+
+function renderRouteResult() {
+  const html = `<div class="route-overview">
+    <h3>🗺 環島停靠順序</h3>
+    <div class="route-cities">${state.route.map(r=>`<div class="city-tag"><span class="day-num">D${r.day}</span>${esc(r.city)}</div>`).join('<span style="opacity:.35">→</span>')}</div>
+  </div>
+  <button class="btn-primary" id="to-step3">開始選旅館（每站 5-8 間）→</button>`;
+  document.getElementById('route-result').innerHTML = html;
+  document.getElementById('route-result').style.display = 'block';
+  const loadingEl = document.getElementById('route-loading');
+  if (loadingEl) loadingEl.style.display = 'none';
+  bindEvents();
+}
+
+async function drawRouteRecommendMap() {
+  try {
+    await ensureMapsApi();
+    const el = document.getElementById('route-recommend-map');
+    if (!el) return;
+    const preview = state.routePresetId
+      ? buildRouteFromPreset(state.routePresetId, state.days, state.startStation)
+      : [];
+    const st = START_STATIONS[state.startStation] || START_STATIONS['台北車站'];
+    const center = preview[0] ? { lat: preview[0].lat, lng: preview[0].lng } : { lat: st.lat, lng: st.lng };
+    const map = new google.maps.Map(el, { center, zoom: 8, ...MAP_UI });
+    const bounds = new google.maps.LatLngBounds();
+    const sMarker = new google.maps.Marker({
+      position: { lat: st.lat, lng: st.lng },
+      map,
+      icon: { url:'http://maps.google.com/mapfiles/ms/icons/blue-dot.png', scaledSize:new google.maps.Size(38,38) },
+      label: { text:'起', color:'#fff', fontWeight:'700', fontSize:'11px' },
+      title: state.startStation
+    });
+    sMarker.addListener('click', () => openMarkerInfo(map, sMarker, { displayName:{ text: state.startStation }, formattedAddress:'出發車站' }, ''));
+    bounds.extend({ lat: st.lat, lng: st.lng });
+    if (preview.length) {
+      const path = preview.map(r => ({ lat: r.lat, lng: r.lng }));
+      new google.maps.Polyline({ map, path, geodesic:true, strokeColor:'#c0392b', strokeOpacity:0.85, strokeWeight:4 });
+      preview.forEach((r, idx) => {
+        const m = new google.maps.Marker({
+          position: { lat: r.lat, lng: r.lng },
+          map,
+          label: { text: String(idx + 1), color:'#fff', fontWeight:'700', fontSize:'10px' },
+          icon: { path: google.maps.SymbolPath.CIRCLE, scale: 11, fillColor:'#0f766e', fillOpacity:1, strokeColor:'#fff', strokeWeight:2 },
+          title: `D${r.day} ${r.city}`
+        });
+        m.addListener('click', () => openMarkerInfo(map, m, { displayName:{ text: `D${r.day} ${r.city}` }, formattedAddress:'推薦路線停靠點' }, ''));
+        bounds.extend({ lat: r.lat, lng: r.lng });
+      });
+    }
+    map.fitBounds(bounds);
+  } catch {}
+}
+
+function renderStep3() {
+  const i = state.currentDay;
+  const node = state.route[i];
+  const city = node?.city || '';
+  const skipDay = state.skipDepartHotel && i === 0;
+  const hotel = skipDay ? null : selectedHotel(i);
+  const loaded = state.hotelCache[city] || [];
+  const allDone = state.route.every((_,idx)=>{
+    if (state.skipDepartHotel && idx === 0) return true;
+    return !!selectedHotel(idx);
+  });
+  return `<div class="step-card">
+    <div class="step-title">先選旅館（停靠點附近）</div>
+    <div class="step-sub">可<strong>直接點地圖上紅色圖標</strong>選旅館（與下方清單同步）。綠線為目前已選的住宿動線。選完可自動換下一天。<br><small style="color:var(--muted)">住宿價格顯示為 Google 價位等級 + 估算區間（非即時房價），實際以訂房頁為準。</small></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:12px;">
+      <div style="background:var(--surface);padding:8px 10px;border-radius:8px;font-size:12px;">總預算：NT$${state.budgetAmount.toLocaleString()}</div>
+      <div style="background:var(--surface);padding:8px 10px;border-radius:8px;font-size:12px;">已選花費：NT$${usedCost().toLocaleString()}</div>
+      <div style="background:${state.budgetAmount-usedCost()<0?'#fef2f2':'var(--surface)'};padding:8px 10px;border-radius:8px;font-size:12px;">剩餘：NT$${(state.budgetAmount-usedCost()).toLocaleString()}</div>
+    </div>
+    <div class="day-tabs">${state.route.map((r,idx)=>`<button class="day-tab ${idx===i?'active':''} ${(state.skipDepartHotel&&idx===0)||selectedHotel(idx)?'done':''}" data-hday="${idx}">D${r.day} ${esc(r.city)}${state.skipDepartHotel&&idx===0?'（出發）':''}</button>`).join('')}</div>
+    <div id="hotel-step-map" style="width:100%;height:420px;border:1px solid var(--border);border-radius:12px;margin-bottom:14px;"></div>
+    <div class="place-section">
+      <div class="place-section-title">🏨 ${esc(city)} · ${accLabel()} · ${budgetLabel()}</div>
+      <div id="hotel-list">
+        ${skipDay ? `<div style="padding:16px;background:#ecfdf5;border:1px solid #86efac;border-radius:12px;font-size:14px;color:#166534;">
+          此日為<strong>出發日</strong>（你已勾選「不在出發城市住宿」），請從 <strong>D2</strong> 開始選當晚要住的旅館。地圖路段餐飲會從「出發車站」連到下一站旅館。
+        </div>
+        <button class="btn-primary" id="goto-day1-hotel" style="margin-top:12px;width:auto;">前往 D2 選旅館 →</button>` :
+        hotel ? `<div class="place-card selected">
+          <div class="place-icon">🏨</div><div class="place-info">
+          <div class="place-name">${esc(hotel.displayName?.text || hotel.name)}</div>
+          <div class="place-addr">${esc(hotel.formattedAddress || '')}</div>
+          <div class="place-meta"><span class="price-level">${hotelPriceHint(hotel)}</span></div>
+          </div><div class="place-check">✓</div></div>
+          <button class="btn-secondary" id="remove-hotel" style="margin-top:10px">刪除旅館，重新選擇</button>` :
+          (loaded.length===0 ? `<div class="loading-wrap"><div class="spinner"></div><div class="loading-text">搜尋旅館中…</div></div>` :
+            `<div style="padding:12px;background:#f8fafc;border:1px solid var(--border);border-radius:10px;font-size:13px;color:#334155;">請直接點地圖上的住宿大頭針，於資訊窗按「加入此住宿」。下方只顯示你已加入的住宿。</div>`)}
+      </div>
+    </div>
+    <div class="error-msg" style="${allDone?'':'display:none'};background:#ecfdf5;border-color:#86efac;color:#166534;">所有旅館已完成，可進入路段餐飲。</div>
+    <div class="nav-row">
+      <button class="btn-secondary" id="back-step2">← 返回路線</button>
+      ${i > (state.skipDepartHotel ? 1 : 0) ? `<button class="btn-secondary" id="prev-hotel-day" style="margin-left:auto;">← 返回上一間旅館</button>` : ''}
+      <button class="btn-primary" id="to-step4" style="width:auto;padding:14px 26px;">下一步：路段餐飲 →</button>
+    </div>
+    <button class="btn-restart" id="restart-all" style="margin-top:10px;">重新規劃</button>
+  </div>`;
+}
+
+function segKey(i){ const a=state.route[i], b=state.route[i+1]; return `${a.city}->${b.city}`; }
+
+function renderStep4() {
+  const i = state.currentSeg;
+  const from = state.route[i], to = state.route[i+1];
+  const key = segKey(i);
+  const cache = state.segmentCache[key];
+  const picked = state.segmentSelections[key] || { restaurants:[], convenience:[] };
+  const selectedCards = [
+    ...picked.restaurants.map((p, idx)=>`<div class="place-card selected">
+      <div class="place-icon">🍽</div><div class="place-info">
+      <div class="place-name">${esc(p.displayName?.text || p.name)}</div>
+      <div class="place-addr">${esc(p.formattedAddress || '')}</div>
+      <div class="place-meta"><span class="price-level">NT$${p.estimatedCost || estimateCost(p,'budget')}</span></div>
+      </div><button class="btn-secondary" data-remove-picked="r-${idx}" style="padding:4px 8px;font-size:12px;">移除</button></div>`),
+    ...picked.convenience.map((p, idx)=>`<div class="place-card selected">
+      <div class="place-icon">🏪</div><div class="place-info">
+      <div class="place-name">${esc(p.displayName?.text || p.name)}</div>
+      <div class="place-addr">${esc(p.formattedAddress || '')}</div>
+      <div class="place-meta"><span class="price-level">NT$${p.estimatedCost || estimateCost(p,'convenience')}</span></div>
+      </div><button class="btn-secondary" data-remove-picked="c-${idx}" style="padding:4px 8px;font-size:12px;">移除</button></div>`)
+  ].join('');
+
+  return `<div class="step-card">
+    <div class="step-title">路段餐飲與便利商店（路徑附近）</div>
+    <div class="step-sub">請直接<strong>點地圖大頭針</strong>看店家資訊，再按「加入本段」。下方僅顯示你已選的店家，方便管理。</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:12px;">
+      <div style="background:var(--surface);padding:8px 10px;border-radius:8px;font-size:12px;">總預算：NT$${state.budgetAmount.toLocaleString()}</div>
+      <div style="background:var(--surface);padding:8px 10px;border-radius:8px;font-size:12px;">已選花費：NT$${usedCost().toLocaleString()}</div>
+      <div style="background:${state.budgetAmount-usedCost()<0?'#fef2f2':'var(--surface)'};padding:8px 10px;border-radius:8px;font-size:12px;">剩餘：NT$${(state.budgetAmount-usedCost()).toLocaleString()}</div>
+    </div>
+    <div class="day-tabs">${state.route.slice(0,-1).map((r,idx)=>`<button class="day-tab ${idx===i?'active':''}" data-seg="${idx}">D${idx+1} ${esc(r.city)}→${esc(state.route[idx+1].city)}</button>`).join('')}</div>
+    <div id="segment-step-map" style="width:100%;height:420px;border:1px solid var(--border);border-radius:12px;margin-bottom:14px;"></div>
+    <div class="place-section">
+      <div class="place-section-title">🧭 ${esc(from.city)} → ${esc(to.city)}</div>
+      ${state.skipDepartHotel && i === 0 ? `<div style="font-size:12px;color:#0f766e;margin-bottom:10px;">此段起點為 <strong>${esc(state.startStation)}</strong>（不住宿出發城市），終點為 <strong>${esc(to.city)}</strong> 已選旅館。</div>` : ''}
+      ${!cache ? `<div class="loading-wrap"><div class="spinner"></div><div class="loading-text">搜尋路段附近店家中…</div></div>` : `<div style="font-size:13px;color:var(--muted);margin-bottom:8px;">可點地圖上的餐廳/便利商店圖標查看店家並加入本段。</div>`}
+    </div>
+    ${state.segmentError[key] ? `<div class="error-msg" style="margin-top:8px;">${esc(state.segmentError[key])}</div>` : ''}
+    <div style="margin-top:14px;padding:12px;background:var(--surface);border-radius:10px;font-size:13px;">
+      已選餐廳 ${picked.restaurants.length} 間，便利商店 ${picked.convenience.length} 間
+      ${(picked.restaurants.length + picked.convenience.length) ? `<button class="btn-secondary" id="clear-seg" style="margin-left:8px;padding:6px 10px;font-size:12px;">清空本段</button>`:''}
+      <div class="place-cards" style="margin-top:10px;">${selectedCards || '<div style="color:var(--muted);font-size:12px;">本段尚未選店家</div>'}</div>
+    </div>
+    <div class="nav-row">
+      <button class="btn-secondary" id="back-step3">← 返回旅館</button>
+      ${i < state.route.length - 2
+        ? `<button class="btn-primary" id="to-next-seg" style="width:auto;padding:14px 26px;">下一段路線餐飲 →</button>`
+        : `<button class="btn-primary" id="to-step5" style="width:auto;padding:14px 26px;">完成，查看行程 →</button>`}
+    </div>
+    <button class="btn-restart" id="restart-all" style="margin-top:10px;">重新規劃</button>
+  </div>`;
+}
+
+function renderStep5() {
+  const remain = state.budgetAmount - usedCost();
+  const linkPlace = (p, label) => {
+    if (!p) return '-';
+    const name = p.displayName?.text || p.name || '';
+    const href = toMapsSearch(p);
+    return `<a href="${esc(href)}" target="_blank" rel="noopener" style="color:var(--teal);font-weight:500;">${esc(label || name)}</a>`;
+  };
+  const rows = state.route.map((r,i)=>{
+    const h = selectedHotel(i);
+    const skipRow = state.skipDepartHotel && i === 0;
+    const next = i < state.route.length-1 ? state.route[i+1] : null;
+    const seg = next ? state.segmentSelections[`${r.city}->${next.city}`] : null;
+    const foodText = [
+      ...(seg?.restaurants||[]).map(x=>`🍽 ${linkPlace(x)} <span style="color:var(--muted);font-size:12px;">(NT$${x.estimatedCost||estimateCost(x,'budget')})</span>`),
+      ...(seg?.convenience||[]).map(x=>`🏪 ${linkPlace(x)} <span style="color:var(--muted);font-size:12px;">(NT$${x.estimatedCost||estimateCost(x,'convenience')})</span>`)
+    ].join('<br>') || '<span style="color:var(--muted)">—</span>';
+    const hotelCell = skipRow ? `<div style="color:var(--muted);font-size:13px;">（出發日，未安排住宿）</div>` :
+      (h ? `<div style="font-weight:500">${linkPlace(h, h.displayName?.text || h.name)}</div><div style="font-size:11px;color:var(--muted)">${esc(h?.formattedAddress || '')}</div><div style="font-size:11px;color:var(--teal)">${hotelPriceHint(h)}</div>` : '<span style="color:var(--muted)">—</span>');
+    return `<tr>
+      <td><span class="day-badge">D${r.day}</span></td>
+      <td><strong>${esc(r.city)}</strong></td>
+      <td>${hotelCell}</td>
+      <td>${foodText}</td>
+    </tr>`;
+  }).join('');
+  const allEquip = [...EQUIPMENT, ...(state.customEquipment || [])];
+
+  return `<div class="step-card">
+    <div class="step-title">完整環島行程</div>
+    <div class="step-sub">預算與花費即時統計。「開啟 Google 地圖路線」會盡量串接<strong>旅館＋已選餐飲／便利商店</strong>（站點過多時會自動精簡）。</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:16px;">
+      <div style="background:var(--surface);padding:10px;border-radius:10px;font-size:13px;">總預算：NT$${state.budgetAmount.toLocaleString()}</div>
+      <div style="background:var(--surface);padding:10px;border-radius:10px;font-size:13px;">目前花費：NT$${usedCost().toLocaleString()}</div>
+      <div style="background:${remain<0?'#fef2f2':'var(--surface)'};padding:10px;border-radius:10px;font-size:13px;color:${remain<0?'#b91c1c':'inherit'};">剩餘：NT$${remain.toLocaleString()}</div>
+    </div>
+    <div id="map-container"></div>
+    <div style="overflow-x:auto;border-radius:10px;overflow:hidden;">
+      <table class="itinerary-table"><thead><tr><th>日期</th><th>城市</th><th>旅館</th><th>餐飲/補給</th></tr></thead><tbody>${rows}</tbody></table>
+    </div>
+    <div style="margin-top:16px;padding:14px;border:1px solid var(--border);border-radius:10px;">
+      <div class="form-label">🎒 裝備檢查（勾選會保留，可自訂項目）</div>
+      <div class="option-grid">
+        ${allEquip.map(e=>`<label style="display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface);">
+          <input type="checkbox" data-equip="${esc(e)}" ${state.equipment[e]?'checked':''}> <span style="font-size:13px">${esc(e)}</span>
+          ${(state.customEquipment||[]).includes(e) ? `<button type="button" class="btn-secondary" data-remove-equip="${esc(e)}" style="margin-left:auto;padding:2px 8px;font-size:11px;">刪除</button>` : ''}</label>`).join('')}
+      </div>
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center;">
+        <input id="custom-equip-input" type="text" placeholder="新增自訂裝備…" style="flex:1;min-width:140px;padding:10px 12px;border:1px solid var(--border);border-radius:10px;font-size:14px;">
+        <button type="button" class="btn-secondary" id="add-custom-equip" style="padding:10px 16px;">新增</button>
+      </div>
+    </div>
+    <div class="action-row">
+      <button class="btn-map" id="open-gmap">🗺 開啟 Google 地圖路線（含餐飲）</button>
+      <button class="btn-csv" id="export-table">📄 下載可視化行程表</button>
+    </div>
+    <div class="nav-row">
+      <button class="btn-secondary" id="back-from-step5-to3">← 回旅館設定</button>
+      <button class="btn-secondary" id="back-from-step5-to4">← 回路段餐飲</button>
+    </div>
+    <button class="btn-restart" id="restart-all">重新規劃</button>
+  </div>`;
+}
+
+function totalSegmentFoodCount() {
+  let n = 0;
+  Object.values(state.segmentSelections || {}).forEach(s => {
+    n += (s.restaurants || []).length + (s.convenience || []).length;
+  });
+  return n;
+}
+
+function bindEvents() {
+  document.querySelectorAll('[data-budget-mode]').forEach(btn => btn.onclick = () => {
+    state.budgetMode = btn.dataset.budgetMode;
+    if (state.budgetMode === 'level') state.budgetLevel = state.budgetLevel || 'mid';
+    if (state.budgetMode === 'custom') state.budgetLevel = null;
+    applyBudgetLevelAmount();
+    render();
+  });
+  document.querySelectorAll('[data-budget]').forEach(btn=>btn.onclick=()=>{ state.budgetLevel = btn.dataset.budget; applyBudgetLevelAmount(); render(); });
+  document.querySelectorAll('[data-acc]').forEach(btn=>btn.onclick=()=>{ state.accommodation = btn.dataset.acc; render(); });
+  document.querySelectorAll('[data-food]').forEach(btn=>btn.onclick=()=>{
+    const v = btn.dataset.food;
+    state.foodPrefs = state.foodPrefs.includes(v) ? state.foodPrefs.filter(x=>x!==v) : [...state.foodPrefs, v];
+    render();
+  });
+  document.querySelectorAll('[data-route-preset]').forEach(btn => btn.onclick = () => {
+    state.routePresetId = btn.dataset.routePreset;
+    state.otherRoutesExpanded = true; // 選其他路線時，保持展開可繼續比對
+    state.routeSelectionLocked = false;
+    render();
+  });
+  document.querySelectorAll('[data-trip-mode]').forEach(btn => btn.onclick = () => {
+    state.tripMode = btn.dataset.tripMode;
+    state.routeSelectionLocked = false;
+    render();
+  });
+  const bAmt = document.getElementById('budget-amount');
+  if (bAmt) bAmt.oninput = e => { state.budgetAmount = Math.max(0, parseInt(e.target.value || 0)); saveState(); };
+  const to1 = document.getElementById('to-step1');
+  if (to1) to1.onclick = ()=>{ if (!canStep0Continue()) return; state.step = 1; render(); };
+
+  const slider = document.getElementById('day-slider');
+  if (slider) slider.oninput = e => { state.days = parseInt(e.target.value); state.routeSelectionLocked = false; render(); };
+  const startSel = document.getElementById('start-station');
+  if (startSel) startSel.onchange = e => { state.startStation = e.target.value; state.routeSelectionLocked = false; saveState(); render(); };
+  const back0 = document.getElementById('back-step0');
+  if (back0) back0.onclick = ()=>{ state.step = 0; render(); };
+  const to2 = document.getElementById('to-step2');
+  if (to2) to2.onclick = ()=>{
+    state.step = 2;
+    render();
+  };
+  const toggleOther = document.getElementById('toggle-other-routes');
+  if (toggleOther) toggleOther.onclick = ()=>{
+    state.otherRoutesExpanded = !state.otherRoutesExpanded;
+    render();
+  };
+  const unlockRoute = document.getElementById('unlock-route-choice');
+  if (unlockRoute) unlockRoute.onclick = ()=>{
+    state.routeSelectionLocked = false;
+    state.otherRoutesExpanded = true;
+    render();
+  };
+  const quickRoute = document.getElementById('btn-quick-route');
+  if (quickRoute) quickRoute.onclick = ()=>{
+    if (!state.routePresetId) return;
+    state.route = buildRouteFromPreset(state.routePresetId, state.days, state.startStation);
+    render();
+  };
+
+  const to3 = document.getElementById('to-step3');
+  if (to3) to3.onclick = ()=>{
+    if (!state.routePresetId) { alert('請先選一條路線。'); return; }
+    const preset = ROUTE_PRESETS[state.routePresetId];
+    if (state.tripMode === 'oneway' && preset && state.days < preset.cities.length) {
+      const ok = confirm(`你目前選擇 ${state.days} 天，會只走「${preset.name}」部分路線。\\n要繼續嗎？若要折返請改選「來回 ${state.days} 天」。`);
+      if (!ok) return;
+    }
+    const nextRoute = buildRouteFromPreset(state.routePresetId, state.days, state.startStation);
+    const nextKey = routeApplyKey();
+    const changed = state.appliedRouteKey !== nextKey;
+    state.route = nextRoute;
+    if (changed) {
+      state.selections = {};
+      state.segmentSelections = {};
+      state.segmentCache = {};
+      state.hotelCache = {};
+      state.currentSeg = 0;
+    }
+    state.appliedRouteKey = nextKey;
+    state.routeSelectionLocked = true;
+    state.otherRoutesExpanded = false;
+    state.step = 3;
+    state.currentDay = state.skipDepartHotel ? 1 : 0;
+    render();
+    ensureHotelForDay(state.currentDay);
+  };
+  document.querySelectorAll('[data-hday]').forEach(t=>t.onclick=()=>{ state.currentDay = parseInt(t.dataset.hday); render(); ensureHotelForDay(state.currentDay); });
+  document.querySelectorAll('[data-hidx]').forEach(c=>c.onclick=()=>{
+    const idx = parseInt(c.dataset.hidx);
+    selectHotelForDay(state.currentDay, idx);
+  });
+  const rmHotel = document.getElementById('remove-hotel');
+  if (rmHotel) rmHotel.onclick = ()=>{ delete state.selections[state.currentDay].hotel; render(); };
+  const prevHotelDay = document.getElementById('prev-hotel-day');
+  if (prevHotelDay) prevHotelDay.onclick = ()=>{
+    const minDay = state.skipDepartHotel ? 1 : 0;
+    state.currentDay = Math.max(minDay, state.currentDay - 1);
+    render();
+    ensureHotelForDay(state.currentDay);
+  };
+  const back2 = document.getElementById('back-step2');
+  if (back2) back2.onclick = ()=>{ state.step = 2; render(); };
+  const to4 = document.getElementById('to-step4');
+  if (to4) to4.onclick = ()=>{
+    const allHotels = state.route.every((_, idx) => (state.skipDepartHotel && idx === 0) || selectedHotel(idx));
+    if (!allHotels && !confirm('尚有日期未選旅館，確定要繼續嗎？（未選日期將無住宿顯示）')) return;
+    state.step = 4; state.currentSeg = 0; render(); ensureSegmentData(0);
+  };
+
+  document.querySelectorAll('[data-seg]').forEach(t=>t.onclick=()=>{ state.currentSeg = parseInt(t.dataset.seg); render(); ensureSegmentData(state.currentSeg); });
+  document.querySelectorAll('[data-seltype]').forEach(c=>c.onclick=()=>{
+    const idx = parseInt(c.dataset.pidx); const type = c.dataset.seltype;
+    const i = state.currentSeg; const key = segKey(i); const cache = state.segmentCache[key];
+    if (!state.segmentSelections[key]) state.segmentSelections[key] = { restaurants:[], convenience:[] };
+    const target = type === 'convenience' ? state.segmentSelections[key].convenience : state.segmentSelections[key].restaurants;
+    const source = type === 'convenience' ? (cache.convenience || []) : ([...(cache.vegetarian||[]), ...(cache.budget||[]), ...(cache.luxury||[])]);
+    const item = source[idx]; if (!item) return;
+    const exists = target.some(x=>x.place_id===item.place_id);
+    if (exists) {
+      if (type==='convenience') state.segmentSelections[key].convenience = target.filter(x=>x.place_id!==item.place_id);
+      else state.segmentSelections[key].restaurants = target.filter(x=>x.place_id!==item.place_id);
+    } else {
+      item.estimatedCost = item.estimatedCost || estimateCost(item, type==='convenience'?'convenience':'restaurant');
+      target.push(item);
+    }
+    render();
+  });
+  const clearSeg = document.getElementById('clear-seg');
+  if (clearSeg) clearSeg.onclick = ()=>{ const k=segKey(state.currentSeg); state.segmentSelections[k]={restaurants:[],convenience:[]}; render(); };
+  const back3 = document.getElementById('back-step3');
+  if (back3) back3.onclick = ()=>{ state.step = 3; render(); };
+  const to5 = document.getElementById('to-step5');
+  if (to5) to5.onclick = ()=>{
+    const curKey = segKey(state.currentSeg);
+    const curPicked = state.segmentSelections[curKey] || { restaurants:[], convenience:[] };
+    if ((curPicked.restaurants.length + curPicked.convenience.length) === 0) {
+      const ok = confirm('當日未選餐飲/便利商店，確認後進入完整行程？');
+      if (!ok) return;
+    }
+    if (totalSegmentFoodCount() === 0 && !confirm('尚未選任何餐飲／便利商店，確定要繼續嗎？（Google 路線仍會連旅館與補給點）')) return;
+    state.step = 5; render();
+  };
+  const nextSeg = document.getElementById('to-next-seg');
+  if (nextSeg) nextSeg.onclick = ()=>{
+    const curKey = segKey(state.currentSeg);
+    const curPicked = state.segmentSelections[curKey] || { restaurants:[], convenience:[] };
+    if ((curPicked.restaurants.length + curPicked.convenience.length) === 0) {
+      const ok = confirm('當日未選餐飲/便利商店，確認後進入下一天規劃？');
+      if (!ok) return;
+    }
+    if (state.currentSeg < state.route.length - 2) {
+      state.currentSeg += 1;
+      render();
+      ensureSegmentData(state.currentSeg);
+    }
+  };
+  document.querySelectorAll('[data-remove-picked]').forEach(btn => btn.onclick = ()=>{
+    const token = btn.dataset.removePicked || '';
+    const key = segKey(state.currentSeg);
+    if (!state.segmentSelections[key]) return;
+    if (token.startsWith('r-')) {
+      const idx = parseInt(token.slice(2), 10);
+      state.segmentSelections[key].restaurants = state.segmentSelections[key].restaurants.filter((_, i) => i !== idx);
+    } else if (token.startsWith('c-')) {
+      const idx = parseInt(token.slice(2), 10);
+      state.segmentSelections[key].convenience = state.segmentSelections[key].convenience.filter((_, i) => i !== idx);
+    }
+    render();
+  });
+
+  const mapBtn = document.getElementById('open-gmap');
+  if (mapBtn) mapBtn.onclick = ()=> {
+    const one = buildGoogleDirections();
+    if (one !== '#') {
+      window.open(one, '_blank');
+      return;
+    }
+    const hasPickedStops = totalSegmentFoodCount() > 0;
+    const urls = buildGoogleDirectionsSegments();
+    if (!urls.length) {
+      alert('目前沒有足夠的路線點可開啟 Google 地圖。');
+      return;
+    }
+    urls.forEach((u, i) => setTimeout(() => window.open(u, '_blank'), i * 220));
+    if (hasPickedStops) {
+      alert('點位超過 Google 單一路線上限，已分段開啟（包含你選的餐飲／補給點）。');
+    } else {
+      alert('路線已分段開啟 Google 導航。');
+    }
+  };
+  const exBtn = document.getElementById('export-table');
+  if (exBtn) exBtn.onclick = exportVisualHtml;
+  document.querySelectorAll('[data-equip]').forEach(ch=>ch.onchange=e=>{ state.equipment[ch.dataset.equip] = e.target.checked; saveState(); });
+  const reBtn = document.getElementById('restart-all');
+  if (reBtn) reBtn.onclick = ()=>{ localStorage.removeItem(STORE_KEY); location.reload(); };
+  const backS5h = document.getElementById('back-from-step5-to3');
+  if (backS5h) backS5h.onclick = ()=>{ state.step = 3; state.currentDay = state.skipDepartHotel ? 1 : 0; render(); ensureHotelForDay(state.currentDay); };
+  const backS5f = document.getElementById('back-from-step5-to4');
+  if (backS5f) backS5f.onclick = ()=>{ state.step = 4; state.currentSeg = 0; render(); ensureSegmentData(0); };
+
+  const addEquipBtn = document.getElementById('add-custom-equip');
+  if (addEquipBtn) addEquipBtn.onclick = () => {
+    const inp = document.getElementById('custom-equip-input');
+    const v = (inp && inp.value || '').trim();
+    if (!v) return;
+    if (!state.customEquipment) state.customEquipment = [];
+    if (!EQUIPMENT.includes(v) && !state.customEquipment.includes(v)) state.customEquipment.push(v);
+    if (inp) inp.value = '';
+    saveState();
+    render();
+  };
+  document.querySelectorAll('[data-remove-equip]').forEach(btn => {
+    btn.onclick = () => {
+      const v = btn.dataset.removeEquip;
+      state.customEquipment = (state.customEquipment || []).filter(x => x !== v);
+      delete state.equipment[v];
+      saveState();
+      render();
+    };
+  });
+
+  const skipChk = document.getElementById('skip-depart-hotel');
+  if (skipChk) skipChk.onchange = e => {
+    state.skipDepartHotel = e.target.checked;
+    if (state.skipDepartHotel && state.selections[0]) delete state.selections[0].hotel;
+    state.segmentCache = {};
+    state.segmentError = {};
+    saveState();
+  };
+  const gotoD2 = document.getElementById('goto-day1-hotel');
+  if (gotoD2) gotoD2.onclick = () => { state.currentDay = 1; render(); ensureHotelForDay(1); };
+  const back21 = document.getElementById('back-step1-from2');
+  if (back21) back21.onclick = () => { state.step = 1; render(); };
+
+  document.querySelectorAll('[data-goto-step]').forEach(dot => {
+    dot.onclick = (e) => {
+      e.stopPropagation();
+      const t = parseInt(dot.dataset.gotoStep, 10);
+      if (isNaN(t)) return;
+      if (t >= 3 && (!state.route || state.route.length < 2)) {
+        alert('請先在「推薦路線」完成路線套用。');
+        return;
+      }
+      if (t === 3 && (!state.route || state.route.length < 2)) return;
+      state.step = t;
+      if (t === 3) {
+        state.currentDay = state.skipDepartHotel ? 1 : 0;
+        render();
+        ensureHotelForDay(state.currentDay);
+      } else if (t === 4) {
+        state.currentSeg = 0;
+        render();
+        ensureSegmentData(0);
+      } else {
+        render();
+      }
+    };
+  });
+}
+
+function stationCoord() {
+  return START_STATIONS[state.startStation] || START_STATIONS['台北車站'];
+}
+
+async function planRoute() {
+  if (routeRequest.running) return;
+  routeRequest.running = true;
+  let finished = false;
+  const hardTimeout = setTimeout(() => {
+    if (finished) return;
+    finished = true;
+    const loading = document.getElementById('route-loading');
+    const errEl = document.getElementById('route-error');
+    if (loading) loading.style.display = 'none';
+    if (errEl) {
+      errEl.innerHTML = `<div class="error-msg">Gemini 請求超時（12 秒）。通常是：API 配額、瀏覽器網路攔截、或 key 限制。請先點「先測 Gemini 連線」看即時錯誤。</div>`;
+    }
+    routeRequest.running = false;
+    routeRequest.controller = null;
+  }, 12000);
+
+  try {
+    const loading = document.getElementById('route-loading');
+    const errEl = document.getElementById('route-error');
+    const resultEl = document.getElementById('route-result');
+    if (loading) loading.style.display = 'block';
+    if (errEl) errEl.innerHTML = '';
+    if (resultEl) resultEl.style.display = 'none';
+    const pr = state.routePresetId ? ROUTE_PRESETS[state.routePresetId] : null;
+    const prompt = `請規劃台灣環島城市停靠順序。
+條件：天數 ${state.days}、出發 ${state.startStation}、預算 ${budgetLabel() || '自訂'}、住宿 ${accLabel()}。
+${pr ? `使用者已選路線版型「${pr.name}」，請盡量維持類似走向：${pr.cities.join('→')}。` : ''}
+輸出格式（擇一）：
+1) [{"day":1,"city":"台北","lat":25.0478,"lng":121.5170}]
+2) {"route":[{"day":1,"city":"台北","lat":25.0478,"lng":121.5170}]}
+若無法輸出 JSON，至少請輸出純城市順序，例如：台北 -> 台中 -> 高雄 -> 台東 -> 花蓮 -> 宜蘭。`;
+    const models = ['gemini-2.5-flash'];
+    let text = '', ok = false, err = '';
+    for (const model of models) {
+      const controller = new AbortController();
+      routeRequest.controller = controller;
+      const timer = setTimeout(() => controller.abort(), 7000);
+      try {
+        const t0 = performance.now();
+        const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_KEY}`, {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          signal: controller.signal,
+          body: JSON.stringify({
+            contents:[{parts:[{text:prompt}]}],
+            generationConfig:{
+              temperature:0.1,
+              maxOutputTokens:512,
+              responseMimeType:'application/json'
+            }
+          })
+        });
+        const data = await resp.json();
+        const elapsed = Math.round(performance.now() - t0);
+        if (resp.ok) {
+          text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+          ok = true;
+          clearTimeout(timer);
+          const errEl = document.getElementById('route-error');
+          if (errEl) errEl.innerHTML = `<div style="font-size:12px;color:#475569;margin-top:8px;">Gemini 回應時間：${elapsed} ms（${model}）</div>`;
+          break;
+        }
+        err = `HTTP ${resp.status}（${model}）：${data.error?.message || '未知錯誤'}`;
+        clearTimeout(timer);
+        if (resp.status === 429) break;
+      } catch (fe) {
+        clearTimeout(timer);
+        err = fe.name === 'AbortError'
+          ? `Gemini 超時（${model}，>7秒）`
+          : `Gemini 連線失敗（${model}）：${fe.message || '未知錯誤'}`;
+      }
+    }
+    if (!ok) throw new Error(err || 'Gemini 呼叫失敗');
+    let route;
+    try {
+      const parsed = extractJsonArray(text);
+      if (!Array.isArray(parsed) || parsed.length < 2) throw new Error('json-too-short');
+      route = parsed.slice(0, state.days).map((r, idx) => {
+        const city = String(r.city || '').trim();
+        const fallback = CITY_COORDS[city];
+        const lat = Number.isFinite(Number(r.lat)) ? Number(r.lat) : fallback?.lat;
+        const lng = Number.isFinite(Number(r.lng)) ? Number(r.lng) : fallback?.lng;
+        return { day: idx + 1, city, lat, lng };
+      }).filter(r => r.city && Number.isFinite(r.lat) && Number.isFinite(r.lng));
+    } catch {
+      const cities = extractCitiesFromText(text);
+      route = cities.slice(0, state.days).map((city, idx) => ({
+        day: idx + 1,
+        city,
+        lat: CITY_COORDS[city]?.lat,
+        lng: CITY_COORDS[city]?.lng
+      })).filter(r => r.city && Number.isFinite(r.lat) && Number.isFinite(r.lng));
+    }
+    route = fillRouteToDays(route, state.days, state.startStation);
+    if (route.length < 2) throw new Error('有效城市不足');
+    state.route = route;
+    state.selections = {};
+    state.segmentSelections = {};
+    state.hotelCache = {};
+    state.segmentCache = {};
+    if (!finished) {
+      finished = true;
+      clearTimeout(hardTimeout);
+      renderRouteResult();
+      routeRequest.running = false;
+      routeRequest.controller = null;
+    }
+  } catch (e) {
+    if (finished) return;
+    finished = true;
+    clearTimeout(hardTimeout);
+    const loading = document.getElementById('route-loading');
+    const errEl = document.getElementById('route-error');
+    if (loading) loading.style.display = 'none';
+    if (errEl) {
+      errEl.innerHTML = `<div class="error-msg">AI 規劃失敗：${esc(e.message || String(e))}<br><small>請檢查：模型權限、配額、API key 限制（HTTP referrer）。</small></div>`;
+    }
+    routeRequest.running = false;
+    routeRequest.controller = null;
+  }
+}
+
+function buildLocalFallbackRoute(days, startStation) {
+  const clockwise = [
+    { city:'台北', lat:25.0330, lng:121.5654 },
+    { city:'桃園', lat:24.9936, lng:121.3010 },
+    { city:'新竹', lat:24.8138, lng:120.9675 },
+    { city:'台中', lat:24.1477, lng:120.6736 },
+    { city:'嘉義', lat:23.4801, lng:120.4491 },
+    { city:'台南', lat:22.9997, lng:120.2270 },
+    { city:'高雄', lat:22.6273, lng:120.3014 },
+    { city:'屏東', lat:22.5519, lng:120.5488 },
+    { city:'台東', lat:22.7583, lng:121.1444 },
+    { city:'花蓮', lat:23.9872, lng:121.6015 },
+    { city:'宜蘭', lat:24.7570, lng:121.7539 },
+  ];
+  const counter = [...clockwise].reverse();
+  const startCity = (START_STATIONS[startStation]?.city || '台北');
+  const base = (startCity === '高雄' || startCity === '屏東' || startCity === '台東' || startCity === '花蓮' || startCity === '宜蘭') ? counter : clockwise;
+  const idx = Math.max(0, base.findIndex(x => x.city === startCity));
+  const ordered = [...base.slice(idx), ...base.slice(0, idx)];
+  return ordered.slice(0, Math.max(3, Math.min(14, days))).map((r, i) => ({ ...r, day: i + 1 }));
+}
+
+function accommodationTypes() {
+  return { guesthouse:['lodging'], hotel:['hotel','lodging'], hostel:['hostel'] }[state.accommodation] || ['lodging'];
+}
+
+function filterLodgingPlaces(places, acc) {
+  const badName = /(火車站|高鐵|台鐵|捷運|站前廣場|THSR|HSR|Railway|Restaurant only|公園|遊客中心|轉運站)/i;
+  return (places || []).filter(p => {
+    const name = p.name || p.displayName?.text || '';
+    if (badName.test(name)) return false;
+    const types = p.types || [];
+    if (types.includes('transit_station') || types.includes('train_station') || types.includes('subway_station')) return false;
+    if (types.includes('restaurant') && !types.some(t => ['lodging','hotel','hostel'].includes(t))) return false;
+    if (!types.some(t => ['lodging','hotel','hostel'].includes(t)) && !/(飯店|旅館|旅店|民宿|hotel|hostel|inn|villa|背包|青年)/i.test(name)) return false;
+    if (acc === 'hostel') {
+      if (!types.includes('lodging') && !types.includes('hostel')) {
+        if (!/(旅館|旅店|hostel|旅舍|背包|青年)/i.test(name)) return false;
+      }
+    }
+    return true;
+  });
+}
+function budgetPriceLevels() {
+  const bl = state.budgetLevel || 'mid';
+  if (state.accommodation === 'guesthouse' || state.accommodation === 'hostel') {
+    if (bl === 'high') return ['PRICE_LEVEL_MODERATE','PRICE_LEVEL_EXPENSIVE','PRICE_LEVEL_VERY_EXPENSIVE'];
+    return ['PRICE_LEVEL_INEXPENSIVE','PRICE_LEVEL_MODERATE','PRICE_LEVEL_EXPENSIVE'];
+  }
+  if (bl === 'low') return ['PRICE_LEVEL_INEXPENSIVE','PRICE_LEVEL_MODERATE'];
+  if (bl === 'high') return ['PRICE_LEVEL_EXPENSIVE','PRICE_LEVEL_VERY_EXPENSIVE'];
+  return ['PRICE_LEVEL_MODERATE','PRICE_LEVEL_EXPENSIVE'];
+}
+
+async function placesNearby(lat,lng,includedTypes,maxResultCount,priceLevels) {
+  const type = (includedTypes && includedTypes[0]) || 'restaurant';
+  const keyword = type === 'lodging' || type === 'hotel' ? accLabel() : '';
+  return placesSearchClient({ lat, lng, type, keyword, max: maxResultCount || 8 });
+}
+
+async function placesLegacy(lat,lng,type,keyword,max=8){
+  return placesSearchClient({ lat, lng, type, keyword, max });
+}
+
+async function ensureHotelForDay(day) {
+  const r = state.route[day]; if (!r) return;
+  if (state.skipDepartHotel && day === 0) return;
+  if (state.hotelCache[r.city]) return;
+  try {
+    let places = [];
+    const acc = state.accommodation;
+    const merge = new Map();
+    const add = arr => (arr || []).forEach(p => { if (p.place_id) merge.set(p.place_id, p); });
+    try {
+      if (acc === 'hostel') {
+        add(await placesSearchClient({ lat:r.lat, lng:r.lng, type:'hostel', keyword:'', max:10, radius:12000 }));
+        add(await placesSearchClient({ lat:r.lat, lng:r.lng, type:'lodging', keyword:'青年旅館', max:10, radius:12000 }));
+        add(await placesSearchClient({ lat:r.lat, lng:r.lng, type:'lodging', keyword:'背包客棧', max:10, radius:12000 }));
+      } else if (acc === 'guesthouse') {
+        add(await placesSearchClient({ lat:r.lat, lng:r.lng, type:'lodging', keyword:'民宿', max:10, radius:12000 }));
+        add(await placesSearchClient({ lat:r.lat, lng:r.lng, type:'lodging', keyword:'', max:8, radius:12000 }));
+      } else {
+        add(await placesSearchClient({ lat:r.lat, lng:r.lng, type:'hotel', keyword:'', max:10, radius:12000 }));
+        add(await placesSearchClient({ lat:r.lat, lng:r.lng, type:'lodging', keyword:'飯店', max:8, radius:12000 }));
+      }
+      places = filterLodgingPlaces(Array.from(merge.values()), acc);
+      if (places.length < 4) {
+        add(await placesNearby(r.lat, r.lng, accommodationTypes(), 12, budgetPriceLevels()));
+        places = filterLodgingPlaces(Array.from(merge.values()), acc);
+      }
+    } catch {
+      add(await placesLegacy(r.lat, r.lng, 'lodging', acc === 'hostel' ? '旅館' : accLabel(), 12));
+      places = filterLodgingPlaces(Array.from(merge.values()), acc);
+    }
+    const withDist = (places || []).map(p => {
+      const lat = p.location?.latitude;
+      const lng = p.location?.longitude;
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) return { ...p, stopoverDistanceKm: 999 };
+      return { ...p, stopoverDistanceKm: haversineKm({ lat: r.lat, lng: r.lng }, { lat, lng }) };
+    });
+    let near = withDist.filter(p => p.stopoverDistanceKm <= 5);
+    if (near.length < 6) near = withDist.filter(p => p.stopoverDistanceKm <= 8);
+    if (near.length < 4) near = withDist.filter(p => p.stopoverDistanceKm <= 12);
+    if (near.length < 3) near = withDist;
+    near.sort((a,b)=>(a.stopoverDistanceKm - b.stopoverDistanceKm) || ((a.price_level ?? 99)-(b.price_level ?? 99)));
+    state.hotelCache[r.city] = near.slice(0,8);
+    render();
+  } catch (e) {
+    const el = document.getElementById('hotel-list');
+    if (el) el.innerHTML = `<div class="error-msg">旅館搜尋失敗：${esc(e.message)}</div>`;
+  }
+}
+
+function lerp(a,b,t){ return a + (b-a)*t; }
+/** Google Places 回傳的座標可能是 lat/lng 或 latitude/longitude */
+function normalizeLatLng(p) {
+  if (!p) return null;
+  const lat = Number(p.lat ?? p.latitude);
+  const lng = Number(p.lng ?? p.longitude);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+  return { lat, lng };
+}
+function routeSamplePoints(a,b){
+  const A = normalizeLatLng(a);
+  const B = normalizeLatLng(b);
+  if (!A || !B) return [];
+  const pts = [];
+  // 取更密集的路徑樣本，避免店家只集中在起終點
+  for (let t = 0.05; t <= 0.95; t += 0.05) {
+    pts.push({ lat: lerp(A.lat, B.lat, t), lng: lerp(A.lng, B.lng, t) });
+  }
+  return pts;
+}
+
+function haversineKm(a, b) {
+  const R = 6371;
+  const toRad = (d) => d * Math.PI / 180;
+  const dLat = toRad(b.lat - a.lat);
+  const dLng = toRad(b.lng - a.lng);
+  const s1 = Math.sin(dLat / 2);
+  const s2 = Math.sin(dLng / 2);
+  const x = s1 * s1 + Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * s2 * s2;
+  return 2 * R * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
+}
+
+function distanceToSegmentKm(p, a, b) {
+  const avgLat = ((a.lat + b.lat + p.lat) / 3) * Math.PI / 180;
+  const kx = 111.32 * Math.cos(avgLat);
+  const ky = 110.57;
+  const ax = a.lng * kx, ay = a.lat * ky;
+  const bx = b.lng * kx, by = b.lat * ky;
+  const px = p.lng * kx, py = p.lat * ky;
+  const dx = bx - ax, dy = by - ay;
+  const len2 = dx * dx + dy * dy;
+  if (len2 <= 1e-9) return Math.hypot(px - ax, py - ay);
+  let t = ((px - ax) * dx + (py - ay) * dy) / len2;
+  t = Math.max(0, Math.min(1, t));
+  const cx = ax + t * dx, cy = ay + t * dy;
+  return Math.hypot(px - cx, py - cy);
+}
+
+function filterPlacesNearRoute(places, fromPt, toPt, maxDistKm) {
+  return (places || [])
+    .map(p => {
+      const pt = normalizeLatLng(p.location || p);
+      if (!pt) return null;
+      const d = distanceToSegmentKm(pt, fromPt, toPt);
+      return { ...p, routeDistanceKm: d };
+    })
+    .filter(Boolean)
+    .filter(p => p.routeDistanceKm <= maxDistKm)
+    .sort((a, b) => a.routeDistanceKm - b.routeDistanceKm);
+}
+
+async function fetchCategoryAlongRoute(points, mode, fromPt, toPt) {
+  const uniq = new Map();
+  function addAll(arr, costKind) {
+    (arr || []).forEach(x => {
+      if (!x.place_id || uniq.has(x.place_id)) return;
+      x.estimatedCost = estimateCost(x, costKind);
+      uniq.set(x.place_id, x);
+    });
+  }
+  for (const p of points) {
+    try {
+      if (mode === 'convenience') {
+        let arr = await placesSearchClient({ lat:p.lat, lng:p.lng, type:'convenience_store', keyword:'', max:6, radius:5000 });
+        if (!arr.length) arr = await placesSearchClient({ lat:p.lat, lng:p.lng, type:'convenience_store', keyword:'', max:6, radius:9000 });
+        addAll(arr, 'convenience');
+      } else if (mode === 'vegetarian') {
+        let arr = await placesSearchClient({ lat:p.lat, lng:p.lng, type:'restaurant', keyword:'素食', max:6, radius:6500 });
+        if (!arr.length) arr = await placesSearchClient({ lat:p.lat, lng:p.lng, type:'restaurant', keyword:'蔬食', max:6, radius:9500 });
+        if (!arr.length) arr = await placesSearchClient({ lat:p.lat, lng:p.lng, type:'restaurant', keyword:'vegan', max:6, radius:9500 });
+        arr = (arr || []).filter(isVegetarianPlace);
+        addAll(arr, 'vegetarian');
+      } else if (mode === 'budget') {
+        let arr = await placesSearchClient({ lat:p.lat, lng:p.lng, type:'restaurant', keyword:'平價', max:6, radius:7000 });
+        if (!arr.length) arr = await placesSearchClient({ lat:p.lat, lng:p.lng, type:'restaurant', keyword:'小吃', max:6, radius:9500 });
+        if (!arr.length) arr = await placesSearchClient({ lat:p.lat, lng:p.lng, type:'restaurant', keyword:'', max:6, radius:9500 });
+        addAll(arr, 'budget');
+      } else if (mode === 'luxury') {
+        let arr = await placesSearchClient({ lat:p.lat, lng:p.lng, type:'restaurant', keyword:'高級', max:6, radius:8000 });
+        if (!arr.length) arr = await placesSearchClient({ lat:p.lat, lng:p.lng, type:'restaurant', keyword:'套餐', max:6, radius:10000 });
+        if (!arr.length) arr = await placesSearchClient({ lat:p.lat, lng:p.lng, type:'restaurant', keyword:'', max:6, radius:10000 });
+        addAll(arr, 'luxury');
+      }
+    } catch {}
+  }
+  const all = Array.from(uniq.values());
+  if (!fromPt || !toPt) return all.slice(0, 12);
+  const maxKm = mode === 'convenience' ? 2.5 : 4.0;
+  let filtered = filterPlacesNearRoute(all, fromPt, toPt, maxKm);
+  if (!filtered.length) filtered = filterPlacesNearRoute(all, fromPt, toPt, maxKm * 1.8);
+  // 讓結果分佈在路線中段，不要都黏在起點/終點
+  const withProgress = filtered.map(p => {
+    const pt = normalizeLatLng(p.location || p);
+    const t = pt ? projTOnSeg(fromPt, toPt, pt) : 0;
+    return { ...p, routeProgress: t };
+  });
+  const middle = withProgress
+    .filter(p => p.routeProgress >= 0.2 && p.routeProgress <= 0.8)
+    .sort((a, b) => a.routeDistanceKm - b.routeDistanceKm || Math.abs(a.routeProgress - 0.5) - Math.abs(b.routeProgress - 0.5));
+  const edge = withProgress
+    .filter(p => p.routeProgress < 0.2 || p.routeProgress > 0.8)
+    .sort((a, b) => a.routeDistanceKm - b.routeDistanceKm);
+  const selected = [];
+  const wantMiddle = Math.min(6, middle.length);
+  for (let i = 0; i < wantMiddle; i++) selected.push(middle[i]);
+  let i = 0;
+  while (selected.length < 10 && i < edge.length) { selected.push(edge[i++]); }
+  i = wantMiddle;
+  while (selected.length < 10 && i < middle.length) { selected.push(middle[i++]); }
+  return selected.slice(0, 10);
+}
+
+async function ensureSegmentData(segIdx) {
+  if (!state.route[segIdx+1]) return;
+  const from = state.route[segIdx], to = state.route[segIdx+1], key = segKey(segIdx);
+  if (state.segmentCache[key]) return;
+  const fromHotel = selectedHotel(segIdx), toHotel = selectedHotel(segIdx+1);
+  if (!toHotel) return;
+  if (!(state.skipDepartHotel && segIdx === 0) && !fromHotel) return;
+  state.segmentLoading[key] = true;
+  state.segmentError[key] = '';
+  const st = stationCoord();
+  const fromPt = (state.skipDepartHotel && segIdx === 0)
+    ? { lat: st.lat, lng: st.lng }
+    : (normalizeLatLng(fromHotel?.location || fromHotel) || normalizeLatLng(from));
+  const toPt = normalizeLatLng(toHotel?.location || toHotel) || normalizeLatLng(to);
+  let pts = routeSamplePoints(fromPt, toPt);
+  if (!pts.length && fromPt && toPt) {
+    pts = [{ lat: (fromPt.lat + toPt.lat) / 2, lng: (fromPt.lng + toPt.lng) / 2 }];
+  }
+  const cache = { vegetarian:[], budget:[], luxury:[], convenience:[] };
+  try {
+    if (state.foodPrefs.includes('vegetarian')) cache.vegetarian = await fetchCategoryAlongRoute(pts,'vegetarian', fromPt, toPt);
+    if (state.foodPrefs.includes('budget')) cache.budget = await fetchCategoryAlongRoute(pts,'budget', fromPt, toPt);
+    if (state.foodPrefs.includes('luxury')) cache.luxury = await fetchCategoryAlongRoute(pts,'luxury', fromPt, toPt);
+    if (state.foodPrefs.includes('convenience')) cache.convenience = await fetchCategoryAlongRoute(pts,'convenience', fromPt, toPt);
+    const total = cache.vegetarian.length + cache.budget.length + cache.luxury.length + cache.convenience.length;
+    if (total === 0) {
+      // fallback：至少給一般餐廳與便利商店，避免空畫面
+      cache.budget = await fetchCategoryAlongRoute(pts,'budget', fromPt, toPt);
+      cache.convenience = await fetchCategoryAlongRoute(pts,'convenience', fromPt, toPt);
+      if ((cache.budget.length + cache.convenience.length) === 0) {
+        state.segmentError[key] = '這段路線附近找不到可用店家，請切換上一段或調整天數/路線。';
+      }
+    }
+    state.segmentCache[key] = cache;
+  } catch (e) {
+    state.segmentError[key] = `路段店家載入失敗：${e.message || e}`;
+  } finally {
+    state.segmentLoading[key] = false;
+    render();
+  }
+}
+
+function markerInfoHtml(place, extra) {
+  const name = place.displayName?.text || place.name || '地點';
+  const addr = place.formattedAddress || place.vicinity || '';
+  const q = encodeURIComponent(name + (addr ? ' ' + addr : ''));
+  return `<div style="max-width:260px;font-size:13px;line-height:1.45;padding:2px;">
+    <strong>${esc(name)}</strong><br>
+    <span style="color:#64748b;font-size:12px">${esc(addr)}</span><br>
+    <a href="https://www.google.com/maps/search/?api=1&query=${q}" target="_blank" rel="noopener">在 Google 地圖開啟</a>
+    ${extra || ''}
+  </div>`;
+}
+function openMarkerInfo(map, marker, place, extra) {
+  if (activeInfoWindow) activeInfoWindow.close();
+  const iw = new google.maps.InfoWindow({ content: markerInfoHtml(place, extra) });
+  iw.open(map, marker);
+  activeInfoWindow = iw;
+}
+function pickHotelFromMap() {
+  if (!pendingHotelPick) return;
+  const { day, idx } = pendingHotelPick;
+  pendingHotelPick = null;
+  selectHotelForDay(day, idx);
+}
+function pickSegmentFromMap() {
+  if (!pendingSegmentPick) return;
+  const p = pendingSegmentPick;
+  pendingSegmentPick = null;
+  toggleSegmentPlaceFromMap(p, 'add');
+}
+
+async function drawHotelStepMap() {
+  try {
+    await ensureMapsApi();
+    const el = document.getElementById('hotel-step-map');
+    if (!el) return;
+    const day = state.currentDay;
+    const node = state.route[day];
+    if (!node) return;
+    const map = new google.maps.Map(el, { center:{lat:node.lat,lng:node.lng}, zoom:12, ...MAP_UI });
+    const hotels = state.hotelCache[node.city] || [];
+    const selected = selectedHotel(day);
+    const bounds = new google.maps.LatLngBounds();
+    const selectedPath = [];
+    if (state.skipDepartHotel) {
+      const st = START_STATIONS[state.startStation] || START_STATIONS['台北車站'];
+      selectedPath.push({ lat: st.lat, lng: st.lng, label: '出' });
+    }
+    for (let d = 0; d < state.route.length; d++) {
+      if (state.skipDepartHotel && d === 0) continue;
+      const h = selectedHotel(d);
+      if (h?.location?.latitude && h?.location?.longitude) {
+        selectedPath.push({
+          lat: h.location.latitude,
+          lng: h.location.longitude,
+          label: `D${d + 1}`,
+          title: h.displayName?.text || h.name || ''
+        });
+      }
+    }
+    if (selectedPath.length >= 2) {
+      new google.maps.Polyline({
+        path: selectedPath.map(p => ({ lat: p.lat, lng: p.lng })),
+        map,
+        geodesic: true,
+        strokeColor: '#0f766e',
+        strokeOpacity: 0.9,
+        strokeWeight: 4,
+        zIndex: 1
+      });
+    }
+    selectedPath.forEach((p, idx) => {
+      const m = new google.maps.Marker({
+        position: { lat: p.lat, lng: p.lng },
+        map,
+        label: { text: p.label || String(idx + 1), color: '#fff', fontWeight: '700', fontSize: '10px' },
+        icon: {
+          path: google.maps.SymbolPath.CIRCLE,
+          scale: 11,
+          fillColor: idx === 0 && state.skipDepartHotel ? '#1d4ed8' : '#0f766e',
+          fillOpacity: 1,
+          strokeColor: '#fff',
+          strokeWeight: 2
+        },
+        zIndex: 2,
+        title: p.title || '已選住宿'
+      });
+      bounds.extend({ lat: p.lat, lng: p.lng });
+      m.addListener('click', () => openMarkerInfo(map, m, { displayName: { text: p.title || '已選住宿' }, formattedAddress: '已選路線節點' }, ''));
+    });
+    const fromAnchor = (() => {
+      if (day <= 0) return { lat: node.lat, lng: node.lng };
+      if (state.skipDepartHotel && day === 1) {
+        const st = START_STATIONS[state.startStation] || START_STATIONS['台北車站'];
+        return { lat: st.lat, lng: st.lng };
+      }
+      const prevHotel = selectedHotel(day - 1);
+      if (prevHotel?.location?.latitude && prevHotel?.location?.longitude) {
+        return { lat: prevHotel.location.latitude, lng: prevHotel.location.longitude };
+      }
+      const prevNode = state.route[day - 1] || node;
+      return { lat: prevNode.lat, lng: prevNode.lng };
+    })();
+
+    new google.maps.Polyline({
+      map,
+      path: [fromAnchor, { lat: node.lat, lng: node.lng }],
+      geodesic: true,
+      strokeColor: '#94a3b8',
+      strokeOpacity: 0.85,
+      strokeWeight: 3,
+      zIndex: 1
+    });
+    bounds.extend(fromAnchor);
+    bounds.extend({lat:node.lat,lng:node.lng});
+    const fromTitle = (() => {
+      if (day <= 0) return `D${node.day} ${node.city}`;
+      if (state.skipDepartHotel && day === 1) return `${state.startStation}（出發車站）`;
+      const prevH = selectedHotel(day - 1);
+      return prevH ? `前一天旅館：${prevH.displayName?.text || prevH.name || ''}` : `D${day} ${state.route[day - 1]?.city || ''}`;
+    })();
+    const fromLabel = (state.skipDepartHotel && day === 1) ? 'D1' : '前';
+    const fromM = new google.maps.Marker({
+      position: fromAnchor,
+      map,
+      label: { text: fromLabel, color:'#fff', fontSize:'11px', fontWeight:'700' },
+      icon:{ url:'http://maps.google.com/mapfiles/ms/icons/blue-dot.png', scaledSize:new google.maps.Size(42,42) },
+      title: fromTitle,
+      zIndex: 2
+    });
+    fromM.addListener('click', () => openMarkerInfo(map, fromM, { displayName:{ text: fromTitle }, formattedAddress:'上一段起點' }, ''));
+    const cityM = new google.maps.Marker({
+      position:{lat:node.lat,lng:node.lng}, map,
+      label:{ text:'停', color:'#fff', fontSize:'11px', fontWeight:'600' },
+      icon:{
+        path: google.maps.SymbolPath.CIRCLE,
+        scale: 12,
+        fillColor: '#1d4ed8',
+        fillOpacity: 1,
+        strokeColor: '#ffffff',
+        strokeWeight: 2
+      },
+      title: node.city + '（當日停靠城市）',
+      zIndex: 1
+    });
+    cityM.addListener('click', () => openMarkerInfo(map, cityM, { displayName:{text:node.city}, formattedAddress:'此日行程停靠點（參考中心）' }, '<br><small>點紅色圖標即可選旅館</small>'));
+    const accIcon = state.accommodation === 'guesthouse' ? '🏡' : state.accommodation === 'hostel' ? '🎒' : '🏨';
+    let previewLine = null;
+    hotels.forEach((h,idx)=>{
+      const lat = h.location?.latitude; const lng = h.location?.longitude;
+      if (!lat || !lng) return;
+      const isSel = selected && selected.place_id === h.place_id;
+      const m = new google.maps.Marker({
+        position:{lat,lng}, map,
+        label:{ text: isSel ? '✓' : String(idx+1), color:'#fff', fontWeight:'bold' },
+        icon: {
+          url: isSel
+            ? 'http://maps.google.com/mapfiles/ms/icons/green-dot.png'
+            : 'http://maps.google.com/mapfiles/ms/icons/red-dot.png',
+          scaledSize: new google.maps.Size(isSel ? 50 : 46, isSel ? 50 : 46)
+        },
+        title: (isSel ? '已選 ' : '點擊選擇 ') + (h.displayName?.text || h.name),
+        zIndex: isSel ? 3 : 2
+      });
+      m.addListener('click', () => {
+        if (previewLine) previewLine.setMap(null);
+        const fromPt = fromAnchor;
+        previewLine = new google.maps.Polyline({
+          map,
+          path: [fromPt, { lat, lng }],
+          geodesic: true,
+          strokeColor: '#0f766e',
+          strokeOpacity: 0.95,
+          strokeWeight: 5,
+          zIndex: 6
+        });
+        const actionText = (selected && selected.place_id !== h.place_id) ? '修改為此住宿' : '加入此住宿';
+        pendingHotelPick = { day, idx };
+        openMarkerInfo(
+          map,
+          m,
+          h,
+          `<br><small>${esc(accIcon)} ${esc(accLabel())} · ${hotelPriceHint(h)}${Number.isFinite(h.stopoverDistanceKm) ? `｜離停靠點約 ${h.stopoverDistanceKm.toFixed(1)}km` : ''}</small><br>
+          <button type="button" onclick="pickHotelFromMap()" style="margin-top:8px;padding:6px 10px;border:1px solid #0f766e;border-radius:6px;background:#0f766e;color:#fff;cursor:pointer;">${actionText}</button>`
+        );
+      });
+      bounds.extend({lat,lng});
+    });
+    map.fitBounds(bounds);
+  } catch {}
+}
+
+async function drawSegmentStepMap() {
+  try {
+    await ensureMapsApi();
+    const el = document.getElementById('segment-step-map');
+    if (!el) return;
+    const i = state.currentSeg;
+    const from = state.route[i], to = state.route[i+1];
+    if (!from || !to) return;
+    const st = stationCoord();
+    const fromHotel = selectedHotel(i), toHotel = selectedHotel(i+1);
+    const fromPt = (state.skipDepartHotel && i === 0)
+      ? { lat: st.lat, lng: st.lng }
+      : { lat: fromHotel?.location?.latitude || from.lat, lng: fromHotel?.location?.longitude || from.lng };
+    const toPt = { lat: toHotel?.location?.latitude || to.lat, lng: toHotel?.location?.longitude || to.lng };
+    const map = new google.maps.Map(el, { center:fromPt, zoom:10, ...MAP_UI });
+    const bounds = new google.maps.LatLngBounds();
+    bounds.extend(fromPt); bounds.extend(toPt);
+    const startM = new google.maps.Marker({
+      position:fromPt, map,
+      icon: { url:'http://maps.google.com/mapfiles/ms/icons/blue-dot.png', scaledSize:new google.maps.Size(42,42) },
+      label: { text:'起', color:'#fff', fontSize:'11px', fontWeight:'700' },
+      title: (state.skipDepartHotel && i === 0) ? `${state.startStation}（出發）` : `${from.city} 旅館`,
+      zIndex: 5
+    });
+    startM.addListener('click', () => openMarkerInfo(map, startM, {
+      displayName:{ text: (state.skipDepartHotel && i === 0) ? state.startStation : (fromHotel?.displayName?.text || from.city) },
+      formattedAddress: (state.skipDepartHotel && i === 0) ? '單車路段起點（出發車站座標）' : (fromHotel?.formattedAddress || '')
+    }, ''));
+    const endM = new google.maps.Marker({
+      position:toPt, map,
+      icon: { url:'http://maps.google.com/mapfiles/ms/icons/green-dot.png', scaledSize:new google.maps.Size(42,42) },
+      label: { text:'宿', color:'#fff', fontSize:'11px', fontWeight:'700' },
+      title: `${to.city} 住宿`,
+      zIndex: 5
+    });
+    endM.addListener('click', () => openMarkerInfo(map, endM, toHotel || { displayName:{text:to.city}, formattedAddress:'' }, '<br><small>🏨 當晚住宿點</small>'));
+    new google.maps.Polyline({ map, path:[fromPt,toPt], geodesic:true, strokeColor:'#fca5a5', strokeOpacity:0.6, strokeWeight:2, zIndex:1 });
+    const key = segKey(i);
+    const picked = state.segmentSelections[key] || { restaurants:[], convenience:[] };
+    const selFood = [...(picked.restaurants||[]), ...(picked.convenience||[])];
+    const sortedSel = sortStopsAlongSegment(fromPt, toPt, selFood);
+    if (sortedSel.length) {
+      const pathLine = [fromPt, ...sortedSel.map(p=>({lat:p.location.latitude,lng:p.location.longitude})), toPt];
+      new google.maps.Polyline({ map, path:pathLine, geodesic:true, strokeColor:'#0f766e', strokeOpacity:0.95, strokeWeight:5, zIndex:3 });
+    }
+    const cache = state.segmentCache[key];
+    if (cache) {
+      const all = [...(cache.vegetarian||[]), ...(cache.budget||[]), ...(cache.luxury||[]), ...(cache.convenience||[])];
+      all.slice(0, 30).forEach(p=>{
+        const lat = p.location?.latitude; const lng = p.location?.longitude;
+        if (!lat || !lng) return;
+        const isConv = (cache.convenience||[]).some(x=>x.place_id===p.place_id);
+        const isPicked = (picked.convenience||[]).some(x=>x.place_id===p.place_id) || (picked.restaurants||[]).some(x=>x.place_id===p.place_id);
+        const m = new google.maps.Marker({
+          position:{lat,lng}, map,
+          icon: {
+            url: isPicked
+              ? 'http://maps.google.com/mapfiles/ms/icons/green-dot.png'
+              : (isConv ? 'http://maps.google.com/mapfiles/ms/icons/orange-dot.png' : 'http://maps.google.com/mapfiles/ms/icons/purple-dot.png'),
+            scaledSize: new google.maps.Size(isPicked ? 46 : 40, isPicked ? 46 : 40)
+          },
+          label: { text: isConv ? '店' : '餐', color:'#fff', fontSize:'10px', fontWeight:'600' },
+          title: (isConv ? '🏪 ' : '🍽 ') + (p.displayName?.text || p.name) + `（離路線約 ${Number(p.routeDistanceKm||0).toFixed(1)}km）`,
+          zIndex: isPicked ? 4 : 2
+        });
+        m.addListener('click', () => {
+          pendingSegmentPick = p;
+          openMarkerInfo(
+            map,
+            m,
+            p,
+            `<br><small>參考 NT$${p.estimatedCost || estimateCost(p, isConv ? 'convenience' : 'budget')}｜離路線約 ${Number(p.routeDistanceKm||0).toFixed(1)}km</small><br>
+            <button type="button" onclick="pickSegmentFromMap()" style="margin-top:8px;padding:6px 10px;border:1px solid #0f766e;border-radius:6px;background:#0f766e;color:#fff;cursor:pointer;">加入本段</button>`
+          );
+        });
+        bounds.extend({lat,lng});
+      });
+    }
+    map.fitBounds(bounds);
+  } catch {}
+}
+
+function hotelAddr(h) {
+  if (!h) return '';
+  return h.formattedAddress || `${h.location?.latitude||''},${h.location?.longitude||''}`;
+}
+function placeToken(p) {
+  if (!p) return '';
+  const lat = p.location?.latitude;
+  const lng = p.location?.longitude;
+  if (Number.isFinite(lat) && Number.isFinite(lng)) return `${lat},${lng}`;
+  if (p.place_id) return `place_id:${p.place_id}`;
+  return hotelAddr(p);
+}
+function placeLatLng(p) {
+  if (!p) return null;
+  return normalizeLatLng(p.location || p);
+}
+function getSegmentStartLatLng(seg) {
+  if (state.skipDepartHotel && seg === 0) {
+    const st = stationCoord();
+    return { lat: st.lat, lng: st.lng };
+  }
+  return placeLatLng(selectedHotel(seg)) || normalizeLatLng(state.route[seg]);
+}
+function getSegmentEndLatLng(seg) {
+  return placeLatLng(selectedHotel(seg+1)) || normalizeLatLng(state.route[seg+1]);
+}
+function projTOnSeg(A, B, P) {
+  if (!A || !B || !P) return 0;
+  const dx = B.lng - A.lng, dy = B.lat - A.lat;
+  const len2 = dx * dx + dy * dy + 1e-12;
+  return ((P.lng - A.lng) * dx + (P.lat - A.lat) * dy) / len2;
+}
+function sortStopsAlongSegment(fromPt, toPt, items) {
+  return [...items].sort((a, b) => {
+    const pa = placeLatLng(a), pb = placeLatLng(b);
+    if (!pa || !pb) return 0;
+    return projTOnSeg(fromPt, toPt, pa) - projTOnSeg(fromPt, toPt, pb);
+  });
+}
+function selectHotelForDay(day, idx) {
+  const city = state.route[day]?.city;
+  const list = state.hotelCache[city];
+  if (!city || !list || !list[idx]) return;
+  if (!state.selections[day]) state.selections[day] = {};
+  state.selections[day].hotel = list[idx];
+  if (day < state.route.length - 1) {
+    state.currentDay = day + 1;
+    ensureHotelForDay(state.currentDay);
+  }
+  render();
+}
+function toggleSegmentPlaceFromMap(place, mode = 'toggle') {
+  const key = segKey(state.currentSeg);
+  const cache = state.segmentCache[key];
+  if (!cache || !place.place_id) return;
+  const isConv = (cache.convenience || []).some(x => x.place_id === place.place_id);
+  if (!state.segmentSelections[key]) state.segmentSelections[key] = { restaurants: [], convenience: [] };
+  const target = isConv ? state.segmentSelections[key].convenience : state.segmentSelections[key].restaurants;
+  const exists = target.some(x => x.place_id === place.place_id);
+  if (exists && mode !== 'add') {
+    if (isConv) state.segmentSelections[key].convenience = target.filter(x => x.place_id !== place.place_id);
+    else state.segmentSelections[key].restaurants = target.filter(x => x.place_id !== place.place_id);
+  } else if (!exists) {
+    place.estimatedCost = place.estimatedCost || estimateCost(place, isConv ? 'convenience' : 'budget');
+    target.push(place);
+  }
+  render();
+}
+
+function buildGoogleDirections() {
+  if (!state.route.length) return '#';
+  const st = stationCoord();
+  const parts = [];
+  const push = (h) => {
+    const s = typeof h === 'string' ? h : placeToken(h);
+    if (s) parts.push(s);
+  };
+  if (state.skipDepartHotel) {
+    push(`${st.lat},${st.lng}`);
+  } else {
+    const h0 = selectedHotel(0);
+    if (h0) push(h0);
+    else {
+      const r0 = state.route[0];
+      if (r0) push(`${r0.lat},${r0.lng}`);
+    }
+  }
+  for (let seg = 0; seg < state.route.length - 1; seg++) {
+    const fromPt = getSegmentStartLatLng(seg);
+    const toPt = getSegmentEndLatLng(seg);
+    if (!fromPt || !toPt) continue;
+    const k = segKey(seg);
+    const sel = state.segmentSelections[k] || {};
+    const foods = [...(sel.restaurants || []), ...(sel.convenience || [])];
+    sortStopsAlongSegment(fromPt, toPt, foods).forEach(p => push(p));
+    const hEnd = selectedHotel(seg + 1);
+    if (hEnd) push(hEnd);
+    else {
+      const r = state.route[seg + 1];
+      if (r) push(`${r.lat},${r.lng}`);
+    }
+  }
+  const MAX = 12; // 1 origin + 10 waypoints + 1 destination
+  // 不再刪除你選的點，改由外層自動分段開啟
+  if (parts.length > MAX) return '#';
+  if (parts.length < 2) return '#';
+  const origin = encodeURIComponent(parts[0]);
+  const destination = encodeURIComponent(parts[parts.length - 1]);
+  const mid = parts.slice(1, -1);
+  const waypoints = mid.length ? '&waypoints=' + mid.map(x => encodeURIComponent(x)).join('|') : '';
+  return `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}${waypoints}&travelmode=bicycling`;
+}
+
+function buildGoogleDirectionsSegments() {
+  const MAX = 12;
+  const routePoints = [];
+  const push = (x) => { if (x) routePoints.push(x); };
+  if (!state.route.length) return [];
+  if (state.skipDepartHotel) {
+    const st = stationCoord();
+    push(`${st.lat},${st.lng}`);
+  } else {
+    const h0 = selectedHotel(0);
+    if (h0) push(placeToken(h0));
+    else {
+      const r0 = state.route[0];
+      if (r0) push(`${r0.lat},${r0.lng}`);
+    }
+  }
+  for (let seg = 0; seg < state.route.length - 1; seg++) {
+    const fromPt = getSegmentStartLatLng(seg);
+    const toPt = getSegmentEndLatLng(seg);
+    if (!fromPt || !toPt) continue;
+    const key = segKey(seg);
+    const sel = state.segmentSelections[key] || {};
+    const foods = sortStopsAlongSegment(fromPt, toPt, [...(sel.restaurants || []), ...(sel.convenience || [])]);
+    foods.forEach(p => push(placeToken(p)));
+    const hEnd = selectedHotel(seg + 1);
+    if (hEnd) push(placeToken(hEnd));
+    else {
+      const r = state.route[seg + 1];
+      if (r) push(`${r.lat},${r.lng}`);
+    }
+  }
+  if (routePoints.length < 2) return [];
+
+  const urls = [];
+  let start = 0;
+  while (start < routePoints.length - 1) {
+    const end = Math.min(start + MAX - 1, routePoints.length - 1);
+    const chunk = routePoints.slice(start, end + 1);
+    const origin = encodeURIComponent(chunk[0]);
+    const destination = encodeURIComponent(chunk[chunk.length - 1]);
+    const mid = chunk.slice(1, -1);
+    const waypoints = mid.length ? '&waypoints=' + mid.map(x => encodeURIComponent(x)).join('|') : '';
+    urls.push(`https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}${waypoints}&travelmode=bicycling`);
+    start = end;
+  }
+  return urls;
+}
+
+function initMap() {
+  const container = document.getElementById('map-container');
+  if (!container) return;
+  if (!window.google) {
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${MAPS_KEY}&callback=initMapCallback`;
+    script.async = true;
+    window.initMapCallback = drawMap;
+    document.head.appendChild(script);
+  } else drawMap();
+}
+
+function drawMap() {
+  const st = stationCoord();
+  let path = [];
+  if (state.skipDepartHotel) {
+    path.push({ lat: st.lat, lng: st.lng });
+    for (let i = 1; i < state.route.length; i++) {
+      const h = selectedHotel(i);
+      if (h) path.push({ lat:h.location?.latitude || 0, lng:h.location?.longitude || 0 });
+      else if (state.route[i]) path.push({ lat: state.route[i].lat, lng: state.route[i].lng });
+    }
+  } else {
+    const hotels = state.route.map((_,i)=>selectedHotel(i)).filter(Boolean);
+    if (hotels.length === 0) {
+      path = state.route.map(r => ({ lat: r.lat, lng: r.lng }));
+    } else {
+      path = state.route.map((r, i) => {
+        const h = selectedHotel(i);
+        return h ? { lat:h.location?.latitude || r.lat, lng:h.location?.longitude || r.lng } : { lat:r.lat, lng:r.lng };
+      });
+    }
+  }
+  if (path.length === 0) return;
+  const center = path[Math.floor(path.length/2)];
+  const map = new google.maps.Map(document.getElementById('map-container'), {
+    center: { lat:center.lat || 23.8, lng:center.lng || 120.9 },
+    zoom: 7, ...MAP_UI
+  });
+  new google.maps.Polyline({ path, geodesic:true, strokeColor:'#c0392b', strokeOpacity:0.8, strokeWeight:3, map });
+  const bounds = new google.maps.LatLngBounds();
+  path.forEach((p,idx)=>{
+    const isStart = state.skipDepartHotel && idx === 0;
+    const numLabel = isStart ? '出' : String(state.skipDepartHotel ? idx : idx + 1);
+    const m = new google.maps.Marker({
+      position:p, map, title: isStart ? '出發車站' : `第 ${numLabel} 晚住宿`,
+      label:{ text: numLabel, color:'white', fontWeight:'bold', fontSize:'11px' },
+      icon: isStart
+        ? { url:'http://maps.google.com/mapfiles/ms/icons/blue-dot.png', scaledSize:new google.maps.Size(44,44) }
+        : { path:google.maps.SymbolPath.CIRCLE, scale:16, fillColor:'#c0392b', fillOpacity:1, strokeColor:'#fff', strokeWeight:2 }
+    });
+    if (isStart) {
+      m.addListener('click', () => openMarkerInfo(map, m, { displayName:{ text: state.startStation }, formattedAddress:'行程起點（出發車站）' }, ''));
+    } else {
+      const dayIdx = idx;
+      const h = selectedHotel(dayIdx);
+      if (h) m.addListener('click', () => openMarkerInfo(map, m, h, `<br><small>住宿點（D${dayIdx + 1}）</small>`));
+    }
+    bounds.extend(p);
+  });
+  // 加上已選餐飲/便利商店標記，讓總覽能看到完整規劃點位
+  Object.keys(state.segmentSelections || {}).forEach(k => {
+    const seg = state.segmentSelections[k] || {};
+    const all = [...(seg.restaurants || []), ...(seg.convenience || [])];
+    all.forEach(p => {
+      const lat = p.location?.latitude;
+      const lng = p.location?.longitude;
+      if (!lat || !lng) return;
+      const isConv = (seg.convenience || []).some(x => x.place_id === p.place_id);
+      const m = new google.maps.Marker({
+        position: { lat, lng },
+        map,
+        icon: {
+          url: isConv
+            ? 'http://maps.google.com/mapfiles/ms/icons/orange-dot.png'
+            : 'http://maps.google.com/mapfiles/ms/icons/purple-dot.png',
+          scaledSize: new google.maps.Size(38, 38)
+        },
+        title: (isConv ? '🏪 ' : '🍽 ') + (p.displayName?.text || p.name || '')
+      });
+      m.addListener('click', () => openMarkerInfo(map, m, p, `<br><small>${isConv ? '便利商店' : '餐飲'}（已選）</small>`));
+      bounds.extend({ lat, lng });
+    });
+  });
+  map.fitBounds(bounds);
+}
+
+function exportVisualHtml() {
+  const link = (p) => p ? `<a href="${esc(toMapsSearch(p))}" target="_blank" rel="noopener">${esc(p.displayName?.text || p.name)}</a>` : '-';
+  const rows = state.route.map((r,i)=>{
+    const h = selectedHotel(i);
+    const skipRow = state.skipDepartHotel && i === 0;
+    const n = state.route[i+1];
+    const seg = n ? state.segmentSelections[`${r.city}->${n.city}`] : null;
+    const hotelCost = skipRow ? 0 : estimateCost(h, 'hotel');
+    const foods = [
+      ...(seg?.restaurants||[]).map(x=>`🍽 ${link(x)} <span class="cost-chip">NT$${x.estimatedCost||estimateCost(x,'budget')}</span>`),
+      ...(seg?.convenience||[]).map(x=>`🏪 ${link(x)} <span class="cost-chip">NT$${x.estimatedCost||estimateCost(x,'convenience')}</span>`)
+    ].join('<br>') || '—';
+    const segCost = (seg?.restaurants || []).reduce((s, x) => s + (x.estimatedCost || estimateCost(x, 'budget')), 0)
+      + (seg?.convenience || []).reduce((s, x) => s + (x.estimatedCost || estimateCost(x, 'convenience')), 0);
+    return `<tr>
+      <td>Day ${r.day}</td>
+      <td>${esc(r.city)}</td>
+      <td>${skipRow ? '（出發日不住宿）' : link(h)}</td>
+      <td>${skipRow ? '—' : esc(h?.formattedAddress || '')}</td>
+      <td>${skipRow ? '—' : esc(h?.nationalPhoneNumber || '—')}</td>
+      <td>${foods}</td>
+      <td><input type="number" min="0" value="${hotelCost}" class="cost-input js-hotel-cost"></td>
+      <td><input type="number" min="0" value="${segCost}" class="cost-input js-food-cost"></td>
+    </tr>`;
+  }).join('');
+  const equipAll = [...EQUIPMENT, ...(state.customEquipment || [])];
+  const equipRows = equipAll.map(e => `<li style="margin:4px 0;"><label><input type="checkbox" ${state.equipment[e] ? 'checked' : ''}> ${esc(e)}</label></li>`).join('');
+  const preset = state.routePresetId ? ROUTE_PRESETS[state.routePresetId] : null;
+  const html = `<!doctype html><html lang="zh-TW"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>台灣環島行程表</title>
+  <style>
+    *{box-sizing:border-box}
+    body{font-family:'Segoe UI','Noto Sans TC',sans-serif;margin:0;padding:16px;background:linear-gradient(165deg,#f0ede8,#e8f4f3);color:#1a1a2e;line-height:1.5}
+    .wrap{max-width:920px;margin:0 auto;background:#fff;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,.08);overflow:hidden}
+    .head{background:linear-gradient(135deg,#1a1a2e,#2d2d44);color:#fff;padding:20px 24px}
+    .head h1{margin:0;font-size:1.35rem;letter-spacing:.05em}
+    .meta{font-size:13px;opacity:.85;margin-top:8px}
+    .box{padding:20px 24px}
+    table{width:100%;border-collapse:collapse;font-size:14px}
+    th,td{border:1px solid #e5e7eb;padding:12px 10px;text-align:left;vertical-align:top}
+    th{background:#0f172a;color:#fff;font-weight:600;font-size:12px}
+    tr:nth-child(even) td{background:#f9fafb}
+    a{color:#0f766e;font-weight:500}
+    .cost-chip{color:#475569;font-size:12px}
+    .cost-input{width:110px;padding:6px 8px;border:1px solid #cbd5e1;border-radius:8px}
+    .cost-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:12px 0 16px}
+    .cost-box{background:#f8fafc;border:1px solid #e2e8f0;padding:10px 12px;border-radius:10px}
+    .equip{border:1px solid #e5e7eb;border-radius:12px;padding:16px;margin-top:20px;background:#f8fafc}
+    .equip h3{margin:0 0 10px;font-size:15px;color:#0f172a}
+    ul{padding-left:20px;margin:0}
+    @media(max-width:640px){th,td{font-size:12px;padding:8px 6px}}
+  </style></head>
+  <body><div class="wrap"><div class="head"><h1>台灣環島行程規劃表</h1>
+  <div class="meta">預算 NT$${state.budgetAmount.toLocaleString()}｜${state.days} 天｜${esc(accLabel())}｜${state.foodPrefs.map(esc).join('、')}${preset ? '｜路線：' + esc(preset.name) : ''}</div></div>
+  <div class="box">
+  <div class="cost-summary">
+    <div class="cost-box">總預算：<strong id="budget-total">NT$${state.budgetAmount.toLocaleString()}</strong></div>
+    <div class="cost-box">已規劃花費：<strong id="planned-total">NT$0</strong></div>
+    <div class="cost-box">剩餘：<strong id="remain-total">NT$0</strong></div>
+  </div>
+  <table><thead><tr><th>日期</th><th>城市</th><th>旅館</th><th>地址</th><th>電話</th><th>餐飲／補給</th><th>住宿費(可改)</th><th>餐飲補給(可改)</th></tr></thead><tbody>${rows}</tbody></table>
+  <div class="equip"><h3>🎒 裝備清單</h3><ul>${equipRows}</ul></div>
+  </div></div>
+  <script>
+    (function(){
+      const budget = ${Number(state.budgetAmount || 0)};
+      const fmt = n => 'NT$' + Number(n || 0).toLocaleString('zh-TW');
+      const update = () => {
+        const h = [...document.querySelectorAll('.js-hotel-cost')].reduce((s, el)=>s + Math.max(0, Number(el.value || 0)), 0);
+        const f = [...document.querySelectorAll('.js-food-cost')].reduce((s, el)=>s + Math.max(0, Number(el.value || 0)), 0);
+        const total = h + f;
+        document.getElementById('planned-total').textContent = fmt(total);
+        document.getElementById('remain-total').textContent = fmt(budget - total);
+      };
+      document.querySelectorAll('.cost-input').forEach(el => el.addEventListener('input', update));
+      update();
+    })();
+  <\/script>
+  </body></html>`;
+  const blob = new Blob([html], {type:'text/html;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `台灣環島行程_${state.days}天.html`; a.click();
+  URL.revokeObjectURL(url);
+}
+
+loadState();
+render();
+</script>
+</body>
+</html>
